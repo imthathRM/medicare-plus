@@ -1,0 +1,35 @@
+export const initialHospitalProfile = {
+  name: 'MediCare Plus Hospital',
+  tagline: 'Excellence in Healthcare, Compassion in Healing',
+  registrationNumber: 'PV-0029104-SLMC',
+  taxId: 'TIN-9081249-0001',
+  hotline: '+94 11 268 4500',
+  emergencyLine: '+94 11 268 4911',
+  email: 'info@medicare.plus',
+  billingEmail: 'billing@medicare.plus',
+  website: 'https://medicare.plus',
+  address: '124 Elvitigala Mawatha, Colombo 05, Sri Lanka',
+  district: 'Colombo',
+  province: 'Western Province',
+  postalCode: '00500',
+  currency: 'LKR',
+  timezone: 'Asia/Colombo (UTC+05:30)',
+  operatingBeds: 180,
+  operatingTheaters: 6,
+  icuBeds: 16,
+  accreditation: 'ACHS International Accredited & ISO 9001:2015',
+  establishedYear: '2012',
+};
+
+export const initialAppSettings = {
+  hospitalName: 'MediCare Plus Hospital',
+  defaultAppointmentDurationMinutes: 20,
+  defaultCurrency: 'LKR',
+  dateFormat: 'DD/MM/YYYY',
+  enableSmsReminders: true,
+  enableEmailInvoicing: true,
+  lowStockAlertThreshold: 100,
+  autoDischargeSummary: true,
+  themeMode: 'light', // Strict light theme
+  allowOnlineBooking: true,
+};
