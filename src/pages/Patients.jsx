@@ -30,7 +30,7 @@ export const Patients = () => {
   const [genderFilter, setGenderFilter] = useState('ALL');
 
   // Modals state
-  const [isAddModalOpen, setIsAddModalOpen] = useState(false);
+  const [isAddModalOpen, setIsAddModalOpen] = useState(() => searchParams.get('action') === 'new');
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [isViewModalOpen, setIsViewModalOpen] = useState(false);
   const [isDeleteConfirmOpen, setIsDeleteConfirmOpen] = useState(false);
@@ -39,10 +39,10 @@ export const Patients = () => {
   const [patientToDelete, setPatientToDelete] = useState(null);
 
   // Form state
-  const [formData, setFormData] = useState({
+  const [formData, setFormData] = useState(() => ({
     name: '',
     gender: 'Male',
-    dob: '',
+    dob: '1990-01-01',
     bloodGroup: 'O+',
     phone: '',
     email: '',
@@ -50,10 +50,10 @@ export const Patients = () => {
     address: '',
     emergencyContact: '',
     status: 'Outpatient',
-    department: 'General Surgery',
-    allergies: 'None',
+    department: departments[0]?.name || 'General Surgery',
+    allergies: '',
     medicalHistory: '',
-  });
+  }));
 
   const [formErrors, setFormErrors] = useState({});
 
@@ -69,7 +69,7 @@ export const Patients = () => {
       address: '',
       emergencyContact: '',
       status: 'Outpatient',
-      department: departments[0]?.name || 'Cardiology',
+      department: departments[0]?.name || 'General Surgery',
       allergies: '',
       medicalHistory: '',
     });
@@ -80,13 +80,12 @@ export const Patients = () => {
   // Check URL query param for quick action
   useEffect(() => {
     if (searchParams.get('action') === 'new') {
-      handleOpenAddModal();
       setSearchParams((prev) => {
         prev.delete('action');
         return prev;
-      });
+      }, { replace: true });
     }
-  }, [searchParams, setSearchParams, handleOpenAddModal]);
+  }, [searchParams, setSearchParams]);
 
   // Filtered patients
   const filteredPatients = useMemo(() => {

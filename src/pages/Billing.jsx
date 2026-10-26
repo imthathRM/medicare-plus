@@ -31,7 +31,7 @@ export const Billing = () => {
   const [statusFilter, setStatusFilter] = useState('ALL');
 
   // Modals
-  const [isAddModalOpen, setIsAddModalOpen] = useState(false);
+  const [isAddModalOpen, setIsAddModalOpen] = useState(() => searchParams.get('action') === 'new');
   const [isViewModalOpen, setIsViewModalOpen] = useState(false);
   const [isPaymentModalOpen, setIsPaymentModalOpen] = useState(false);
 
@@ -41,14 +41,20 @@ export const Billing = () => {
   const [paymentMethod, setPaymentMethod] = useState('Cash');
 
   // Form for New Invoice
-  const [formData, setFormData] = useState({
-    patientId: '',
-    department: 'General Care',
-    dueDate: '',
-    items: [
-      { id: 1, description: 'Medical Consultation', quantity: 1, unitPrice: 4000, amount: 4000 },
-    ],
-    notes: 'Standard hospital billing invoice.',
+  const [formData, setFormData] = useState(() => {
+    const today = new Date();
+    const dueDate = new Date();
+    dueDate.setDate(today.getDate() + 14);
+    return {
+      patientId: patients[0]?.id || '',
+      department: 'Cardiology',
+      dueDate: dueDate.toISOString().split('T')[0],
+      items: [
+        { id: 1, description: 'Specialist Consultation Fee', quantity: 1, unitPrice: 4500, amount: 4500 },
+        { id: 2, description: 'ECG Diagnostic Test', quantity: 1, unitPrice: 3500, amount: 3500 },
+      ],
+      notes: 'Outpatient diagnostic invoice.',
+    };
   });
   const [formErrors, setFormErrors] = useState({});
 
@@ -73,13 +79,12 @@ export const Billing = () => {
 
   useEffect(() => {
     if (searchParams.get('action') === 'new') {
-      handleOpenAdd();
       setSearchParams((prev) => {
         prev.delete('action');
         return prev;
-      });
+      }, { replace: true });
     }
-  }, [searchParams, setSearchParams, handleOpenAdd]);
+  }, [searchParams, setSearchParams]);
 
   const filteredInvoices = useMemo(() => {
     return invoices.filter((inv) => {

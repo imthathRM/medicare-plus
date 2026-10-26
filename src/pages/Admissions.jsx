@@ -32,7 +32,7 @@ export const Admissions = () => {
   const [statusFilter, setStatusFilter] = useState('ALL');
 
   // Modals
-  const [isAddModalOpen, setIsAddModalOpen] = useState(false);
+  const [isAddModalOpen, setIsAddModalOpen] = useState(() => searchParams.get('action') === 'new');
   const [isViewModalOpen, setIsViewModalOpen] = useState(false);
   const [isDischargeConfirmOpen, setIsDischargeConfirmOpen] = useState(false);
 
@@ -40,18 +40,18 @@ export const Admissions = () => {
   const [admissionToDischarge, setAdmissionToDischarge] = useState(null);
 
   // Form
-  const [formData, setFormData] = useState({
-    patientId: '',
-    ward: 'General Medical Ward',
+  const [formData, setFormData] = useState(() => ({
+    patientId: patients[0]?.id || '',
+    ward: 'Cardiology Special Care Ward',
     bedNumber: 'Bed 101',
-    attendingDoctor: '',
-    department: 'Cardiology',
+    attendingDoctor: doctors[0]?.name || '',
+    department: departments[0]?.name || 'Cardiology',
     primaryDiagnosis: '',
     status: 'Admitted',
-    dailyRate: 10000,
-    emergencyContact: '',
+    dailyRate: 11000,
+    emergencyContact: patients[0]?.emergencyContact || '',
     notes: '',
-  });
+  }));
   const [formErrors, setFormErrors] = useState({});
 
   const handleOpenAdd = useCallback(() => {
@@ -73,13 +73,12 @@ export const Admissions = () => {
 
   useEffect(() => {
     if (searchParams.get('action') === 'new') {
-      handleOpenAdd();
       setSearchParams((prev) => {
         prev.delete('action');
         return prev;
-      });
+      }, { replace: true });
     }
-  }, [searchParams, setSearchParams, handleOpenAdd]);
+  }, [searchParams, setSearchParams]);
 
   const filteredAdmissions = useMemo(() => {
     return admissions.filter((adm) => {

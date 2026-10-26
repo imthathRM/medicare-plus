@@ -13,18 +13,12 @@ export const DataTable = ({
   const [currentPage, setCurrentPage] = useState(1);
 
   const totalPages = Math.ceil(data.length / pageSize) || 1;
+  const safePage = Math.min(Math.max(1, currentPage), totalPages);
 
   const currentData = useMemo(() => {
-    const start = (currentPage - 1) * pageSize;
+    const start = (safePage - 1) * pageSize;
     return data.slice(start, start + pageSize);
-  }, [data, currentPage, pageSize]);
-
-  // Reset to page 1 if data length shrinks
-  React.useEffect(() => {
-    if (currentPage > totalPages) {
-      setCurrentPage(1);
-    }
-  }, [totalPages, currentPage]);
+  }, [data, safePage, pageSize]);
 
   return (
     <div className={`flex flex-col bg-white rounded-lg border border-[#E2E8F0] shadow-xs overflow-hidden ${className}`}>
@@ -89,11 +83,11 @@ export const DataTable = ({
           <div>
             Showing{' '}
             <span className="font-semibold text-[#1E3A5F]">
-              {(currentPage - 1) * pageSize + 1}
+              {(safePage - 1) * pageSize + 1}
             </span>{' '}
             to{' '}
             <span className="font-semibold text-[#1E3A5F]">
-              {Math.min(currentPage * pageSize, data.length)}
+              {Math.min(safePage * pageSize, data.length)}
             </span>{' '}
             of <span className="font-semibold text-[#1E3A5F]">{data.length}</span> entries
           </div>
@@ -101,7 +95,7 @@ export const DataTable = ({
           <div className="flex items-center gap-1.5">
             <button
               onClick={() => setCurrentPage(1)}
-              disabled={currentPage === 1}
+              disabled={safePage === 1}
               className="p-1.5 rounded-lg border border-[#E2E8F0] text-[#334155] hover:bg-white disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
               title="First Page"
             >
@@ -109,7 +103,7 @@ export const DataTable = ({
             </button>
             <button
               onClick={() => setCurrentPage((p) => Math.max(1, p - 1))}
-              disabled={currentPage === 1}
+              disabled={safePage === 1}
               className="p-1.5 rounded-lg border border-[#E2E8F0] text-[#334155] hover:bg-white disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
               title="Previous Page"
             >
@@ -117,12 +111,12 @@ export const DataTable = ({
             </button>
 
             <span className="px-3 py-1 font-medium text-[#334155]">
-              Page {currentPage} of {totalPages}
+              Page {safePage} of {totalPages}
             </span>
 
             <button
               onClick={() => setCurrentPage((p) => Math.min(totalPages, p + 1))}
-              disabled={currentPage === totalPages}
+              disabled={safePage === totalPages}
               className="p-1.5 rounded-lg border border-[#E2E8F0] text-[#334155] hover:bg-white disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
               title="Next Page"
             >
@@ -130,7 +124,7 @@ export const DataTable = ({
             </button>
             <button
               onClick={() => setCurrentPage(totalPages)}
-              disabled={currentPage === totalPages}
+              disabled={safePage === totalPages}
               className="p-1.5 rounded-lg border border-[#E2E8F0] text-[#334155] hover:bg-white disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
               title="Last Page"
             >

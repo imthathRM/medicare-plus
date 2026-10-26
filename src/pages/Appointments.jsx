@@ -34,7 +34,7 @@ export const Appointments = () => {
   const [dateFilter, setDateFilter] = useState('');
 
   // Modals
-  const [isAddModalOpen, setIsAddModalOpen] = useState(false);
+  const [isAddModalOpen, setIsAddModalOpen] = useState(() => searchParams.get('action') === 'new');
   const [isViewModalOpen, setIsViewModalOpen] = useState(false);
   const [isCancelConfirmOpen, setIsCancelConfirmOpen] = useState(false);
 
@@ -42,15 +42,15 @@ export const Appointments = () => {
   const [appointmentToCancel, setAppointmentToCancel] = useState(null);
 
   // Form
-  const [formData, setFormData] = useState({
-    patientId: '',
-    doctorId: '',
-    date: '2026-10-15',
-    time: '10:00',
+  const [formData, setFormData] = useState(() => ({
+    patientId: patients[0]?.id || '',
+    doctorId: doctors[0]?.id || '',
+    date: new Date().toISOString().split('T')[0],
+    time: '10:30',
     type: 'Consultation',
     status: 'Confirmed',
     notes: '',
-  });
+  }));
   const [formErrors, setFormErrors] = useState({});
 
   const handleOpenAdd = useCallback(() => {
@@ -69,13 +69,12 @@ export const Appointments = () => {
 
   useEffect(() => {
     if (searchParams.get('action') === 'new') {
-      handleOpenAdd();
       setSearchParams((prev) => {
         prev.delete('action');
         return prev;
-      });
+      }, { replace: true });
     }
-  }, [searchParams, setSearchParams, handleOpenAdd]);
+  }, [searchParams, setSearchParams]);
 
   const filteredAppointments = useMemo(() => {
     return appointments.filter((apt) => {

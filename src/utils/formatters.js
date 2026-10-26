@@ -4,13 +4,13 @@
  */
 
 export const formatLKR = (amount) => {
-  if (amount === undefined || amount === null || isNaN(amount)) return 'LKR 0.00';
-  return new Intl.NumberFormat('en-LK', {
-    style: 'currency',
-    currency: 'LKR',
+  if (amount === undefined || amount === null || amount === '') return 'LKR 0.00';
+  const num = Number(amount);
+  if (isNaN(num)) return 'LKR 0.00';
+  return `LKR ${num.toLocaleString('en-US', {
     minimumFractionDigits: 2,
     maximumFractionDigits: 2,
-  }).format(amount).replace('LKR', 'LKR ');
+  })}`;
 };
 
 export const formatDate = (dateString) => {
