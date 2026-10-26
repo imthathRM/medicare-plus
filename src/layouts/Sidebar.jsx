@@ -57,24 +57,24 @@ export const Sidebar = ({ isCollapsed, setIsCollapsed, isMobileOpen, setIsMobile
 
       {/* Sidebar Container */}
       <aside
-        className={`fixed top-0 bottom-0 left-0 z-40 flex flex-col bg-white border-r border-slate-200 transition-all duration-300 ease-in-out ${
+        className={`fixed top-0 bottom-0 left-0 z-40 flex flex-col bg-white border-r border-[#E2E8F0] transition-all duration-300 ease-in-out ${
           isCollapsed ? 'w-20' : 'w-64'
         } ${
           isMobileOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'
         }`}
       >
         {/* Logo and Brand */}
-        <div className="h-16 flex items-center justify-between px-4 border-b border-slate-100 shrink-0">
+        <div className="h-16 flex items-center justify-between px-4 border-b border-[#E2E8F0] shrink-0">
           <div className="flex items-center gap-3 overflow-hidden">
-            <div className="w-10 h-10 rounded-xl bg-gradient-to-tr from-sky-600 to-teal-500 text-white flex items-center justify-center shadow-md shadow-sky-500/20 shrink-0">
+            <div className="w-9 h-9 rounded-lg bg-[#2563EB] text-white flex items-center justify-center shrink-0 shadow-xs">
               <Cross className="w-5 h-5 rotate-45 stroke-[2.5]" />
             </div>
             {!isCollapsed && (
               <div className="flex flex-col min-w-0">
-                <span className="text-base font-bold text-slate-900 tracking-tight leading-none flex items-center gap-1">
-                  MediCare <span className="text-sky-600">Plus</span>
+                <span className="text-base font-bold text-[#1E3A5F] tracking-tight leading-none flex items-center gap-1">
+                  MediCare <span className="text-[#2563EB]">Plus</span>
                 </span>
-                <span className="text-[10px] font-semibold uppercase tracking-wider text-teal-600 mt-1">
+                <span className="text-[10px] font-semibold uppercase tracking-wider text-[#0F766E] mt-1">
                   Hospital System
                 </span>
               </div>
@@ -84,7 +84,7 @@ export const Sidebar = ({ isCollapsed, setIsCollapsed, isMobileOpen, setIsMobile
           {/* Desktop collapse toggle */}
           <button
             onClick={() => setIsCollapsed(!isCollapsed)}
-            className="hidden lg:flex p-1.5 rounded-lg text-slate-400 hover:text-slate-600 hover:bg-slate-100 transition-colors"
+            className="hidden lg:flex p-1.5 rounded-lg text-[#64748B] hover:text-[#1E3A5F] hover:bg-[#F7F9FC] transition-colors"
             title={isCollapsed ? 'Expand sidebar' : 'Collapse sidebar'}
           >
             {isCollapsed ? (
@@ -108,10 +108,10 @@ export const Sidebar = ({ isCollapsed, setIsCollapsed, isMobileOpen, setIsMobile
                 onClick={() => setIsMobileOpen(false)}
                 title={isCollapsed ? item.name : undefined}
                 className={({ isActive }) =>
-                  `flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium transition-all group ${
+                  `flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-colors group ${
                     isActive
-                      ? 'bg-sky-50 text-sky-700 shadow-2xs font-semibold'
-                      : 'text-slate-600 hover:bg-slate-50 hover:text-slate-900'
+                      ? 'bg-blue-50 text-[#2563EB] font-semibold'
+                      : 'text-[#64748B] hover:bg-[#F7F9FC] hover:text-[#1E3A5F]'
                   } ${isCollapsed ? 'justify-center px-0' : ''}`
                 }
               >
@@ -120,8 +120,8 @@ export const Sidebar = ({ isCollapsed, setIsCollapsed, isMobileOpen, setIsMobile
                     <Icon
                       className={`w-5 h-5 shrink-0 transition-colors ${
                         isActive
-                          ? 'text-sky-600'
-                          : 'text-slate-400 group-hover:text-slate-600'
+                          ? 'text-[#2563EB]'
+                          : 'text-[#64748B] group-hover:text-[#1E3A5F]'
                       }`}
                     />
                     {!isCollapsed && (
@@ -131,10 +131,10 @@ export const Sidebar = ({ isCollapsed, setIsCollapsed, isMobileOpen, setIsMobile
                       <span
                         className={`text-[11px] font-bold px-2 py-0.5 rounded-full ${
                           typeof badge === 'string' && badge.includes('!')
-                            ? 'bg-rose-100 text-rose-700'
+                            ? 'bg-red-50 text-[#B91C1C]'
                             : isActive
-                            ? 'bg-sky-100 text-sky-700'
-                            : 'bg-slate-100 text-slate-600'
+                            ? 'bg-blue-100 text-[#2563EB]'
+                            : 'bg-[#F7F9FC] text-[#64748B] border border-[#E2E8F0]'
                         }`}
                       >
                         {badge}
@@ -148,13 +148,13 @@ export const Sidebar = ({ isCollapsed, setIsCollapsed, isMobileOpen, setIsMobile
         </nav>
 
         {/* User Card & Logout in Footer */}
-        <div className="p-3 border-t border-slate-100 shrink-0">
+        <div className="p-3 border-t border-[#E2E8F0] shrink-0">
           <div
-            className={`flex items-center gap-3 p-2 rounded-xl bg-slate-50/80 border border-slate-100 ${
+            className={`flex items-center gap-3 p-2 rounded-lg ${
               isCollapsed ? 'justify-center p-1.5' : ''
             }`}
           >
-            <div className="w-9 h-9 rounded-full bg-sky-100 text-sky-700 flex items-center justify-center font-bold text-xs ring-2 ring-white shrink-0">
+            <div className="w-9 h-9 rounded-full bg-blue-50 text-[#2563EB] border border-[#E2E8F0] flex items-center justify-center font-bold text-xs shrink-0">
               {user?.name
                 ? user.name
                     .split(' ')
@@ -165,10 +165,10 @@ export const Sidebar = ({ isCollapsed, setIsCollapsed, isMobileOpen, setIsMobile
             </div>
             {!isCollapsed && (
               <div className="min-w-0 flex-1">
-                <p className="text-xs font-semibold text-slate-800 truncate">
+                <p className="text-xs font-semibold text-[#1E3A5F] truncate">
                   {user?.name || 'Administrator'}
                 </p>
-                <p className="text-[11px] text-slate-500 truncate">
+                <p className="text-[11px] text-[#64748B] truncate">
                   {user?.role || 'Hospital Admin'}
                 </p>
               </div>
@@ -176,7 +176,7 @@ export const Sidebar = ({ isCollapsed, setIsCollapsed, isMobileOpen, setIsMobile
             {!isCollapsed && (
               <button
                 onClick={logout}
-                className="text-slate-400 hover:text-rose-600 p-1.5 rounded-lg hover:bg-white transition-colors"
+                className="text-[#64748B] hover:text-[#B91C1C] p-1.5 rounded-lg hover:bg-red-50 transition-colors"
                 title="Sign out of system"
               >
                 <LogOut className="w-4 h-4" />

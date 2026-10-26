@@ -186,8 +186,8 @@ export const Billing = () => {
       key: 'invoiceNumber',
       render: (row) => (
         <div>
-          <span className="font-mono text-xs font-bold text-slate-900">{row.invoiceNumber}</span>
-          <p className="text-[11px] text-slate-400 font-mono">{row.id}</p>
+          <span className="font-mono text-xs font-bold text-[#1E3A5F]">{row.invoiceNumber}</span>
+          <p className="text-[11px] text-[#64748B] font-mono">{row.id}</p>
         </div>
       ),
     },
@@ -196,8 +196,8 @@ export const Billing = () => {
       key: 'patientName',
       render: (row) => (
         <div>
-          <p className="font-semibold text-slate-900 text-xs sm:text-sm">{row.patientName}</p>
-          <span className="text-[11px] text-slate-500 font-mono">{row.patientId}</span>
+          <p className="font-semibold text-[#1E3A5F] text-xs sm:text-sm">{row.patientName}</p>
+          <span className="text-[11px] text-[#64748B] font-mono">{row.patientId}</span>
         </div>
       ),
     },
@@ -205,9 +205,9 @@ export const Billing = () => {
       header: 'Invoice Date',
       key: 'date',
       render: (row) => (
-        <div className="text-xs text-slate-600 whitespace-nowrap">
-          <p className="font-medium text-slate-800">{formatDate(row.date)}</p>
-          <span className="text-[10px] text-slate-400">Due: {formatDate(row.dueDate)}</span>
+        <div className="text-xs text-[#64748B] whitespace-nowrap">
+          <p className="font-medium text-[#334155]">{formatDate(row.date)}</p>
+          <span className="text-[10px] text-[#64748B]">Due: {formatDate(row.dueDate)}</span>
         </div>
       ),
     },
@@ -216,11 +216,11 @@ export const Billing = () => {
       key: 'totalAmount',
       render: (row) => (
         <div>
-          <span className="font-bold text-slate-900 text-xs sm:text-sm">
+          <span className="font-bold text-[#1E3A5F] text-xs sm:text-sm">
             {formatLKR(row.totalAmount)}
           </span>
           {row.paidAmount > 0 && row.paidAmount < row.totalAmount && (
-            <p className="text-[11px] text-amber-600 font-medium">
+            <p className="text-[11px] text-[#B45309] font-medium">
               Paid: {formatLKR(row.paidAmount)}
             </p>
           )}
@@ -241,7 +241,7 @@ export const Billing = () => {
         <div className="flex items-center justify-end gap-1" onClick={(e) => e.stopPropagation()}>
           <button
             onClick={() => handleOpenView(row)}
-            className="p-1.5 rounded-lg text-slate-400 hover:text-sky-600 hover:bg-sky-50 transition-colors"
+            className="p-1.5 rounded-lg text-[#64748B] hover:text-[#2563EB] hover:bg-blue-50 transition-colors"
             title="View Details / Print"
           >
             <Eye className="w-4 h-4" />
@@ -249,7 +249,7 @@ export const Billing = () => {
           {row.status !== 'Paid' && (
             <button
               onClick={() => handleOpenPayment(row)}
-              className="p-1.5 rounded-lg text-slate-400 hover:text-emerald-600 hover:bg-emerald-50 transition-colors"
+              className="p-1.5 rounded-lg text-[#64748B] hover:text-[#15803D] hover:bg-emerald-50 transition-colors"
               title="Record Payment"
             >
               <CreditCard className="w-4 h-4" />
@@ -265,8 +265,8 @@ export const Billing = () => {
       {/* Page Header */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
-          <h2 className="text-xl font-bold text-slate-900 tracking-tight">Hospital Invoicing & Billing</h2>
-          <p className="text-xs sm:text-sm text-slate-500 mt-0.5">
+          <h2 className="text-xl font-bold text-[#1E3A5F] tracking-tight">Hospital Invoicing & Billing</h2>
+          <p className="text-xs sm:text-sm text-[#64748B] mt-0.5">
             Generate patient billing invoices, process settlements (in LKR), and track insurance claims
           </p>
         </div>
@@ -276,7 +276,7 @@ export const Billing = () => {
       </div>
 
       {/* Filter and Search Bar */}
-      <div className="bg-white p-4 rounded-2xl border border-slate-200/80 shadow-xs flex flex-col md:flex-row md:items-center justify-between gap-3">
+      <div className="bg-white p-4 rounded-lg border border-[#E2E8F0] shadow-xs flex flex-col md:flex-row md:items-center justify-between gap-3">
         <div className="flex-1 max-w-md">
           <SearchInput
             value={searchQuery}
@@ -286,7 +286,7 @@ export const Billing = () => {
         </div>
 
         <div className="flex flex-wrap items-center gap-2.5">
-          <div className="flex items-center gap-1.5 text-xs text-slate-500">
+          <div className="flex items-center gap-1.5 text-xs text-[#64748B]">
             <Filter className="w-3.5 h-3.5" />
             <span>Status:</span>
           </div>
@@ -294,7 +294,7 @@ export const Billing = () => {
           <select
             value={statusFilter}
             onChange={(e) => setStatusFilter(e.target.value)}
-            className="text-xs bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-slate-700 font-medium focus:outline-none focus:ring-2 focus:ring-sky-500/20"
+            className="text-xs bg-[#F7F9FC] border border-[#E2E8F0] rounded-lg px-3 py-2 text-[#334155] font-medium focus:outline-none focus:ring-2 focus:ring-[#2563EB]/20 focus:border-[#2563EB]"
           >
             <option value="ALL">All Invoices</option>
             <option value="Paid">Paid</option>
@@ -309,7 +309,7 @@ export const Billing = () => {
                 setSearchQuery('');
                 setStatusFilter('ALL');
               }}
-              className="text-xs text-sky-600 hover:text-sky-800 font-medium px-2 py-1"
+              className="text-xs text-[#2563EB] hover:text-[#1D4ED8] font-medium px-2 py-1"
             >
               Reset
             </button>

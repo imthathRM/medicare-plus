@@ -43,16 +43,16 @@ export const Dashboard = () => {
   return (
     <div className="space-y-6">
       {/* Welcome Banner & Quick Action Buttons */}
-      <div className="bg-white rounded-3xl border border-slate-200/80 p-6 shadow-xs flex flex-col lg:flex-row lg:items-center justify-between gap-6">
+      <div className="bg-white rounded-lg border border-[#E2E8F0] p-5 shadow-xs flex flex-col lg:flex-row lg:items-center justify-between gap-5">
         <div>
-          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-sky-50 text-sky-700 text-xs font-semibold mb-2">
-            <HeartPulse className="w-3.5 h-3.5 text-sky-600" />
+          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-blue-50 text-[#2563EB] text-xs font-semibold mb-2">
+            <HeartPulse className="w-3.5 h-3.5 text-[#2563EB]" />
             Operational Status: Normal
           </div>
-          <h2 className="text-xl sm:text-2xl font-bold text-slate-900 tracking-tight">
+          <h2 className="text-xl sm:text-2xl font-bold text-[#1E3A5F] tracking-tight">
             MediCare Plus Clinical Administration
           </h2>
-          <p className="text-xs sm:text-sm text-slate-500 mt-1 max-w-xl">
+          <p className="text-xs sm:text-sm text-[#64748B] mt-1 max-w-xl">
             Real-time hospital intelligence overview for {hospitalProfile.name}. Managing patient admissions, specialist consultations, and bed capacities.
           </p>
         </div>
@@ -100,7 +100,7 @@ export const Dashboard = () => {
           title="Total Registered Patients"
           value={dashboardStats.totalPatients}
           icon={Users}
-          colorTheme="sky"
+          colorTheme="blue"
           trend="+12%"
           trendDirection="up"
           trendText="vs last month"
@@ -203,7 +203,7 @@ export const Dashboard = () => {
         >
           <div className="overflow-x-auto">
             <table className="w-full text-left text-xs sm:text-sm">
-              <thead className="bg-slate-50 border-b border-slate-100 text-slate-500 font-semibold uppercase tracking-wider text-[11px]">
+              <thead className="bg-[#F7F9FC] border-b border-[#E2E8F0] text-[#64748B] font-semibold uppercase tracking-wider text-[11px]">
                 <tr>
                   <th className="px-5 py-3">Patient</th>
                   <th className="px-5 py-3">Doctor & Dept</th>
@@ -211,18 +211,18 @@ export const Dashboard = () => {
                   <th className="px-5 py-3">Status</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-slate-100">
+              <tbody className="divide-y divide-[#E2E8F0]">
                 {upcomingAppointments.map((apt) => (
-                  <tr key={apt.id} className="hover:bg-sky-50/30 transition-colors">
+                  <tr key={apt.id} className="hover:bg-blue-50/20 transition-colors">
                     <td className="px-5 py-3.5">
-                      <p className="font-semibold text-slate-900">{apt.patientName}</p>
-                      <span className="text-[11px] text-slate-400">{apt.patientId}</span>
+                      <p className="font-semibold text-[#1E3A5F]">{apt.patientName}</p>
+                      <span className="text-[11px] text-[#64748B]">{apt.patientId}</span>
                     </td>
                     <td className="px-5 py-3.5">
-                      <p className="font-medium text-slate-800">{apt.doctorName}</p>
-                      <span className="text-[11px] text-slate-400">{apt.department}</span>
+                      <p className="font-medium text-[#334155]">{apt.doctorName}</p>
+                      <span className="text-[11px] text-[#64748B]">{apt.department}</span>
                     </td>
-                    <td className="px-5 py-3.5 text-slate-600 font-medium whitespace-nowrap">
+                    <td className="px-5 py-3.5 text-[#334155] font-medium whitespace-nowrap">
                       {formatTime(apt.time)}
                     </td>
                     <td className="px-5 py-3.5 whitespace-nowrap">
@@ -253,7 +253,7 @@ export const Dashboard = () => {
         >
           <div className="overflow-x-auto">
             <table className="w-full text-left text-xs sm:text-sm">
-              <thead className="bg-slate-50 border-b border-slate-100 text-slate-500 font-semibold uppercase tracking-wider text-[11px]">
+              <thead className="bg-[#F7F9FC] border-b border-[#E2E8F0] text-[#64748B] font-semibold uppercase tracking-wider text-[11px]">
                 <tr>
                   <th className="px-5 py-3">Patient</th>
                   <th className="px-5 py-3">Age / Blood</th>
@@ -261,20 +261,20 @@ export const Dashboard = () => {
                   <th className="px-5 py-3">Category</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-slate-100">
+              <tbody className="divide-y divide-[#E2E8F0]">
                 {recentPatients.map((pat) => (
-                  <tr key={pat.id} className="hover:bg-sky-50/30 transition-colors">
+                  <tr key={pat.id} className="hover:bg-blue-50/20 transition-colors">
                     <td className="px-5 py-3.5">
-                      <p className="font-semibold text-slate-900">{pat.name}</p>
-                      <span className="text-[11px] text-slate-400">{pat.id}</span>
+                      <p className="font-semibold text-[#1E3A5F]">{pat.name}</p>
+                      <span className="text-[11px] text-[#64748B]">{pat.id}</span>
                     </td>
                     <td className="px-5 py-3.5">
-                      <span className="font-medium text-slate-700">{pat.age} yrs</span>
-                      <span className="text-[11px] ml-1.5 px-1.5 py-0.5 rounded bg-slate-100 font-semibold text-slate-600">
+                      <span className="font-medium text-[#334155]">{pat.age} yrs</span>
+                      <span className="text-[11px] ml-1.5 px-1.5 py-0.5 rounded bg-[#F7F9FC] border border-[#E2E8F0] font-semibold text-[#64748B]">
                         {pat.bloodGroup}
                       </span>
                     </td>
-                    <td className="px-5 py-3.5 text-slate-600 text-xs whitespace-nowrap">
+                    <td className="px-5 py-3.5 text-[#64748B] text-xs whitespace-nowrap">
                       {formatDate(pat.registeredDate)}
                     </td>
                     <td className="px-5 py-3.5 whitespace-nowrap">
@@ -307,22 +307,22 @@ export const Dashboard = () => {
           {departments.slice(0, 4).map((dept) => (
             <div
               key={dept.id}
-              className="p-4 rounded-2xl bg-slate-50/70 border border-slate-200/70 hover:border-sky-300 transition-colors"
+              className="p-4 rounded-lg bg-[#F7F9FC] border border-[#E2E8F0] hover:border-blue-300 transition-colors"
             >
               <div className="flex items-center justify-between mb-2">
-                <span className="text-xs font-bold text-sky-700 bg-sky-100/60 px-2 py-0.5 rounded-md">
+                <span className="text-xs font-bold text-[#2563EB] bg-blue-50 px-2 py-0.5 rounded-md">
                   {dept.code}
                 </span>
-                <span className="text-xs font-semibold text-emerald-600 flex items-center gap-1">
-                  <span className="w-1.5 h-1.5 rounded-full bg-emerald-500" />
+                <span className="text-xs font-semibold text-[#15803D] flex items-center gap-1">
+                  <span className="w-1.5 h-1.5 rounded-full bg-[#15803D]" />
                   {dept.status}
                 </span>
               </div>
-              <h4 className="font-semibold text-slate-900 text-sm truncate">{dept.name}</h4>
-              <p className="text-xs text-slate-500 mt-0.5 truncate">{dept.headOfDepartment}</p>
-              <div className="mt-3 pt-2 border-t border-slate-200/50 flex items-center justify-between text-xs text-slate-600">
+              <h4 className="font-semibold text-[#1E3A5F] text-sm truncate">{dept.name}</h4>
+              <p className="text-xs text-[#64748B] mt-0.5 truncate">{dept.headOfDepartment}</p>
+              <div className="mt-3 pt-2 border-t border-[#E2E8F0] flex items-center justify-between text-xs text-[#64748B]">
                 <span>{dept.doctorCount} Doctors</span>
-                <span className="font-semibold text-slate-800">{dept.bedCount} Beds</span>
+                <span className="font-semibold text-[#1E3A5F]">{dept.bedCount} Beds</span>
               </div>
             </div>
           ))}

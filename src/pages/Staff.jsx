@@ -3,6 +3,7 @@ import {
   PlusCircle,
   Eye,
   Edit2,
+  Trash2,
   Filter,
 } from 'lucide-react';
 import { useHospitalData } from '../context/HospitalDataContext';
@@ -11,12 +12,13 @@ import { SearchInput } from '../components/common/SearchInput';
 import { Button } from '../components/common/Button';
 import { Badge } from '../components/common/Badge';
 import { Modal } from '../components/common/Modal';
+import { ConfirmDialog } from '../components/common/ConfirmDialog';
 import { FormField, Input, Select } from '../components/common/FormField';
 import { formatDate } from '../utils/formatters';
 import { validateRequired, validateEmail, validatePhone } from '../utils/validators';
 
 export const Staff = () => {
-  const { staff, departments, addStaff, updateStaff } = useHospitalData();
+  const { staff, departments, addStaff, updateStaff, deleteStaff } = useHospitalData();
 
   const [searchQuery, setSearchQuery] = useState('');
   const [departmentFilter, setDepartmentFilter] = useState('ALL');
@@ -26,7 +28,9 @@ export const Staff = () => {
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [isViewModalOpen, setIsViewModalOpen] = useState(false);
+  const [isDeleteConfirmOpen, setIsDeleteConfirmOpen] = useState(false);
   const [selectedStaff, setSelectedStaff] = useState(null);
+  const [staffToDelete, setStaffToDelete] = useState(null);
 
   // Form
   const [formData, setFormData] = useState({
@@ -91,6 +95,11 @@ export const Staff = () => {
   const handleOpenView = (stf) => {
     setSelectedStaff(stf);
     setIsViewModalOpen(true);
+  };
+
+  const handleOpenDelete = (stf) => {
+    setStaffToDelete(stf);
+    setIsDeleteConfirmOpen(true);
   };
 
   const validate = () => {
@@ -188,17 +197,24 @@ export const Staff = () => {
         <div className="flex items-center justify-end gap-1" onClick={(e) => e.stopPropagation()}>
           <button
             onClick={() => handleOpenView(row)}
-            className="p-1.5 rounded-lg text-slate-400 hover:text-sky-600 hover:bg-sky-50 transition-colors"
+            className="p-1.5 rounded-lg text-[#64748B] hover:text-[#2563EB] hover:bg-blue-50 transition-colors"
             title="View Dossier"
           >
             <Eye className="w-4 h-4" />
           </button>
           <button
             onClick={() => handleOpenEdit(row)}
-            className="p-1.5 rounded-lg text-slate-400 hover:text-teal-600 hover:bg-teal-50 transition-colors"
+            className="p-1.5 rounded-lg text-[#64748B] hover:text-[#0F766E] hover:bg-teal-50 transition-colors"
             title="Edit Details"
           >
             <Edit2 className="w-4 h-4" />
+          </button>
+          <button
+            onClick={() => handleOpenDelete(row)}
+            className="p-1.5 rounded-lg text-[#64748B] hover:text-[#B91C1C] hover:bg-red-50 transition-colors"
+            title="Delete Staff Member"
+          >
+            <Trash2 className="w-4 h-4" />
           </button>
         </div>
       ),
@@ -210,8 +226,8 @@ export const Staff = () => {
       {/* Page Header */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
-          <h2 className="text-xl font-bold text-slate-900 tracking-tight">Hospital Staff Directory</h2>
-          <p className="text-xs sm:text-sm text-slate-500 mt-0.5">
+          <h2 className="text-xl font-bold text-[#1E3A5F] tracking-tight">Hospital Staff Directory</h2>
+          <p className="text-xs sm:text-sm text-[#64748B] mt-0.5">
             Nursing administration, laboratory technologists, pharmacy staff, and clinical officers
           </p>
         </div>
@@ -221,7 +237,7 @@ export const Staff = () => {
       </div>
 
       {/* Filter and Search Bar */}
-      <div className="bg-white p-4 rounded-2xl border border-slate-200/80 shadow-xs flex flex-col md:flex-row md:items-center justify-between gap-3">
+      <div className="bg-white p-4 rounded-lg border border-[#E2E8F0] shadow-xs flex flex-col md:flex-row md:items-center justify-between gap-3">
         <div className="flex-1 max-w-md">
           <SearchInput
             value={searchQuery}
@@ -231,7 +247,7 @@ export const Staff = () => {
         </div>
 
         <div className="flex flex-wrap items-center gap-2.5">
-          <div className="flex items-center gap-1.5 text-xs text-slate-500">
+          <div className="flex items-center gap-1.5 text-xs text-[#64748B]">
             <Filter className="w-3.5 h-3.5" />
             <span>Filters:</span>
           </div>
@@ -239,7 +255,7 @@ export const Staff = () => {
           <select
             value={departmentFilter}
             onChange={(e) => setDepartmentFilter(e.target.value)}
-            className="text-xs bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-slate-700 font-medium focus:outline-none focus:ring-2 focus:ring-sky-500/20"
+            className="text-xs bg-[#F7F9FC] border border-[#E2E8F0] rounded-lg px-3 py-2 text-[#334155] font-medium focus:outline-none focus:ring-2 focus:ring-[#2563EB]/20 focus:border-[#2563EB]"
           >
             <option value="ALL">All Departments</option>
             {departments.map((d) => (
@@ -252,7 +268,7 @@ export const Staff = () => {
           <select
             value={statusFilter}
             onChange={(e) => setStatusFilter(e.target.value)}
-            className="text-xs bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-slate-700 font-medium focus:outline-none focus:ring-2 focus:ring-sky-500/20"
+            className="text-xs bg-[#F7F9FC] border border-[#E2E8F0] rounded-lg px-3 py-2 text-[#334155] font-medium focus:outline-none focus:ring-2 focus:ring-[#2563EB]/20 focus:border-[#2563EB]"
           >
             <option value="ALL">All Statuses</option>
             <option value="Active">Active</option>
@@ -266,7 +282,7 @@ export const Staff = () => {
                 setDepartmentFilter('ALL');
                 setStatusFilter('ALL');
               }}
-              className="text-xs text-sky-600 hover:text-sky-800 font-medium px-2 py-1"
+              className="text-xs text-[#2563EB] hover:text-[#1D4ED8] font-medium px-2 py-1"
             >
               Reset
             </button>
@@ -522,6 +538,21 @@ export const Staff = () => {
           </FormField>
         </form>
       </Modal>
+
+      {/* Confirmation Dialog: Delete Staff */}
+      <ConfirmDialog
+        isOpen={isDeleteConfirmOpen}
+        onClose={() => setIsDeleteConfirmOpen(false)}
+        onConfirm={() => {
+          if (staffToDelete) {
+            deleteStaff(staffToDelete.id);
+          }
+        }}
+        title="Remove Staff Member"
+        message={`Are you sure you want to remove ${staffToDelete?.name} (${staffToDelete?.role}) from the staff registry?`}
+        confirmText="Remove Staff"
+        confirmVariant="danger"
+      />
     </div>
   );
 };

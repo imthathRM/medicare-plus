@@ -9,11 +9,11 @@ import {
 } from 'recharts';
 
 const defaultData = [
-  { name: 'Cardiology', value: 38, color: '#0284c7' },
-  { name: 'Surgery', value: 24, color: '#0d9488' },
-  { name: 'Pediatrics', value: 18, color: '#3b82f6' },
-  { name: 'Orthopedics', value: 12, color: '#10b981' },
-  { name: 'Neurology', value: 8, color: '#f59e0b' },
+  { name: 'Cardiology', value: 38, color: '#2563EB' },
+  { name: 'Surgery', value: 24, color: '#0F766E' },
+  { name: 'Pediatrics', value: 18, color: '#15803D' },
+  { name: 'Orthopedics', value: 12, color: '#B45309' },
+  { name: 'Neurology', value: 8, color: '#6366F1' },
 ];
 
 export const DepartmentDistributionChart = ({ data = defaultData, height = 280 }) => {
@@ -37,11 +37,12 @@ export const DepartmentDistributionChart = ({ data = defaultData, height = 280 }
           <Tooltip
             formatter={(value) => [`${value}% Patients`, 'Proportion']}
             contentStyle={{
-              backgroundColor: '#ffffff',
-              borderRadius: '12px',
-              border: '1px solid #e2e8f0',
-              boxShadow: '0 4px 12px rgba(0, 0, 0, 0.05)',
+              backgroundColor: '#FFFFFF',
+              borderRadius: '8px',
+              border: '1px solid #E2E8F0',
+              boxShadow: '0 2px 8px rgba(0, 0, 0, 0.05)',
               fontSize: '12px',
+              color: '#334155',
             }}
           />
           <Legend
@@ -50,7 +51,7 @@ export const DepartmentDistributionChart = ({ data = defaultData, height = 280 }
             iconType="circle"
             iconSize={8}
             formatter={(value) => (
-              <span className="text-xs text-slate-600 font-medium">{value}</span>
+              <span className="text-xs text-[#64748B] font-medium">{value}</span>
             )}
           />
         </PieChart>

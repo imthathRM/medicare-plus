@@ -8,6 +8,7 @@ import {
 } from 'lucide-react';
 import { useHospitalData } from '../context/HospitalDataContext';
 import { useAuth } from '../context/AuthContext';
+import { useToast } from '../context/ToastContext';
 import { Card } from '../components/common/Card';
 import { Button } from '../components/common/Button';
 import { FormField, Input, Select } from '../components/common/FormField';
@@ -15,6 +16,7 @@ import { FormField, Input, Select } from '../components/common/FormField';
 export const Settings = () => {
   const { hospitalProfile, updateHospitalProfile, appSettings, updateAppSettings } = useHospitalData();
   const { user } = useAuth();
+  const { success } = useToast();
 
   const [activeTab, setActiveTab] = useState('hospital'); // 'hospital' | 'profile' | 'preferences'
 
@@ -40,27 +42,27 @@ export const Settings = () => {
 
   const handleSaveUserProfile = (e) => {
     e.preventDefault();
-    alert('Administrator profile credentials updated in session.');
+    success('Profile Updated', 'Administrator profile details saved in current session.');
   };
 
   return (
     <div className="space-y-6">
       {/* Page Header */}
       <div>
-        <h2 className="text-xl font-bold text-slate-900 tracking-tight">System Settings & Configurations</h2>
-        <p className="text-xs sm:text-sm text-slate-500 mt-0.5">
+        <h2 className="text-xl font-bold text-[#1E3A5F] tracking-tight">System Settings & Configurations</h2>
+        <p className="text-xs sm:text-sm text-[#64748B] mt-0.5">
           Configure hospital institutional profile, administrative preferences, and clinical defaults
         </p>
       </div>
 
       {/* Tabs */}
-      <div className="flex items-center gap-2 border-b border-slate-200">
+      <div className="flex items-center gap-2 border-b border-[#E2E8F0]">
         <button
           onClick={() => setActiveTab('hospital')}
           className={`flex items-center gap-2 px-4 py-2.5 text-xs sm:text-sm font-semibold border-b-2 transition-all ${
             activeTab === 'hospital'
-              ? 'border-sky-600 text-sky-700'
-              : 'border-transparent text-slate-500 hover:text-slate-700'
+              ? 'border-[#2563EB] text-[#2563EB]'
+              : 'border-transparent text-[#64748B] hover:text-[#1E3A5F]'
           }`}
         >
           <Hospital className="w-4 h-4" />
@@ -71,8 +73,8 @@ export const Settings = () => {
           onClick={() => setActiveTab('profile')}
           className={`flex items-center gap-2 px-4 py-2.5 text-xs sm:text-sm font-semibold border-b-2 transition-all ${
             activeTab === 'profile'
-              ? 'border-sky-600 text-sky-700'
-              : 'border-transparent text-slate-500 hover:text-slate-700'
+              ? 'border-[#2563EB] text-[#2563EB]'
+              : 'border-transparent text-[#64748B] hover:text-[#1E3A5F]'
           }`}
         >
           <User className="w-4 h-4" />
@@ -83,8 +85,8 @@ export const Settings = () => {
           onClick={() => setActiveTab('preferences')}
           className={`flex items-center gap-2 px-4 py-2.5 text-xs sm:text-sm font-semibold border-b-2 transition-all ${
             activeTab === 'preferences'
-              ? 'border-sky-600 text-sky-700'
-              : 'border-transparent text-slate-500 hover:text-slate-700'
+              ? 'border-[#2563EB] text-[#2563EB]'
+              : 'border-transparent text-[#64748B] hover:text-[#1E3A5F]'
           }`}
         >
           <Sliders className="w-4 h-4" />
@@ -193,14 +195,14 @@ export const Settings = () => {
               </Button>
             }
           >
-            <div className="flex items-center gap-4 p-4 rounded-2xl bg-sky-50/70 border border-sky-100 mb-6">
-              <div className="w-16 h-16 rounded-2xl bg-gradient-to-tr from-sky-600 to-teal-500 text-white flex items-center justify-center font-bold text-xl shadow-md">
+            <div className="flex items-center gap-4 p-4 rounded-lg bg-blue-50/70 border border-blue-100 mb-6">
+              <div className="w-16 h-16 rounded-lg bg-[#2563EB] text-white flex items-center justify-center font-bold text-xl shadow-xs">
                 SW
               </div>
               <div>
-                <h4 className="font-bold text-slate-900 text-base">{userProfileForm.name}</h4>
-                <p className="text-xs text-slate-600">{userProfileForm.role}</p>
-                <div className="mt-1.5 inline-flex items-center gap-1 px-2 py-0.5 rounded bg-emerald-100 text-emerald-800 text-[10px] font-bold">
+                <h4 className="font-bold text-[#1E3A5F] text-base">{userProfileForm.name}</h4>
+                <p className="text-xs text-[#64748B]">{userProfileForm.role}</p>
+                <div className="mt-1.5 inline-flex items-center gap-1 px-2 py-0.5 rounded bg-emerald-50 text-[#15803D] text-[10px] font-bold">
                   <ShieldCheck className="w-3 h-3" />
                   Full System Superadmin Rights
                 </div>

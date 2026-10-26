@@ -15,7 +15,7 @@ export const Button = ({
   ...props
 }) => {
   const baseClasses =
-    'inline-flex items-center justify-center font-medium rounded-xl transition-all duration-150 focus:outline-none focus:ring-2 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed select-none cursor-pointer';
+    'inline-flex items-center justify-center font-medium rounded-lg transition-colors duration-150 focus:outline-none focus:ring-2 focus:ring-offset-1 disabled:opacity-50 disabled:cursor-not-allowed select-none cursor-pointer';
 
   const sizeClasses = {
     sm: 'text-xs px-3 py-1.5 gap-1.5',
@@ -25,17 +25,17 @@ export const Button = ({
 
   const variantClasses = {
     primary:
-      'bg-sky-600 hover:bg-sky-700 text-white shadow-sm shadow-sky-600/25 focus:ring-sky-500 border border-transparent active:bg-sky-800',
+      'bg-[#2563EB] hover:bg-[#1D4ED8] text-white shadow-xs focus:ring-[#2563EB] border border-transparent active:bg-[#1E40AF]',
     teal:
-      'bg-teal-600 hover:bg-teal-700 text-white shadow-sm shadow-teal-600/25 focus:ring-teal-500 border border-transparent active:bg-teal-800',
+      'bg-[#0F766E] hover:bg-[#115E59] text-white shadow-xs focus:ring-[#0F766E] border border-transparent active:bg-[#134E4A]',
     secondary:
-      'bg-white hover:bg-slate-50 text-slate-700 border border-slate-200 shadow-xs focus:ring-sky-500 active:bg-slate-100',
+      'bg-white hover:bg-[#F7F9FC] text-[#334155] border border-[#E2E8F0] shadow-xs focus:ring-[#2563EB] active:bg-slate-100',
     outline:
-      'bg-transparent hover:bg-sky-50 text-sky-700 border border-sky-300 focus:ring-sky-500 active:bg-sky-100',
+      'bg-transparent hover:bg-blue-50 text-[#2563EB] border border-blue-200 focus:ring-[#2563EB] active:bg-blue-100',
     danger:
-      'bg-rose-600 hover:bg-rose-700 text-white shadow-sm shadow-rose-600/25 focus:ring-rose-500 border border-transparent active:bg-rose-800',
+      'bg-[#B91C1C] hover:bg-[#991B1B] text-white shadow-xs focus:ring-[#B91C1C] border border-transparent active:bg-[#7F1D1D]',
     ghost:
-      'bg-transparent hover:bg-slate-100 text-slate-600 hover:text-slate-900 focus:ring-slate-400 border border-transparent',
+      'bg-transparent hover:bg-[#F7F9FC] text-[#64748B] hover:text-[#334155] focus:ring-slate-300 border border-transparent',
   };
 
   return (

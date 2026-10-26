@@ -27,12 +27,12 @@ export const DataTable = ({
   }, [totalPages, currentPage]);
 
   return (
-    <div className={`flex flex-col bg-white rounded-2xl border border-slate-200/80 shadow-xs overflow-hidden ${className}`}>
+    <div className={`flex flex-col bg-white rounded-lg border border-[#E2E8F0] shadow-xs overflow-hidden ${className}`}>
       {/* Table container */}
       <div className="overflow-x-auto min-w-full">
         <table className="w-full text-left border-collapse">
           <thead>
-            <tr className="bg-slate-50/80 border-b border-slate-200 text-xs font-semibold text-slate-500 uppercase tracking-wider">
+            <tr className="bg-[#F7F9FC] border-b border-[#E2E8F0] text-xs font-semibold text-[#64748B] uppercase tracking-wider">
               {columns.map((col, idx) => (
                 <th
                   key={col.key || idx}
@@ -44,20 +44,20 @@ export const DataTable = ({
               ))}
             </tr>
           </thead>
-          <tbody className="divide-y divide-slate-100 text-sm">
+          <tbody className="divide-y divide-[#E2E8F0] text-sm">
             {currentData.length > 0 ? (
               currentData.map((row, rowIndex) => (
                 <tr
                   key={row.id || rowIndex}
                   onClick={() => onRowClick && onRowClick(row)}
-                  className={`transition-colors duration-150 hover:bg-sky-50/40 ${
+                  className={`transition-colors duration-150 hover:bg-blue-50/25 ${
                     onRowClick ? 'cursor-pointer' : ''
                   }`}
                 >
                   {columns.map((col, colIndex) => (
                     <td
                       key={col.key || colIndex}
-                      className={`px-5 py-3.5 whitespace-nowrap text-slate-700 ${
+                      className={`px-5 py-3.5 whitespace-nowrap text-[#334155] ${
                         col.cellClassName || ''
                       }`}
                     >
@@ -68,13 +68,13 @@ export const DataTable = ({
               ))
             ) : (
               <tr>
-                <td colSpan={columns.length} className="py-12 text-center text-slate-400">
+                <td colSpan={columns.length} className="py-12 text-center text-[#64748B]">
                   <div className="flex flex-col items-center justify-center gap-2">
-                    <div className="w-12 h-12 rounded-2xl bg-slate-50 text-slate-400 flex items-center justify-center border border-slate-200">
+                    <div className="w-12 h-12 rounded-lg bg-[#F7F9FC] text-[#64748B] flex items-center justify-center border border-[#E2E8F0]">
                       <Inbox className="w-6 h-6" />
                     </div>
-                    <p className="text-sm font-semibold text-slate-700">{emptyTitle}</p>
-                    <p className="text-xs text-slate-400 max-w-sm">{emptyMessage}</p>
+                    <p className="text-sm font-semibold text-[#1E3A5F]">{emptyTitle}</p>
+                    <p className="text-xs text-[#64748B] max-w-sm">{emptyMessage}</p>
                   </div>
                 </td>
               </tr>
@@ -85,24 +85,24 @@ export const DataTable = ({
 
       {/* Pagination Footer */}
       {data.length > 0 && (
-        <div className="flex items-center justify-between px-5 py-3.5 border-t border-slate-100 bg-slate-50/50 text-xs text-slate-500">
+        <div className="flex items-center justify-between px-5 py-3.5 border-t border-[#E2E8F0] bg-[#F7F9FC] text-xs text-[#64748B]">
           <div>
             Showing{' '}
-            <span className="font-semibold text-slate-800">
+            <span className="font-semibold text-[#1E3A5F]">
               {(currentPage - 1) * pageSize + 1}
             </span>{' '}
             to{' '}
-            <span className="font-semibold text-slate-800">
+            <span className="font-semibold text-[#1E3A5F]">
               {Math.min(currentPage * pageSize, data.length)}
             </span>{' '}
-            of <span className="font-semibold text-slate-800">{data.length}</span> entries
+            of <span className="font-semibold text-[#1E3A5F]">{data.length}</span> entries
           </div>
 
           <div className="flex items-center gap-1.5">
             <button
               onClick={() => setCurrentPage(1)}
               disabled={currentPage === 1}
-              className="p-1.5 rounded-lg border border-slate-200 text-slate-600 hover:bg-white disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
+              className="p-1.5 rounded-lg border border-[#E2E8F0] text-[#334155] hover:bg-white disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
               title="First Page"
             >
               <ChevronsLeft className="w-4 h-4" />
@@ -110,20 +110,20 @@ export const DataTable = ({
             <button
               onClick={() => setCurrentPage((p) => Math.max(1, p - 1))}
               disabled={currentPage === 1}
-              className="p-1.5 rounded-lg border border-slate-200 text-slate-600 hover:bg-white disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
+              className="p-1.5 rounded-lg border border-[#E2E8F0] text-[#334155] hover:bg-white disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
               title="Previous Page"
             >
               <ChevronLeft className="w-4 h-4" />
             </button>
 
-            <span className="px-3 py-1 font-medium text-slate-700">
+            <span className="px-3 py-1 font-medium text-[#334155]">
               Page {currentPage} of {totalPages}
             </span>
 
             <button
               onClick={() => setCurrentPage((p) => Math.min(totalPages, p + 1))}
               disabled={currentPage === totalPages}
-              className="p-1.5 rounded-lg border border-slate-200 text-slate-600 hover:bg-white disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
+              className="p-1.5 rounded-lg border border-[#E2E8F0] text-[#334155] hover:bg-white disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
               title="Next Page"
             >
               <ChevronRight className="w-4 h-4" />
@@ -131,7 +131,7 @@ export const DataTable = ({
             <button
               onClick={() => setCurrentPage(totalPages)}
               disabled={currentPage === totalPages}
-              className="p-1.5 rounded-lg border border-slate-200 text-slate-600 hover:bg-white disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
+              className="p-1.5 rounded-lg border border-[#E2E8F0] text-[#334155] hover:bg-white disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
               title="Last Page"
             >
               <ChevronsRight className="w-4 h-4" />

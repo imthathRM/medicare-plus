@@ -1,15 +1,34 @@
 @import "tailwindcss";
 
+@theme {
+  --color-primary: #2563EB;
+  --color-primary-hover: #1D4ED8;
+  --color-heading: #1E3A5F;
+  --color-teal-accent: #0F766E;
+  --color-main-bg: #F7F9FC;
+  --color-panel-bg: #FFFFFF;
+  --color-main-text: #334155;
+  --color-secondary-text: #64748B;
+  --color-border-subtle: #E2E8F0;
+  --color-status-success: #15803D;
+  --color-status-warning: #B45309;
+  --color-status-error: #B91C1C;
+}
+
 @layer base {
   * {
     font-family: 'Plus Jakarta Sans', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
   }
   
   body {
-    background-color: #f8fafc;
-    color: #1e293b;
+    background-color: #F7F9FC;
+    color: #334155;
     margin: 0;
     padding: 0;
+  }
+
+  h1, h2, h3, h4, h5, h6 {
+    color: #1E3A5F;
   }
 }
 
@@ -19,14 +38,14 @@
   height: 6px;
 }
 ::-webkit-scrollbar-track {
-  background: #f1f5f9;
+  background: #F7F9FC;
 }
 ::-webkit-scrollbar-thumb {
-  background: #cbd5e1;
+  background: #CBD5E1;
   border-radius: 9999px;
 }
 ::-webkit-scrollbar-thumb:hover {
-  background: #94a3b8;
+  background: #94A3B8;
 }
 
 /* Print media rules for invoices and clinical reports */
@@ -43,7 +62,7 @@
   }
   .print-card {
     box-shadow: none !important;
-    border: 1px solid #e2e8f0 !important;
+    border: 1px solid #E2E8F0 !important;
     page-break-inside: avoid;
   }
 }

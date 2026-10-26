@@ -186,7 +186,7 @@ export const Patients = () => {
       key: 'name',
       render: (row) => (
         <div className="flex items-center gap-3">
-          <div className="w-9 h-9 rounded-full bg-sky-100 text-sky-700 flex items-center justify-center font-bold text-xs ring-2 ring-white shrink-0">
+          <div className="w-9 h-9 rounded-full bg-blue-50 text-[#2563EB] border border-[#E2E8F0] flex items-center justify-center font-bold text-xs ring-2 ring-white shrink-0">
             {row.name
               .split(' ')
               .map((n) => n[0])
@@ -194,8 +194,8 @@ export const Patients = () => {
               .substring(0, 2)}
           </div>
           <div className="min-w-0">
-            <p className="font-semibold text-slate-900 truncate">{row.name}</p>
-            <div className="flex items-center gap-2 text-[11px] text-slate-500">
+            <p className="font-semibold text-[#1E3A5F] truncate">{row.name}</p>
+            <div className="flex items-center gap-2 text-[11px] text-[#64748B]">
               <span className="font-mono">{row.id}</span>
               <span>•</span>
               <span>{row.gender}</span>
@@ -210,7 +210,7 @@ export const Patients = () => {
       header: 'Blood Group',
       key: 'bloodGroup',
       render: (row) => (
-        <span className="inline-flex items-center px-2 py-0.5 rounded-md font-bold text-xs bg-rose-50 text-rose-700 border border-rose-200/80">
+        <span className="inline-flex items-center px-2 py-0.5 rounded-md font-bold text-xs bg-red-50 text-[#B91C1C] border border-red-200/80">
           {row.bloodGroup}
         </span>
       ),
@@ -220,8 +220,8 @@ export const Patients = () => {
       key: 'phone',
       render: (row) => (
         <div className="text-xs">
-          <p className="font-medium text-slate-800">{row.phone}</p>
-          <p className="text-slate-400 text-[11px] truncate max-w-[150px]">{row.email || 'No email'}</p>
+          <p className="font-medium text-[#334155]">{row.phone}</p>
+          <p className="text-[#64748B] text-[11px] truncate max-w-[150px]">{row.email || 'No email'}</p>
         </div>
       ),
     },
@@ -229,7 +229,7 @@ export const Patients = () => {
       header: 'Department',
       key: 'department',
       render: (row) => (
-        <span className="text-xs font-medium text-slate-700 bg-slate-100 px-2.5 py-1 rounded-lg">
+        <span className="text-xs font-medium text-[#334155] bg-[#F7F9FC] border border-[#E2E8F0] px-2.5 py-1 rounded-lg">
           {row.department || 'General Care'}
         </span>
       ),
@@ -243,7 +243,7 @@ export const Patients = () => {
       header: 'Registered',
       key: 'registeredDate',
       render: (row) => (
-        <span className="text-xs text-slate-500 whitespace-nowrap">
+        <span className="text-xs text-[#64748B] whitespace-nowrap">
           {formatDate(row.registeredDate)}
         </span>
       ),
@@ -257,21 +257,21 @@ export const Patients = () => {
         <div className="flex items-center justify-end gap-1" onClick={(e) => e.stopPropagation()}>
           <button
             onClick={() => handleOpenViewModal(row)}
-            className="p-1.5 rounded-lg text-slate-400 hover:text-sky-600 hover:bg-sky-50 transition-colors"
+            className="p-1.5 rounded-lg text-[#64748B] hover:text-[#2563EB] hover:bg-blue-50 transition-colors"
             title="View Details"
           >
             <Eye className="w-4 h-4" />
           </button>
           <button
             onClick={() => handleOpenEditModal(row)}
-            className="p-1.5 rounded-lg text-slate-400 hover:text-teal-600 hover:bg-teal-50 transition-colors"
+            className="p-1.5 rounded-lg text-[#64748B] hover:text-[#0F766E] hover:bg-teal-50 transition-colors"
             title="Edit Record"
           >
             <Edit2 className="w-4 h-4" />
           </button>
           <button
             onClick={() => handleOpenDelete(row)}
-            className="p-1.5 rounded-lg text-slate-400 hover:text-rose-600 hover:bg-rose-50 transition-colors"
+            className="p-1.5 rounded-lg text-[#64748B] hover:text-[#B91C1C] hover:bg-red-50 transition-colors"
             title="Delete Patient"
           >
             <Trash2 className="w-4 h-4" />
@@ -286,8 +286,8 @@ export const Patients = () => {
       {/* Page Header */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
-          <h2 className="text-xl font-bold text-slate-900 tracking-tight">Patient Registry</h2>
-          <p className="text-xs sm:text-sm text-slate-500 mt-0.5">
+          <h2 className="text-xl font-bold text-[#1E3A5F] tracking-tight">Patient Registry</h2>
+          <p className="text-xs sm:text-sm text-[#64748B] mt-0.5">
             Manage electronic medical records, admission histories, and diagnostic profiles
           </p>
         </div>
@@ -301,7 +301,7 @@ export const Patients = () => {
       </div>
 
       {/* Search and Filters Bar */}
-      <div className="bg-white p-4 rounded-2xl border border-slate-200/80 shadow-xs flex flex-col md:flex-row md:items-center justify-between gap-3">
+      <div className="bg-white p-4 rounded-lg border border-[#E2E8F0] shadow-xs flex flex-col md:flex-row md:items-center justify-between gap-3">
         <div className="flex-1 max-w-md">
           <SearchInput
             value={searchQuery}
@@ -311,7 +311,7 @@ export const Patients = () => {
         </div>
 
         <div className="flex flex-wrap items-center gap-2.5">
-          <div className="flex items-center gap-1.5 text-xs text-slate-500">
+          <div className="flex items-center gap-1.5 text-xs text-[#64748B]">
             <Filter className="w-3.5 h-3.5" />
             <span>Filters:</span>
           </div>
@@ -320,7 +320,7 @@ export const Patients = () => {
           <select
             value={statusFilter}
             onChange={(e) => setStatusFilter(e.target.value)}
-            className="text-xs bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-slate-700 font-medium focus:outline-none focus:ring-2 focus:ring-sky-500/20"
+            className="text-xs bg-[#F7F9FC] border border-[#E2E8F0] rounded-lg px-3 py-2 text-[#334155] font-medium focus:outline-none focus:ring-2 focus:ring-[#2563EB]/20 focus:border-[#2563EB]"
           >
             <option value="ALL">All Statuses</option>
             <option value="Inpatient">Inpatient</option>
@@ -333,7 +333,7 @@ export const Patients = () => {
           <select
             value={genderFilter}
             onChange={(e) => setGenderFilter(e.target.value)}
-            className="text-xs bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-slate-700 font-medium focus:outline-none focus:ring-2 focus:ring-sky-500/20"
+            className="text-xs bg-[#F7F9FC] border border-[#E2E8F0] rounded-lg px-3 py-2 text-[#334155] font-medium focus:outline-none focus:ring-2 focus:ring-[#2563EB]/20 focus:border-[#2563EB]"
           >
             <option value="ALL">All Genders</option>
             <option value="Male">Male</option>
@@ -347,7 +347,7 @@ export const Patients = () => {
                 setStatusFilter('ALL');
                 setGenderFilter('ALL');
               }}
-              className="text-xs text-sky-600 hover:text-sky-800 font-medium px-2 py-1"
+              className="text-xs text-[#2563EB] hover:text-[#1D4ED8] font-medium px-2 py-1"
             >
               Reset
             </button>
@@ -396,8 +396,8 @@ export const Patients = () => {
         {selectedPatient && (
           <div className="space-y-6">
             {/* Header snippet */}
-            <div className="flex items-center gap-4 p-4 rounded-2xl bg-sky-50/60 border border-sky-100">
-              <div className="w-14 h-14 rounded-2xl bg-sky-600 text-white flex items-center justify-center font-bold text-lg shadow-sm">
+            <div className="flex items-center gap-4 p-4 rounded-lg bg-sky-50 border border-sky-100">
+              <div className="w-14 h-14 rounded-lg bg-sky-600 text-white flex items-center justify-center font-bold text-lg shadow-sm">
                 {selectedPatient.name
                   .split(' ')
                   .map((n) => n[0])

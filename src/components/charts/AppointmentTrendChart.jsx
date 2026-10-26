@@ -28,41 +28,42 @@ export const AppointmentTrendChart = ({ data = defaultData, height = 280 }) => {
         >
           <defs>
             <linearGradient id="colorCompleted" x1="0" y1="0" x2="0" y2="1">
-              <stop offset="5%" stopColor="#0284c7" stopOpacity={0.25} />
-              <stop offset="95%" stopColor="#0284c7" stopOpacity={0.0} />
+              <stop offset="5%" stopColor="#2563EB" stopOpacity={0.25} />
+              <stop offset="95%" stopColor="#2563EB" stopOpacity={0.0} />
             </linearGradient>
             <linearGradient id="colorScheduled" x1="0" y1="0" x2="0" y2="1">
-              <stop offset="5%" stopColor="#0d9488" stopOpacity={0.2} />
-              <stop offset="95%" stopColor="#0d9488" stopOpacity={0.0} />
+              <stop offset="5%" stopColor="#0F766E" stopOpacity={0.2} />
+              <stop offset="95%" stopColor="#0F766E" stopOpacity={0.0} />
             </linearGradient>
           </defs>
-          <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#f1f5f9" />
+          <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#E2E8F0" />
           <XAxis
             dataKey="month"
             axisLine={false}
             tickLine={false}
-            tick={{ fill: '#64748b', fontSize: 12 }}
+            tick={{ fill: '#64748B', fontSize: 12 }}
             dy={8}
           />
           <YAxis
             axisLine={false}
             tickLine={false}
-            tick={{ fill: '#64748b', fontSize: 12 }}
+            tick={{ fill: '#64748B', fontSize: 12 }}
           />
           <Tooltip
             contentStyle={{
-              backgroundColor: '#ffffff',
-              borderRadius: '12px',
-              border: '1px solid #e2e8f0',
-              boxShadow: '0 4px 12px rgba(0, 0, 0, 0.05)',
+              backgroundColor: '#FFFFFF',
+              borderRadius: '8px',
+              border: '1px solid #E2E8F0',
+              boxShadow: '0 2px 8px rgba(0, 0, 0, 0.05)',
               fontSize: '12px',
+              color: '#334155',
             }}
           />
           <Area
             type="monotone"
             dataKey="scheduled"
             name="Scheduled"
-            stroke="#0d9488"
+            stroke="#0F766E"
             strokeWidth={2}
             fillOpacity={1}
             fill="url(#colorScheduled)"
@@ -71,7 +72,7 @@ export const AppointmentTrendChart = ({ data = defaultData, height = 280 }) => {
             type="monotone"
             dataKey="completed"
             name="Completed"
-            stroke="#0284c7"
+            stroke="#2563EB"
             strokeWidth={2.5}
             fillOpacity={1}
             fill="url(#colorCompleted)"

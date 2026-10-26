@@ -146,8 +146,8 @@ export const Appointments = () => {
       key: 'patientName',
       render: (row) => (
         <div>
-          <p className="font-semibold text-slate-900 text-xs sm:text-sm">{row.patientName}</p>
-          <span className="text-[11px] text-slate-400 font-mono">{row.patientId}</span>
+          <p className="font-semibold text-[#1E3A5F] text-xs sm:text-sm">{row.patientName}</p>
+          <span className="text-[11px] text-[#64748B] font-mono">{row.patientId}</span>
         </div>
       ),
     },
@@ -156,8 +156,8 @@ export const Appointments = () => {
       key: 'doctorName',
       render: (row) => (
         <div>
-          <p className="font-medium text-slate-800 text-xs sm:text-sm">{row.doctorName}</p>
-          <span className="text-[11px] text-slate-500">{row.department}</span>
+          <p className="font-medium text-[#334155] text-xs sm:text-sm">{row.doctorName}</p>
+          <span className="text-[11px] text-[#64748B]">{row.department}</span>
         </div>
       ),
     },
@@ -166,8 +166,8 @@ export const Appointments = () => {
       key: 'dateTime',
       render: (row) => (
         <div className="text-xs">
-          <p className="font-medium text-slate-800 whitespace-nowrap">{formatDate(row.date)}</p>
-          <span className="text-slate-500 font-medium">{formatTime(row.time)}</span>
+          <p className="font-medium text-[#334155] whitespace-nowrap">{formatDate(row.date)}</p>
+          <span className="text-[#64748B] font-medium">{formatTime(row.time)}</span>
         </div>
       ),
     },
@@ -175,7 +175,7 @@ export const Appointments = () => {
       header: 'Type',
       key: 'type',
       render: (row) => (
-        <span className="text-xs font-medium text-slate-600 bg-slate-100 px-2.5 py-0.5 rounded-full">
+        <span className="text-xs font-medium text-[#334155] bg-[#F7F9FC] border border-[#E2E8F0] px-2.5 py-0.5 rounded-full">
           {row.type}
         </span>
       ),
@@ -194,7 +194,7 @@ export const Appointments = () => {
         <div className="flex items-center justify-end gap-1" onClick={(e) => e.stopPropagation()}>
           <button
             onClick={() => handleOpenView(row)}
-            className="p-1.5 rounded-lg text-slate-400 hover:text-sky-600 hover:bg-sky-50 transition-colors"
+            className="p-1.5 rounded-lg text-[#64748B] hover:text-[#2563EB] hover:bg-blue-50 transition-colors"
             title="View Details"
           >
             <Eye className="w-4 h-4" />
@@ -202,7 +202,7 @@ export const Appointments = () => {
           {row.status !== 'Completed' && row.status !== 'Cancelled' && (
             <button
               onClick={() => updateAppointmentStatus(row.id, 'Completed')}
-              className="p-1.5 rounded-lg text-slate-400 hover:text-emerald-600 hover:bg-emerald-50 transition-colors"
+              className="p-1.5 rounded-lg text-[#64748B] hover:text-[#15803D] hover:bg-emerald-50 transition-colors"
               title="Mark Completed"
             >
               <CheckCircle2 className="w-4 h-4" />
@@ -211,7 +211,7 @@ export const Appointments = () => {
           {row.status !== 'Cancelled' && row.status !== 'Completed' && (
             <button
               onClick={() => handleOpenCancel(row)}
-              className="p-1.5 rounded-lg text-slate-400 hover:text-rose-600 hover:bg-rose-50 transition-colors"
+              className="p-1.5 rounded-lg text-[#64748B] hover:text-[#B91C1C] hover:bg-red-50 transition-colors"
               title="Cancel Appointment"
             >
               <XCircle className="w-4 h-4" />
@@ -227,10 +227,10 @@ export const Appointments = () => {
       {/* Page Header */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
-          <h2 className="text-xl font-bold text-slate-900 tracking-tight">
+          <h2 className="text-xl font-bold text-[#1E3A5F] tracking-tight">
             Appointment Scheduling
           </h2>
-          <p className="text-xs sm:text-sm text-slate-500 mt-0.5">
+          <p className="text-xs sm:text-sm text-[#64748B] mt-0.5">
             Book consultations, track specialist queues, and manage clinical visits
           </p>
         </div>
@@ -240,7 +240,7 @@ export const Appointments = () => {
       </div>
 
       {/* Filter and Search Bar */}
-      <div className="bg-white p-4 rounded-2xl border border-slate-200/80 shadow-xs flex flex-col md:flex-row md:items-center justify-between gap-3">
+      <div className="bg-white p-4 rounded-lg border border-[#E2E8F0] shadow-xs flex flex-col md:flex-row md:items-center justify-between gap-3">
         <div className="flex-1 max-w-md">
           <SearchInput
             value={searchQuery}
@@ -250,7 +250,7 @@ export const Appointments = () => {
         </div>
 
         <div className="flex flex-wrap items-center gap-2.5">
-          <div className="flex items-center gap-1.5 text-xs text-slate-500">
+          <div className="flex items-center gap-1.5 text-xs text-[#64748B]">
             <Filter className="w-3.5 h-3.5" />
             <span>Filters:</span>
           </div>
@@ -258,7 +258,7 @@ export const Appointments = () => {
           <select
             value={statusFilter}
             onChange={(e) => setStatusFilter(e.target.value)}
-            className="text-xs bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-slate-700 font-medium focus:outline-none focus:ring-2 focus:ring-sky-500/20"
+            className="text-xs bg-[#F7F9FC] border border-[#E2E8F0] rounded-lg px-3 py-2 text-[#334155] font-medium focus:outline-none focus:ring-2 focus:ring-[#2563EB]/20 focus:border-[#2563EB]"
           >
             <option value="ALL">All Statuses</option>
             <option value="Confirmed">Confirmed</option>
@@ -272,7 +272,7 @@ export const Appointments = () => {
             type="date"
             value={dateFilter}
             onChange={(e) => setDateFilter(e.target.value)}
-            className="text-xs bg-slate-50 border border-slate-200 rounded-xl px-3 py-1.5 text-slate-700 font-medium focus:outline-none focus:ring-2 focus:ring-sky-500/20"
+            className="text-xs bg-[#F7F9FC] border border-[#E2E8F0] rounded-lg px-3 py-1.5 text-[#334155] font-medium focus:outline-none focus:ring-2 focus:ring-[#2563EB]/20 focus:border-[#2563EB]"
           />
 
           {(searchQuery || statusFilter !== 'ALL' || dateFilter) && (
@@ -282,7 +282,7 @@ export const Appointments = () => {
                 setStatusFilter('ALL');
                 setDateFilter('');
               }}
-              className="text-xs text-sky-600 hover:text-sky-800 font-medium px-2 py-1"
+              className="text-xs text-[#2563EB] hover:text-[#1D4ED8] font-medium px-2 py-1"
             >
               Reset
             </button>
@@ -355,7 +355,7 @@ export const Appointments = () => {
             </div>
 
             {selectedAppointment.notes && (
-              <div className="p-3.5 rounded-xl bg-sky-50/60 border border-sky-100">
+              <div className="p-3.5 rounded-xl bg-sky-50 border border-sky-100">
                 <p className="font-semibold text-sky-900 text-[11px] mb-1">Clinical Notes & Symptoms</p>
                 <p className="text-sky-800">{selectedAppointment.notes}</p>
               </div>

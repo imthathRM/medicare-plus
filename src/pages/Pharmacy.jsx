@@ -2,6 +2,7 @@ import React, { useState, useMemo } from 'react';
 import {
   PlusCircle,
   Edit2,
+  Trash2,
   Filter,
   Boxes,
 } from 'lucide-react';
@@ -11,12 +12,13 @@ import { SearchInput } from '../components/common/SearchInput';
 import { Button } from '../components/common/Button';
 import { Badge } from '../components/common/Badge';
 import { Modal } from '../components/common/Modal';
+import { ConfirmDialog } from '../components/common/ConfirmDialog';
 import { FormField, Input, Select } from '../components/common/FormField';
 import { formatDate, formatLKR } from '../utils/formatters';
 import { validateRequired, validateNumber } from '../utils/validators';
 
 export const Pharmacy = () => {
-  const { medicines, addMedicine, updateMedicine, adjustStock } = useHospitalData();
+  const { medicines, addMedicine, updateMedicine, adjustStock, deleteMedicine } = useHospitalData();
 
   const [searchQuery, setSearchQuery] = useState('');
   const [categoryFilter, setCategoryFilter] = useState('ALL');
@@ -26,8 +28,10 @@ export const Pharmacy = () => {
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [isAdjustModalOpen, setIsAdjustModalOpen] = useState(false);
+  const [isDeleteConfirmOpen, setIsDeleteConfirmOpen] = useState(false);
 
   const [selectedMedicine, setSelectedMedicine] = useState(null);
+  const [medicineToDelete, setMedicineToDelete] = useState(null);
   const [adjustAmount, setAdjustAmount] = useState(10);
   const [adjustType, setAdjustType] = useState('add'); // 'add' | 'remove'
 
@@ -115,6 +119,11 @@ export const Pharmacy = () => {
     setAdjustAmount(20);
     setAdjustType('add');
     setIsAdjustModalOpen(true);
+  };
+
+  const handleOpenDelete = (med) => {
+    setMedicineToDelete(med);
+    setIsDeleteConfirmOpen(true);
   };
 
   const validate = () => {
@@ -229,17 +238,24 @@ export const Pharmacy = () => {
         <div className="flex items-center justify-end gap-1" onClick={(e) => e.stopPropagation()}>
           <button
             onClick={() => handleOpenAdjust(row)}
-            className="p-1.5 rounded-lg text-slate-400 hover:text-sky-600 hover:bg-sky-50 transition-colors"
+            className="p-1.5 rounded-lg text-[#64748B] hover:text-[#2563EB] hover:bg-blue-50 transition-colors"
             title="Adjust Stock Quantity"
           >
             <Boxes className="w-4 h-4" />
           </button>
           <button
             onClick={() => handleOpenEdit(row)}
-            className="p-1.5 rounded-lg text-slate-400 hover:text-teal-600 hover:bg-teal-50 transition-colors"
+            className="p-1.5 rounded-lg text-[#64748B] hover:text-[#0F766E] hover:bg-teal-50 transition-colors"
             title="Edit Item"
           >
             <Edit2 className="w-4 h-4" />
+          </button>
+          <button
+            onClick={() => handleOpenDelete(row)}
+            className="p-1.5 rounded-lg text-[#64748B] hover:text-[#B91C1C] hover:bg-red-50 transition-colors"
+            title="Remove from Catalog"
+          >
+            <Trash2 className="w-4 h-4" />
           </button>
         </div>
       ),
@@ -251,10 +267,10 @@ export const Pharmacy = () => {
       {/* Page Header */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
-          <h2 className="text-xl font-bold text-slate-900 tracking-tight">
+          <h2 className="text-xl font-bold text-[#1E3A5F] tracking-tight">
             Pharmacy & Inventory Management
           </h2>
-          <p className="text-xs sm:text-sm text-slate-500 mt-0.5">
+          <p className="text-xs sm:text-sm text-[#64748B] mt-0.5">
             Monitor dispensary stock levels, critical thresholds, batch expirations, and unit pricing
           </p>
         </div>
@@ -264,7 +280,7 @@ export const Pharmacy = () => {
       </div>
 
       {/* Filter and Search Bar */}
-      <div className="bg-white p-4 rounded-2xl border border-slate-200/80 shadow-xs flex flex-col md:flex-row md:items-center justify-between gap-3">
+      <div className="bg-white p-4 rounded-lg border border-[#E2E8F0] shadow-xs flex flex-col md:flex-row md:items-center justify-between gap-3">
         <div className="flex-1 max-w-md">
           <SearchInput
             value={searchQuery}
@@ -274,7 +290,7 @@ export const Pharmacy = () => {
         </div>
 
         <div className="flex flex-wrap items-center gap-2.5">
-          <div className="flex items-center gap-1.5 text-xs text-slate-500">
+          <div className="flex items-center gap-1.5 text-xs text-[#64748B]">
             <Filter className="w-3.5 h-3.5" />
             <span>Filters:</span>
           </div>
@@ -282,7 +298,7 @@ export const Pharmacy = () => {
           <select
             value={categoryFilter}
             onChange={(e) => setCategoryFilter(e.target.value)}
-            className="text-xs bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-slate-700 font-medium focus:outline-none focus:ring-2 focus:ring-sky-500/20"
+            className="text-xs bg-[#F7F9FC] border border-[#E2E8F0] rounded-lg px-3 py-2 text-[#334155] font-medium focus:outline-none focus:ring-2 focus:ring-[#2563EB]/20 focus:border-[#2563EB]"
           >
             <option value="ALL">All Therapeutic Classes</option>
             {categories.map((c) => (
@@ -295,7 +311,7 @@ export const Pharmacy = () => {
           <select
             value={stockLevelFilter}
             onChange={(e) => setStockLevelFilter(e.target.value)}
-            className="text-xs bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-slate-700 font-medium focus:outline-none focus:ring-2 focus:ring-sky-500/20"
+            className="text-xs bg-[#F7F9FC] border border-[#E2E8F0] rounded-lg px-3 py-2 text-[#334155] font-medium focus:outline-none focus:ring-2 focus:ring-[#2563EB]/20 focus:border-[#2563EB]"
           >
             <option value="ALL">All Stock Levels</option>
             <option value="LOW">Low Stock Alerts Only</option>
@@ -308,7 +324,7 @@ export const Pharmacy = () => {
                 setCategoryFilter('ALL');
                 setStockLevelFilter('ALL');
               }}
-              className="text-xs text-sky-600 hover:text-sky-800 font-medium px-2 py-1"
+              className="text-xs text-[#2563EB] hover:text-[#1D4ED8] font-medium px-2 py-1"
             >
               Reset
             </button>
@@ -569,6 +585,21 @@ export const Pharmacy = () => {
           </div>
         </form>
       </Modal>
+
+      {/* Confirmation Dialog: Delete Medicine */}
+      <ConfirmDialog
+        isOpen={isDeleteConfirmOpen}
+        onClose={() => setIsDeleteConfirmOpen(false)}
+        onConfirm={() => {
+          if (medicineToDelete) {
+            deleteMedicine(medicineToDelete.id);
+          }
+        }}
+        title="Remove Medicine Item"
+        message={`Are you sure you want to permanently remove "${medicineToDelete?.name}" (${medicineToDelete?.id}) from the hospital formulary and inventory registry?`}
+        confirmText="Remove Medicine"
+        confirmVariant="danger"
+      />
     </div>
   );
 };

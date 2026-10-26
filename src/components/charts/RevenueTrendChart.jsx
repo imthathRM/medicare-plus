@@ -28,18 +28,18 @@ export const RevenueTrendChart = ({ data = defaultData, height = 280 }) => {
           margin={{ top: 10, right: 10, left: 10, bottom: 0 }}
           barSize={16}
         >
-          <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#f1f5f9" />
+          <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#E2E8F0" />
           <XAxis
             dataKey="month"
             axisLine={false}
             tickLine={false}
-            tick={{ fill: '#64748b', fontSize: 12 }}
+            tick={{ fill: '#64748B', fontSize: 12 }}
             dy={8}
           />
           <YAxis
             axisLine={false}
             tickLine={false}
-            tick={{ fill: '#64748b', fontSize: 12 }}
+            tick={{ fill: '#64748B', fontSize: 12 }}
             tickFormatter={(val) => `LKR ${(val / 1000000).toFixed(1)}M`}
           />
           <Tooltip
@@ -48,23 +48,24 @@ export const RevenueTrendChart = ({ data = defaultData, height = 280 }) => {
               name === 'inpatient' ? 'Inpatient Revenue' : 'Outpatient & Pharmacy',
             ]}
             contentStyle={{
-              backgroundColor: '#ffffff',
-              borderRadius: '12px',
-              border: '1px solid #e2e8f0',
-              boxShadow: '0 4px 12px rgba(0, 0, 0, 0.05)',
+              backgroundColor: '#FFFFFF',
+              borderRadius: '8px',
+              border: '1px solid #E2E8F0',
+              boxShadow: '0 2px 8px rgba(0, 0, 0, 0.05)',
               fontSize: '12px',
+              color: '#334155',
             }}
           />
           <Bar
             dataKey="inpatient"
             name="Inpatient"
-            fill="#0284c7"
+            fill="#2563EB"
             radius={[4, 4, 0, 0]}
           />
           <Bar
             dataKey="outpatient"
             name="Outpatient"
-            fill="#0d9488"
+            fill="#0F766E"
             radius={[4, 4, 0, 0]}
           />
         </BarChart>

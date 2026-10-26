@@ -248,6 +248,12 @@ export const HospitalDataProvider = ({ children }) => {
     info('Stock Adjusted', `Stock quantity modified for item ${id}.`);
   };
 
+  const deleteMedicine = (id) => {
+    const target = medicines.find((m) => m.id === id);
+    setMedicines((prev) => prev.filter((m) => m.id !== id));
+    info('Medicine Removed', `${target?.name || id} removed from pharmacy catalog.`);
+  };
+
   // --- Staff CRUD ---
   const addStaff = (staffData) => {
     const newId = `STF-${Math.floor(500 + Math.random() * 500)}`;
@@ -267,6 +273,12 @@ export const HospitalDataProvider = ({ children }) => {
       prev.map((stf) => (stf.id === id ? { ...stf, ...updatedData } : stf))
     );
     success('Staff Updated', `${updatedData.name || id} details updated.`);
+  };
+
+  const deleteStaff = (id) => {
+    const target = staff.find((s) => s.id === id);
+    setStaff((prev) => prev.filter((s) => s.id !== id));
+    info('Staff Removed', `${target?.name || id} removed from staff roster.`);
   };
 
   // --- Profile & Settings ---
@@ -337,8 +349,10 @@ export const HospitalDataProvider = ({ children }) => {
         addMedicine,
         updateMedicine,
         adjustStock,
+        deleteMedicine,
         addStaff,
         updateStaff,
+        deleteStaff,
         updateHospitalProfile,
         updateAppSettings,
       }}
