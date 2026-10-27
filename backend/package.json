@@ -1,0 +1,19 @@
+{
+  "name": "medicare-plus-backend",
+  "version": "1.0.0",
+  "description": "MediCare Plus Hospital Management System - Express Backend (Stage 5)",
+  "private": true,
+  "type": "module",
+  "main": "src/server.js",
+  "scripts": {
+    "start": "node src/server.js",
+    "dev": "node --watch src/server.js",
+    "test": "node test-backend.js",
+    "test:health": "node -e \"fetch('http://localhost:5000/api/health').then(r=>r.json()).then(console.log)\""
+  },
+  "dependencies": {
+    "cors": "^2.8.5",
+    "dotenv": "^16.4.7",
+    "express": "^4.21.2"
+  }
+}

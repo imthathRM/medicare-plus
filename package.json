@@ -7,7 +7,10 @@
     "dev": "vite",
     "build": "vite build",
     "lint": "oxlint",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "server": "npm --prefix backend start",
+    "server:dev": "npm --prefix backend run dev",
+    "test:backend": "npm --prefix backend test"
   },
   "dependencies": {
     "@tailwindcss/vite": "^4.3.3",
