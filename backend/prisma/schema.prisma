@@ -1,0 +1,253 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// ----------------------------------------------------
+// 1. Departments
+// ----------------------------------------------------
+model Department {
+  id               String    @id // e.g. "DEP-101"
+  name             String    @unique
+  code             String    @unique
+  headOfDepartment String?
+  doctorCount      Int       @default(0)
+  bedCount         Int       @default(0)
+  phone            String?
+  location         String?
+  description      String?
+  status           String    @default("Active")
+  createdAt        DateTime  @default(now())
+  updatedAt        DateTime  @updatedAt
+
+  doctors          Doctor[]
+
+  @@map("departments")
+}
+
+// ----------------------------------------------------
+// 2. Doctors
+// ----------------------------------------------------
+model Doctor {
+  id                 String       @id // e.g. "DOC-201"
+  name               String
+  slmcRegNo          String?
+  department         String       // Denormalized name preserved for existing API contract
+  departmentId       String?
+  specialization     String?
+  qualification      String?
+  phone              String?
+  email              String?
+  status             String       @default("Available")
+  consultationRoom   String?
+  consultationFeeLKR Float        @default(3500)
+  createdAt          DateTime     @default(now())
+  updatedAt          DateTime     @updatedAt
+
+  departmentRef      Department?  @relation(fields: [departmentId], references: [id], onDelete: SetNull)
+  appointments       Appointment[]
+
+  @@index([department])
+  @@index([status])
+  @@map("doctors")
+}
+
+// ----------------------------------------------------
+// 3. Patients
+// ----------------------------------------------------
+model Patient {
+  id               String        @id // e.g. "PAT-1001"
+  name             String
+  gender           String
+  dob              String?
+  age              Int?
+  bloodGroup       String?
+  phone            String?
+  email            String?
+  address          String?
+  nationalId       String?
+  emergencyContact String?
+  status           String        @default("Outpatient")
+  registeredDate   String?
+  attendingDoctor  String?
+  department       String?
+  allergies        String?
+  medicalHistory   String?
+  lastVisit        String?
+  createdAt        DateTime      @default(now())
+  updatedAt        DateTime      @updatedAt
+
+  appointments     Appointment[]
+  admissions       Admission[]
+  invoices         Invoice[]
+
+  @@index([name])
+  @@index([phone])
+  @@index([nationalId])
+  @@map("patients")
+}
+
+// ----------------------------------------------------
+// 4. Appointments
+// ----------------------------------------------------
+model Appointment {
+  id           String    @id // e.g. "APT-501"
+  patientId    String?
+  patientName  String
+  patientPhone String?
+  doctorId     String?
+  doctorName   String
+  department   String
+  date         String    // YYYY-MM-DD
+  time         String    // e.g. "09:30 AM"
+  room         String?
+  status       String    @default("Confirmed")
+  type         String    @default("Consultation")
+  feeLKR       Float     @default(3500)
+  createdAt    DateTime  @default(now())
+  updatedAt    DateTime  @updatedAt
+
+  patient      Patient?  @relation(fields: [patientId], references: [id], onDelete: SetNull)
+  doctor       Doctor?   @relation(fields: [doctorId], references: [id], onDelete: SetNull)
+
+  @@index([date])
+  @@index([status])
+  @@map("appointments")
+}
+
+// ----------------------------------------------------
+// 5. Admissions
+// ----------------------------------------------------
+model Admission {
+  id              String    @id // e.g. "ADM-701"
+  patientId       String?
+  patientName     String
+  ward            String
+  bedNumber       String?
+  admissionDate   String
+  dischargeDate   String?
+  status          String    @default("Admitted")
+  admittingDoctor String?
+  diagnosis       String?
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
+
+  patient         Patient?  @relation(fields: [patientId], references: [id], onDelete: SetNull)
+
+  @@index([status])
+  @@map("admissions")
+}
+
+// ----------------------------------------------------
+// 6. Billing and Invoices
+// ----------------------------------------------------
+model Invoice {
+  id            String    @id // e.g. "INV-301"
+  invoiceNumber String    @unique
+  patientId     String?
+  patientName   String
+  date          String
+  dueDate       String?
+  subtotalLKR   Float
+  taxLKR        Float     @default(0)
+  totalLKR      Float
+  amountPaid    Float?
+  status        String    @default("Pending")
+  paymentMethod String?
+  paidAt        DateTime?
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+
+  patient       Patient?  @relation(fields: [patientId], references: [id], onDelete: SetNull)
+
+  @@index([status])
+  @@map("invoices")
+}
+
+// ----------------------------------------------------
+// 7. Pharmacy and Inventory
+// ----------------------------------------------------
+model Medicine {
+  id            String    @id // e.g. "MED-401"
+  name          String
+  brand         String?
+  category      String
+  dosageForm    String    @default("Tablet")
+  unitPriceLKR  Float
+  stockQuantity Int       @default(0)
+  reorderLevel  Int       @default(50)
+  status        String    @default("In Stock")
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+
+  @@index([category])
+  @@index([status])
+  @@map("medicines")
+}
+
+// ----------------------------------------------------
+// 8. Hospital Staff
+// ----------------------------------------------------
+model Staff {
+  id         String    @id // e.g. "STF-01"
+  name       String
+  role       String
+  department String
+  phone      String?
+  email      String?
+  status     String    @default("Active")
+  shift      String    @default("General")
+  createdAt  DateTime  @default(now())
+  updatedAt  DateTime  @updatedAt
+
+  @@index([department])
+  @@index([role])
+  @@map("staff")
+}
+
+// ----------------------------------------------------
+// 9. Per-User Theme Settings
+// ----------------------------------------------------
+model UserSetting {
+  id        String    @id @default(uuid())
+  userId    String    @unique // e.g. "default-user", "doctor-sarah"
+  themeMode String    @default("light") // strictly 'light' or 'dark'
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+
+  @@map("user_settings")
+}
+
+// ----------------------------------------------------
+// 10. Hospital Profile & Institutional Configuration
+// ----------------------------------------------------
+model HospitalProfile {
+  id                 String   @id @default("default-hospital")
+  name               String
+  tagline            String?
+  registrationNumber String?
+  taxId              String?
+  hotline            String?
+  emergencyLine      String?
+  email              String?
+  billingEmail       String?
+  website            String?
+  address            String?
+  district           String?
+  province           String?
+  postalCode         String?
+  currency           String   @default("LKR")
+  timezone           String   @default("Asia/Colombo (UTC+05:30)")
+  operatingBeds      Int      @default(180)
+  operatingTheaters  Int      @default(6)
+  icuBeds            Int      @default(16)
+  accreditation      String?
+  establishedYear    String?
+  updatedAt          DateTime @updatedAt
+
+  @@map("hospital_profile")
+}

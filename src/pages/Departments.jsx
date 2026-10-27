@@ -133,8 +133,8 @@ export const Departments = () => {
       {/* Page Header */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
-          <h2 className="text-xl font-bold text-[#1E3A5F] tracking-tight">Clinical Departments</h2>
-          <p className="text-xs sm:text-sm text-[#64748B] mt-0.5">
+          <h2 className="text-xl font-bold text-[#1E3A5F] dark:text-[#F1F5F9] tracking-tight">Clinical Departments</h2>
+          <p className="text-xs sm:text-sm text-[#64748B] dark:text-[#CBD5E1] mt-0.5">
             Operational medical units, ward capacities, and clinical leadership
           </p>
         </div>
@@ -144,7 +144,7 @@ export const Departments = () => {
       </div>
 
       {/* Search Bar */}
-      <div className="bg-white p-4 rounded-lg border border-[#E2E8F0] shadow-xs max-w-md">
+      <div className="bg-white dark:bg-[#1E293B] p-4 rounded-lg border border-[#E2E8F0] dark:border-[#334155] shadow-xs max-w-md transition-colors">
         <SearchInput
           value={searchQuery}
           onChange={setSearchQuery}
@@ -158,17 +158,17 @@ export const Departments = () => {
           {filteredDepartments.map((dept) => (
             <div
               key={dept.id}
-              className="bg-white rounded-lg border border-[#E2E8F0] p-5 shadow-xs transition-colors flex flex-col justify-between"
+              className="bg-white dark:bg-[#1E293B] rounded-lg border border-[#E2E8F0] dark:border-[#334155] p-5 shadow-xs transition-colors flex flex-col justify-between"
             >
               <div>
                 <div className="flex items-start justify-between gap-2 mb-3">
                   <div className="flex items-center gap-2.5">
-                    <div className="w-10 h-10 rounded-lg bg-blue-50 text-[#2563EB] flex items-center justify-center shrink-0 border border-blue-100">
+                    <div className="w-10 h-10 rounded-lg bg-blue-50 dark:bg-slate-700 text-[#2563EB] dark:text-[#60A5FA] flex items-center justify-center shrink-0 border border-blue-100 dark:border-blue-800/40">
                       <Building2 className="w-5 h-5" />
                     </div>
                     <div>
-                      <h3 className="font-bold text-[#1E3A5F] text-sm">{dept.name}</h3>
-                      <span className="text-[11px] font-bold text-[#2563EB] bg-blue-50 px-2 py-0.5 rounded">
+                      <h3 className="font-bold text-[#1E3A5F] dark:text-[#F1F5F9] text-sm">{dept.name}</h3>
+                      <span className="text-[11px] font-bold text-[#2563EB] dark:text-[#60A5FA] bg-blue-50 dark:bg-blue-900/40 px-2 py-0.5 rounded">
                         {dept.code}
                       </span>
                     </div>
@@ -176,33 +176,33 @@ export const Departments = () => {
                   <Badge status={dept.status} size="sm" />
                 </div>
 
-                <p className="text-xs text-[#64748B] line-clamp-2 mt-2 leading-relaxed">
+                <p className="text-xs text-[#64748B] dark:text-[#CBD5E1] line-clamp-2 mt-2 leading-relaxed">
                   {dept.description}
                 </p>
 
-                <div className="mt-4 pt-3 border-t border-[#E2E8F0] space-y-2 text-xs text-[#334155]">
+                <div className="mt-4 pt-3 border-t border-[#E2E8F0] dark:border-[#334155] space-y-2 text-xs text-[#334155] dark:text-[#CBD5E1]">
                   <p>
-                    <strong className="text-[#1E3A5F]">HOD:</strong> {dept.headOfDepartment}
+                    <strong className="text-[#1E3A5F] dark:text-[#F1F5F9]">HOD:</strong> {dept.headOfDepartment}
                   </p>
-                  <div className="flex items-center gap-2 text-[#64748B]">
+                  <div className="flex items-center gap-2 text-[#64748B] dark:text-slate-400">
                     <MapPin className="w-3.5 h-3.5 shrink-0" />
                     <span className="truncate">{dept.location}</span>
                   </div>
-                  <div className="flex items-center gap-2 text-[#64748B]">
+                  <div className="flex items-center gap-2 text-[#64748B] dark:text-slate-400">
                     <Phone className="w-3.5 h-3.5 shrink-0" />
                     <span>{dept.phone}</span>
                   </div>
                 </div>
               </div>
 
-              <div className="mt-5 pt-3 border-t border-[#E2E8F0]">
-                <div className="flex items-center justify-between text-xs mb-3 bg-[#F7F9FC] p-2.5 rounded-lg border border-[#E2E8F0]">
-                  <div className="flex items-center gap-1.5 font-medium text-[#334155]">
-                    <Users className="w-3.5 h-3.5 text-[#2563EB]" />
+              <div className="mt-5 pt-3 border-t border-[#E2E8F0] dark:border-[#334155]">
+                <div className="flex items-center justify-between text-xs mb-3 bg-[#F7F9FC] dark:bg-slate-800 p-2.5 rounded-lg border border-[#E2E8F0] dark:border-[#334155]">
+                  <div className="flex items-center gap-1.5 font-medium text-[#334155] dark:text-[#CBD5E1]">
+                    <Users className="w-3.5 h-3.5 text-[#2563EB] dark:text-[#60A5FA]" />
                     <span>{dept.doctorCount} Doctors</span>
                   </div>
-                  <div className="flex items-center gap-1.5 font-semibold text-[#1E3A5F]">
-                    <BedDouble className="w-3.5 h-3.5 text-[#0F766E]" />
+                  <div className="flex items-center gap-1.5 font-semibold text-[#1E3A5F] dark:text-[#F1F5F9]">
+                    <BedDouble className="w-3.5 h-3.5 text-[#0F766E] dark:text-[#4ADE80]" />
                     <span>{dept.bedCount} Beds</span>
                   </div>
                 </div>
@@ -210,13 +210,13 @@ export const Departments = () => {
                 <div className="flex items-center justify-end gap-1.5">
                   <button
                     onClick={() => handleOpenView(dept)}
-                    className="px-3 py-1.5 text-xs font-semibold text-[#2563EB] bg-blue-50 hover:bg-blue-100 rounded-lg transition-colors"
+                    className="px-3 py-1.5 text-xs font-semibold text-[#2563EB] dark:text-[#60A5FA] bg-blue-50 dark:bg-blue-900/40 hover:bg-blue-100 dark:hover:bg-blue-900/60 rounded-lg transition-colors"
                   >
                     View Details
                   </button>
                   <button
                     onClick={() => handleOpenEdit(dept)}
-                    className="px-3 py-1.5 text-xs font-semibold text-[#334155] bg-[#F7F9FC] border border-[#E2E8F0] hover:bg-slate-100 rounded-lg transition-colors"
+                    className="px-3 py-1.5 text-xs font-semibold text-[#334155] dark:text-[#CBD5E1] bg-[#F7F9FC] dark:bg-slate-800 border border-[#E2E8F0] dark:border-[#334155] hover:bg-slate-100 dark:hover:bg-slate-700 rounded-lg transition-colors"
                   >
                     Edit
                   </button>
@@ -226,12 +226,12 @@ export const Departments = () => {
           ))}
         </div>
       ) : (
-        <div className="bg-white rounded-lg border border-[#E2E8F0] p-12 text-center shadow-xs">
-          <div className="w-12 h-12 rounded-lg bg-[#F7F9FC] text-[#64748B] flex items-center justify-center border border-[#E2E8F0] mx-auto mb-3">
+        <div className="bg-white dark:bg-[#1E293B] rounded-lg border border-[#E2E8F0] dark:border-[#334155] p-12 text-center shadow-xs">
+          <div className="w-12 h-12 rounded-lg bg-[#F7F9FC] dark:bg-slate-800 text-[#64748B] dark:text-[#CBD5E1] flex items-center justify-center border border-[#E2E8F0] dark:border-[#334155] mx-auto mb-3">
             <Inbox className="w-6 h-6" />
           </div>
-          <p className="text-sm font-semibold text-[#1E3A5F]">No departments found</p>
-          <p className="text-xs text-[#64748B] max-w-sm mx-auto mt-1">
+          <p className="text-sm font-semibold text-[#1E3A5F] dark:text-[#F1F5F9]">No departments found</p>
+          <p className="text-xs text-[#64748B] dark:text-[#CBD5E1] max-w-sm mx-auto mt-1">
             No clinical departments match your current search criteria.
           </p>
         </div>
@@ -252,11 +252,11 @@ export const Departments = () => {
       >
         {selectedDept && (
           <div className="space-y-4 text-xs">
-            <div className="p-4 rounded-xl bg-slate-50 border border-slate-100 space-y-2">
-              <p className="text-slate-700 leading-relaxed">{selectedDept.description}</p>
-              <div className="pt-2 border-t border-slate-200/60 grid grid-cols-2 gap-2 text-slate-700">
+            <div className="p-4 rounded-xl bg-slate-50 dark:bg-slate-800/80 border border-slate-100 dark:border-[#334155] space-y-2">
+              <p className="text-slate-700 dark:text-[#CBD5E1] leading-relaxed">{selectedDept.description}</p>
+              <div className="pt-2 border-t border-slate-200/60 dark:border-[#334155] grid grid-cols-2 gap-2 text-slate-700 dark:text-[#CBD5E1]">
                 <p>
-                  <strong>Head of Dept:</strong> {selectedDept.headOfDepartment}
+                  <strong className="text-[#1E3A5F] dark:text-[#F1F5F9]">Head of Dept:</strong> {selectedDept.headOfDepartment}
                 </p>
                 <p>
                   <strong>Internal Hotline:</strong> {selectedDept.phone}
@@ -265,13 +265,13 @@ export const Departments = () => {
                   <strong>Location:</strong> {selectedDept.location}
                 </p>
                 <p>
-                  <strong>Ward Capacity:</strong> {selectedDept.bedCount} Beds
+                  <strong className="text-[#1E3A5F] dark:text-[#F1F5F9]">Ward Capacity:</strong> {selectedDept.bedCount} Beds
                 </p>
               </div>
             </div>
 
             <div>
-              <h4 className="font-bold text-slate-900 text-sm mb-2">
+              <h4 className="font-bold text-slate-900 dark:text-[#F1F5F9] text-sm mb-2">
                 Consultants Assigned to {selectedDept.name}
               </h4>
               {departmentDoctors.length > 0 ? (
@@ -279,18 +279,18 @@ export const Departments = () => {
                   {departmentDoctors.map((doc) => (
                     <div
                       key={doc.id}
-                      className="p-3 rounded-xl bg-white border border-slate-200 flex items-center justify-between"
+                      className="p-3 rounded-xl bg-white dark:bg-[#1E293B] border border-slate-200 dark:border-[#334155] flex items-center justify-between"
                     >
                       <div>
-                        <p className="font-semibold text-slate-900">{doc.name}</p>
-                        <p className="text-slate-500 text-[11px]">{doc.specialty}</p>
+                        <p className="font-semibold text-slate-900 dark:text-[#F1F5F9]">{doc.name}</p>
+                        <p className="text-slate-500 dark:text-slate-400 text-[11px]">{doc.specialty}</p>
                       </div>
                       <Badge status={doc.status} size="sm" />
                     </div>
                   ))}
                 </div>
               ) : (
-                <p className="text-slate-400 italic">No doctors currently listed in this mock department roster.</p>
+                <p className="text-slate-400 dark:text-slate-500 italic">No doctors currently listed in this mock department roster.</p>
               )}
             </div>
           </div>

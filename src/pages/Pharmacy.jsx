@@ -173,8 +173,8 @@ export const Pharmacy = () => {
       key: 'name',
       render: (row) => (
         <div>
-          <p className="font-semibold text-slate-900 text-xs sm:text-sm">{row.name}</p>
-          <span className="text-[11px] text-slate-500 italic">{row.genericName}</span>
+          <p className="font-semibold text-slate-900 dark:text-slate-100 text-xs sm:text-sm">{row.name}</p>
+          <span className="text-[11px] text-slate-500 dark:text-slate-400 italic">{row.genericName}</span>
         </div>
       ),
     },
@@ -183,8 +183,8 @@ export const Pharmacy = () => {
       key: 'category',
       render: (row) => (
         <div>
-          <span className="font-medium text-slate-800 text-xs">{row.category}</span>
-          <p className="text-[11px] text-slate-400">{row.form} ({row.dosage})</p>
+          <span className="font-medium text-slate-800 dark:text-slate-200 text-xs">{row.category}</span>
+          <p className="text-[11px] text-slate-400 dark:text-slate-500">{row.form} ({row.dosage})</p>
         </div>
       ),
     },
@@ -196,12 +196,12 @@ export const Pharmacy = () => {
         return (
           <div>
             <div className="flex items-center gap-2">
-              <span className={`font-bold text-xs sm:text-sm ${isLow ? 'text-rose-600' : 'text-slate-800'}`}>
+              <span className={`font-bold text-xs sm:text-sm ${isLow ? 'text-rose-600 dark:text-rose-400' : 'text-slate-800 dark:text-slate-200'}`}>
                 {row.quantity} units
               </span>
               {isLow && <Badge status="Low Stock" size="sm" />}
             </div>
-            <span className="text-[10px] text-slate-400">Min: {row.minThreshold}</span>
+            <span className="text-[10px] text-slate-400 dark:text-slate-500">Min: {row.minThreshold}</span>
           </div>
         );
       },
@@ -210,21 +210,21 @@ export const Pharmacy = () => {
       header: 'Unit Price (LKR)',
       key: 'unitPrice',
       render: (row) => (
-        <span className="font-semibold text-xs text-slate-900">{formatLKR(row.unitPrice)}</span>
+        <span className="font-semibold text-xs text-slate-900 dark:text-slate-100">{formatLKR(row.unitPrice)}</span>
       ),
     },
     {
       header: 'Expiry Date',
       key: 'expiryDate',
       render: (row) => (
-        <span className="text-xs text-slate-600 whitespace-nowrap">{formatDate(row.expiryDate)}</span>
+        <span className="text-xs text-slate-600 dark:text-slate-300 whitespace-nowrap">{formatDate(row.expiryDate)}</span>
       ),
     },
     {
       header: 'Location',
       key: 'storageLocation',
       render: (row) => (
-        <span className="text-xs text-slate-600 bg-slate-100 px-2 py-0.5 rounded-md font-mono">
+        <span className="text-xs text-slate-600 dark:text-slate-300 bg-slate-100 dark:bg-slate-800/80 px-2 py-0.5 rounded-md font-mono">
           {row.storageLocation}
         </span>
       ),
@@ -238,21 +238,21 @@ export const Pharmacy = () => {
         <div className="flex items-center justify-end gap-1" onClick={(e) => e.stopPropagation()}>
           <button
             onClick={() => handleOpenAdjust(row)}
-            className="p-1.5 rounded-lg text-[#64748B] hover:text-[#2563EB] hover:bg-blue-50 transition-colors"
+            className="p-1.5 rounded-lg text-[#64748B] hover:text-[#2563EB] hover:bg-blue-50 dark:hover:bg-blue-950/40 dark:text-slate-400 transition-colors"
             title="Adjust Stock Quantity"
           >
             <Boxes className="w-4 h-4" />
           </button>
           <button
             onClick={() => handleOpenEdit(row)}
-            className="p-1.5 rounded-lg text-[#64748B] hover:text-[#0F766E] hover:bg-teal-50 transition-colors"
+            className="p-1.5 rounded-lg text-[#64748B] hover:text-[#0F766E] hover:bg-teal-50 dark:hover:bg-teal-950/40 dark:text-slate-400 transition-colors"
             title="Edit Item"
           >
             <Edit2 className="w-4 h-4" />
           </button>
           <button
             onClick={() => handleOpenDelete(row)}
-            className="p-1.5 rounded-lg text-[#64748B] hover:text-[#B91C1C] hover:bg-red-50 transition-colors"
+            className="p-1.5 rounded-lg text-[#64748B] hover:text-[#B91C1C] hover:bg-red-50 dark:hover:bg-red-950/40 dark:text-slate-400 transition-colors"
             title="Remove from Catalog"
           >
             <Trash2 className="w-4 h-4" />
@@ -267,10 +267,10 @@ export const Pharmacy = () => {
       {/* Page Header */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
-          <h2 className="text-xl font-bold text-[#1E3A5F] tracking-tight">
+          <h2 className="text-xl font-bold text-[#1E3A5F] dark:text-[#F1F5F9] tracking-tight">
             Pharmacy & Inventory Management
           </h2>
-          <p className="text-xs sm:text-sm text-[#64748B] mt-0.5">
+          <p className="text-xs sm:text-sm text-[#64748B] dark:text-[#CBD5E1] mt-0.5">
             Monitor dispensary stock levels, critical thresholds, batch expirations, and unit pricing
           </p>
         </div>
@@ -280,7 +280,7 @@ export const Pharmacy = () => {
       </div>
 
       {/* Filter and Search Bar */}
-      <div className="bg-white p-4 rounded-lg border border-[#E2E8F0] shadow-xs flex flex-col md:flex-row md:items-center justify-between gap-3">
+      <div className="bg-white dark:bg-[#1E293B] p-4 rounded-lg border border-[#E2E8F0] dark:border-[#334155] shadow-xs flex flex-col md:flex-row md:items-center justify-between gap-3">
         <div className="flex-1 max-w-md">
           <SearchInput
             value={searchQuery}
@@ -290,7 +290,7 @@ export const Pharmacy = () => {
         </div>
 
         <div className="flex flex-wrap items-center gap-2.5">
-          <div className="flex items-center gap-1.5 text-xs text-[#64748B]">
+          <div className="flex items-center gap-1.5 text-xs text-[#64748B] dark:text-[#CBD5E1]">
             <Filter className="w-3.5 h-3.5" />
             <span>Filters:</span>
           </div>
@@ -298,7 +298,7 @@ export const Pharmacy = () => {
           <select
             value={categoryFilter}
             onChange={(e) => setCategoryFilter(e.target.value)}
-            className="text-xs bg-[#F7F9FC] border border-[#E2E8F0] rounded-lg px-3 py-2 text-[#334155] font-medium focus:outline-none focus:ring-2 focus:ring-[#2563EB]/20 focus:border-[#2563EB]"
+            className="text-xs bg-[#F7F9FC] dark:bg-slate-800 border border-[#E2E8F0] dark:border-[#334155] rounded-lg px-3 py-2 text-[#334155] dark:text-[#F1F5F9] font-medium focus:outline-none focus:ring-2 focus:ring-[#2563EB]/20 focus:border-[#2563EB]"
           >
             <option value="ALL">All Therapeutic Classes</option>
             {categories.map((c) => (
@@ -311,7 +311,7 @@ export const Pharmacy = () => {
           <select
             value={stockLevelFilter}
             onChange={(e) => setStockLevelFilter(e.target.value)}
-            className="text-xs bg-[#F7F9FC] border border-[#E2E8F0] rounded-lg px-3 py-2 text-[#334155] font-medium focus:outline-none focus:ring-2 focus:ring-[#2563EB]/20 focus:border-[#2563EB]"
+            className="text-xs bg-[#F7F9FC] dark:bg-slate-800 border border-[#E2E8F0] dark:border-[#334155] rounded-lg px-3 py-2 text-[#334155] dark:text-[#F1F5F9] font-medium focus:outline-none focus:ring-2 focus:ring-[#2563EB]/20 focus:border-[#2563EB]"
           >
             <option value="ALL">All Stock Levels</option>
             <option value="LOW">Low Stock Alerts Only</option>
@@ -324,7 +324,7 @@ export const Pharmacy = () => {
                 setCategoryFilter('ALL');
                 setStockLevelFilter('ALL');
               }}
-              className="text-xs text-[#2563EB] hover:text-[#1D4ED8] font-medium px-2 py-1"
+              className="text-xs text-[#2563EB] dark:text-blue-400 hover:text-[#1D4ED8] dark:hover:text-blue-300 font-medium px-2 py-1"
             >
               Reset
             </button>
@@ -552,14 +552,14 @@ export const Pharmacy = () => {
         }
       >
         <form onSubmit={handleSaveAdjust} className="space-y-4 text-xs">
-          <div className="p-3.5 rounded-xl bg-slate-50 border border-slate-100 flex justify-between items-center">
+          <div className="p-3.5 rounded-xl bg-slate-50 dark:bg-slate-800/60 border border-slate-100 dark:border-slate-700/60 flex justify-between items-center">
             <div>
-              <p className="text-slate-500">Current Stock</p>
-              <p className="text-base font-bold text-slate-900">{selectedMedicine?.quantity} units</p>
+              <p className="text-slate-500 dark:text-slate-400">Current Stock</p>
+              <p className="text-base font-bold text-slate-900 dark:text-slate-100">{selectedMedicine?.quantity} units</p>
             </div>
             <div>
-              <p className="text-slate-500">Reorder Threshold</p>
-              <p className="font-semibold text-slate-700">{selectedMedicine?.minThreshold} units</p>
+              <p className="text-slate-500 dark:text-slate-400">Reorder Threshold</p>
+              <p className="font-semibold text-slate-700 dark:text-slate-300">{selectedMedicine?.minThreshold} units</p>
             </div>
           </div>
 

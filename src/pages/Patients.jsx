@@ -185,7 +185,7 @@ export const Patients = () => {
       key: 'name',
       render: (row) => (
         <div className="flex items-center gap-3">
-          <div className="w-9 h-9 rounded-full bg-blue-50 text-[#2563EB] border border-[#E2E8F0] flex items-center justify-center font-bold text-xs ring-2 ring-white shrink-0">
+          <div className="w-9 h-9 rounded-full bg-blue-50 dark:bg-slate-700 text-[#2563EB] dark:text-[#60A5FA] border border-[#E2E8F0] dark:border-[#334155] flex items-center justify-center font-bold text-xs ring-2 ring-white dark:ring-slate-800 shrink-0">
             {row.name
               .split(' ')
               .map((n) => n[0])
@@ -193,8 +193,8 @@ export const Patients = () => {
               .substring(0, 2)}
           </div>
           <div className="min-w-0">
-            <p className="font-semibold text-[#1E3A5F] truncate">{row.name}</p>
-            <div className="flex items-center gap-2 text-[11px] text-[#64748B]">
+            <p className="font-semibold text-[#1E3A5F] dark:text-[#F1F5F9] truncate">{row.name}</p>
+            <div className="flex items-center gap-2 text-[11px] text-[#64748B] dark:text-[#CBD5E1]">
               <span className="font-mono">{row.id}</span>
               <span>•</span>
               <span>{row.gender}</span>
@@ -209,7 +209,7 @@ export const Patients = () => {
       header: 'Blood Group',
       key: 'bloodGroup',
       render: (row) => (
-        <span className="inline-flex items-center px-2 py-0.5 rounded-md font-bold text-xs bg-red-50 text-[#B91C1C] border border-red-200/80">
+        <span className="inline-flex items-center px-2 py-0.5 rounded-md font-bold text-xs bg-red-50 dark:bg-red-950/60 text-[#B91C1C] dark:text-[#F87171] border border-red-200/80 dark:border-red-900/40">
           {row.bloodGroup}
         </span>
       ),
@@ -219,8 +219,8 @@ export const Patients = () => {
       key: 'phone',
       render: (row) => (
         <div className="text-xs">
-          <p className="font-medium text-[#334155]">{row.phone}</p>
-          <p className="text-[#64748B] text-[11px] truncate max-w-[150px]">{row.email || 'No email'}</p>
+          <p className="font-medium text-[#334155] dark:text-[#F1F5F9]">{row.phone}</p>
+          <p className="text-[#64748B] dark:text-[#CBD5E1] text-[11px] truncate max-w-[150px]">{row.email || 'No email'}</p>
         </div>
       ),
     },
@@ -228,7 +228,7 @@ export const Patients = () => {
       header: 'Department',
       key: 'department',
       render: (row) => (
-        <span className="text-xs font-medium text-[#334155] bg-[#F7F9FC] border border-[#E2E8F0] px-2.5 py-1 rounded-lg">
+        <span className="text-xs font-medium text-[#334155] dark:text-[#CBD5E1] bg-[#F7F9FC] dark:bg-slate-800 border border-[#E2E8F0] dark:border-[#334155] px-2.5 py-1 rounded-lg">
           {row.department || 'General Care'}
         </span>
       ),
@@ -242,7 +242,7 @@ export const Patients = () => {
       header: 'Registered',
       key: 'registeredDate',
       render: (row) => (
-        <span className="text-xs text-[#64748B] whitespace-nowrap">
+        <span className="text-xs text-[#64748B] dark:text-[#CBD5E1] whitespace-nowrap">
           {formatDate(row.registeredDate)}
         </span>
       ),
@@ -285,8 +285,8 @@ export const Patients = () => {
       {/* Page Header */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
-          <h2 className="text-xl font-bold text-[#1E3A5F] tracking-tight">Patient Registry</h2>
-          <p className="text-xs sm:text-sm text-[#64748B] mt-0.5">
+          <h2 className="text-xl font-bold text-[#1E3A5F] dark:text-[#F1F5F9] tracking-tight">Patient Registry</h2>
+          <p className="text-xs sm:text-sm text-[#64748B] dark:text-[#CBD5E1] mt-0.5">
             Manage electronic medical records, admission histories, and diagnostic profiles
           </p>
         </div>
@@ -300,7 +300,7 @@ export const Patients = () => {
       </div>
 
       {/* Search and Filters Bar */}
-      <div className="bg-white p-4 rounded-lg border border-[#E2E8F0] shadow-xs flex flex-col md:flex-row md:items-center justify-between gap-3">
+      <div className="bg-white dark:bg-[#1E293B] p-4 rounded-lg border border-[#E2E8F0] dark:border-[#334155] shadow-xs flex flex-col md:flex-row md:items-center justify-between gap-3 transition-colors">
         <div className="flex-1 max-w-md">
           <SearchInput
             value={searchQuery}
@@ -310,7 +310,7 @@ export const Patients = () => {
         </div>
 
         <div className="flex flex-wrap items-center gap-2.5">
-          <div className="flex items-center gap-1.5 text-xs text-[#64748B]">
+          <div className="flex items-center gap-1.5 text-xs text-[#64748B] dark:text-[#CBD5E1]">
             <Filter className="w-3.5 h-3.5" />
             <span>Filters:</span>
           </div>
@@ -319,7 +319,7 @@ export const Patients = () => {
           <select
             value={statusFilter}
             onChange={(e) => setStatusFilter(e.target.value)}
-            className="text-xs bg-[#F7F9FC] border border-[#E2E8F0] rounded-lg px-3 py-2 text-[#334155] font-medium focus:outline-none focus:ring-2 focus:ring-[#2563EB]/20 focus:border-[#2563EB]"
+            className="text-xs bg-[#F7F9FC] dark:bg-slate-800 border border-[#E2E8F0] dark:border-[#334155] rounded-lg px-3 py-2 text-[#334155] dark:text-[#F1F5F9] font-medium focus:outline-none focus:ring-2 focus:ring-[#2563EB]/20 dark:focus:ring-[#60A5FA]/20 focus:border-[#2563EB] dark:focus:border-[#60A5FA]"
           >
             <option value="ALL">All Statuses</option>
             <option value="Inpatient">Inpatient</option>
@@ -332,7 +332,7 @@ export const Patients = () => {
           <select
             value={genderFilter}
             onChange={(e) => setGenderFilter(e.target.value)}
-            className="text-xs bg-[#F7F9FC] border border-[#E2E8F0] rounded-lg px-3 py-2 text-[#334155] font-medium focus:outline-none focus:ring-2 focus:ring-[#2563EB]/20 focus:border-[#2563EB]"
+            className="text-xs bg-[#F7F9FC] dark:bg-slate-800 border border-[#E2E8F0] dark:border-[#334155] rounded-lg px-3 py-2 text-[#334155] dark:text-[#F1F5F9] font-medium focus:outline-none focus:ring-2 focus:ring-[#2563EB]/20 dark:focus:ring-[#60A5FA]/20 focus:border-[#2563EB] dark:focus:border-[#60A5FA]"
           >
             <option value="ALL">All Genders</option>
             <option value="Male">Male</option>
@@ -346,7 +346,7 @@ export const Patients = () => {
                 setStatusFilter('ALL');
                 setGenderFilter('ALL');
               }}
-              className="text-xs text-[#2563EB] hover:text-[#1D4ED8] font-medium px-2 py-1"
+              className="text-xs text-[#2563EB] dark:text-[#60A5FA] hover:underline font-medium px-2 py-1"
             >
               Reset
             </button>
@@ -395,8 +395,8 @@ export const Patients = () => {
         {selectedPatient && (
           <div className="space-y-6">
             {/* Header snippet */}
-            <div className="flex items-center gap-4 p-4 rounded-lg bg-sky-50 border border-sky-100">
-              <div className="w-14 h-14 rounded-lg bg-sky-600 text-white flex items-center justify-center font-bold text-lg shadow-sm">
+            <div className="flex items-center gap-4 p-4 rounded-lg bg-sky-50 dark:bg-slate-700/60 border border-sky-100 dark:border-slate-600">
+              <div className="w-14 h-14 rounded-lg bg-sky-600 dark:bg-blue-600 text-white flex items-center justify-center font-bold text-lg shadow-sm">
                 {selectedPatient.name
                   .split(' ')
                   .map((n) => n[0])
@@ -405,61 +405,61 @@ export const Patients = () => {
               </div>
               <div className="min-w-0 flex-1">
                 <div className="flex items-center gap-2">
-                  <h4 className="text-base font-bold text-slate-900 truncate">
+                  <h4 className="text-base font-bold text-slate-900 dark:text-[#F1F5F9] truncate">
                     {selectedPatient.name}
                   </h4>
                   <Badge status={selectedPatient.status} size="sm" />
                 </div>
-                <div className="flex flex-wrap items-center gap-x-4 gap-y-1 mt-1 text-xs text-slate-600">
+                <div className="flex flex-wrap items-center gap-x-4 gap-y-1 mt-1 text-xs text-slate-600 dark:text-[#CBD5E1]">
                   <span>
-                    MRN: <strong className="text-slate-800 font-mono">{selectedPatient.id}</strong>
+                    MRN: <strong className="text-slate-800 dark:text-[#F1F5F9] font-mono">{selectedPatient.id}</strong>
                   </span>
                   <span>NIC: {selectedPatient.nationalId || 'N/A'}</span>
                   <span>
                     Age: {selectedPatient.age} yrs ({selectedPatient.gender})
                   </span>
-                  <span className="font-bold text-rose-600">Blood: {selectedPatient.bloodGroup}</span>
+                  <span className="font-bold text-rose-600 dark:text-[#F87171]">Blood: {selectedPatient.bloodGroup}</span>
                 </div>
               </div>
             </div>
 
             {/* Grid details */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-xs">
-              <div className="p-4 rounded-xl bg-slate-50 border border-slate-100 space-y-2">
-                <p className="font-semibold text-slate-800 uppercase tracking-wider text-[11px]">
+              <div className="p-4 rounded-xl bg-slate-50 dark:bg-slate-800/80 border border-slate-100 dark:border-[#334155] space-y-2">
+                <p className="font-semibold text-slate-800 dark:text-[#F1F5F9] uppercase tracking-wider text-[11px]">
                   Contact & Residence
                 </p>
-                <div className="flex items-center gap-2 text-slate-700">
+                <div className="flex items-center gap-2 text-slate-700 dark:text-[#CBD5E1]">
                   <Phone className="w-3.5 h-3.5 text-slate-400 shrink-0" />
                   <span>{selectedPatient.phone}</span>
                 </div>
-                <div className="flex items-center gap-2 text-slate-700">
+                <div className="flex items-center gap-2 text-slate-700 dark:text-[#CBD5E1]">
                   <Mail className="w-3.5 h-3.5 text-slate-400 shrink-0" />
                   <span>{selectedPatient.email || 'No email registered'}</span>
                 </div>
-                <p className="text-slate-600 mt-1">
+                <p className="text-slate-600 dark:text-slate-300 mt-1">
                   <strong>Address:</strong> {selectedPatient.address || 'Colombo, Sri Lanka'}
                 </p>
-                <p className="text-slate-600">
+                <p className="text-slate-600 dark:text-slate-300">
                   <strong>Emergency:</strong> {selectedPatient.emergencyContact || 'None recorded'}
                 </p>
               </div>
 
-              <div className="p-4 rounded-xl bg-slate-50 border border-slate-100 space-y-2">
-                <p className="font-semibold text-slate-800 uppercase tracking-wider text-[11px]">
+              <div className="p-4 rounded-xl bg-slate-50 dark:bg-slate-800/80 border border-slate-100 dark:border-[#334155] space-y-2">
+                <p className="font-semibold text-slate-800 dark:text-[#F1F5F9] uppercase tracking-wider text-[11px]">
                   Clinical Assignment
                 </p>
-                <p className="text-slate-700">
+                <p className="text-slate-700 dark:text-[#CBD5E1]">
                   <strong>Department:</strong> {selectedPatient.department || 'General Medicine'}
                 </p>
-                <p className="text-slate-700">
+                <p className="text-slate-700 dark:text-[#CBD5E1]">
                   <strong>Attending Doctor:</strong>{' '}
                   {selectedPatient.attendingDoctor || 'Consultant On-Duty'}
                 </p>
-                <p className="text-slate-700">
+                <p className="text-slate-700 dark:text-[#CBD5E1]">
                   <strong>Enrolled On:</strong> {formatDate(selectedPatient.registeredDate)}
                 </p>
-                <p className="text-slate-700">
+                <p className="text-slate-700 dark:text-[#CBD5E1]">
                   <strong>Last Visit / Checkup:</strong>{' '}
                   {formatDate(selectedPatient.lastVisit || selectedPatient.registeredDate)}
                 </p>
@@ -468,21 +468,21 @@ export const Patients = () => {
 
             {/* Allergies & Medical History */}
             <div className="space-y-3">
-              <div className="p-4 rounded-xl bg-rose-50/60 border border-rose-100">
-                <div className="flex items-center gap-2 text-rose-800 font-semibold text-xs mb-1">
-                  <AlertCircle className="w-4 h-4 text-rose-600" />
+              <div className="p-4 rounded-xl bg-rose-50/60 dark:bg-red-950/40 border border-rose-100 dark:border-red-900/40">
+                <div className="flex items-center gap-2 text-rose-800 dark:text-[#F87171] font-semibold text-xs mb-1">
+                  <AlertCircle className="w-4 h-4 text-rose-600 dark:text-[#F87171]" />
                   Known Allergies & Contraindications
                 </div>
-                <p className="text-xs text-rose-700">
+                <p className="text-xs text-rose-700 dark:text-red-300">
                   {selectedPatient.allergies || 'No known drug or food allergies on record.'}
                 </p>
               </div>
 
-              <div className="p-4 rounded-xl bg-slate-50 border border-slate-100">
-                <p className="text-xs font-semibold text-slate-800 mb-1">
+              <div className="p-4 rounded-xl bg-slate-50 dark:bg-slate-800/80 border border-slate-100 dark:border-[#334155]">
+                <p className="text-xs font-semibold text-slate-800 dark:text-[#F1F5F9] mb-1">
                   Medical History & Chronic Conditions
                 </p>
-                <p className="text-xs text-slate-600 leading-relaxed">
+                <p className="text-xs text-slate-600 dark:text-slate-300 leading-relaxed">
                   {selectedPatient.medicalHistory || 'No prior chronic conditions recorded in primary record.'}
                 </p>
               </div>

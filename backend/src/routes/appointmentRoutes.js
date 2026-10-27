@@ -1,89 +1,121 @@
 import { Router } from 'express';
-import { appointments } from '../data/memoryStore.js';
+import prisma from '../config/prisma.js';
 import { sendSuccess, sendError } from '../utils/response.js';
 
 const router = Router();
 
 /**
  * GET /api/appointments
- * Retrieve all appointments (supports ?status=, ?date=)
+ * Retrieve all appointments from PostgreSQL (supports ?status=, ?date=)
  */
-router.get('/', (req, res) => {
-  const { status, date } = req.query;
-  let result = [...appointments];
+router.get('/', async (req, res, next) => {
+  try {
+    const { status, date } = req.query;
+    const where = {};
 
-  if (status) {
-    result = result.filter(
-      (a) => a.status.toLowerCase() === String(status).toLowerCase()
-    );
+    if (status) {
+      where.status = { equals: String(status), mode: 'insensitive' };
+    }
+
+    if (date) {
+      where.date = String(date);
+    }
+
+    const appointments = await prisma.appointment.findMany({
+      where,
+      orderBy: { date: 'asc' },
+    });
+
+    return sendSuccess(res, appointments, `Retrieved ${appointments.length} appointment(s).`);
+  } catch (error) {
+    next(error);
   }
-
-  if (date) {
-    result = result.filter((a) => a.date === String(date));
-  }
-
-  return sendSuccess(res, result, `Retrieved ${result.length} appointment(s).`);
 });
 
 /**
  * GET /api/appointments/:id
- * Retrieve appointment by ID
+ * Retrieve appointment by ID from PostgreSQL
  */
-router.get('/:id', (req, res) => {
-  const apt = appointments.find((a) => a.id === req.params.id);
-  if (!apt) {
-    return sendError(res, `Appointment with ID '${req.params.id}' not found.`, 404);
+router.get('/:id', async (req, res, next) => {
+  try {
+    const apt = await prisma.appointment.findUnique({
+      where: { id: req.params.id },
+      include: { patient: true, doctor: true },
+    });
+
+    if (!apt) {
+      return sendError(res, `Appointment with ID '${req.params.id}' not found.`, 404);
+    }
+
+    return sendSuccess(res, apt, 'Appointment retrieved.');
+  } catch (error) {
+    next(error);
   }
-  return sendSuccess(res, apt, 'Appointment retrieved.');
 });
 
 /**
  * POST /api/appointments
- * Book a new appointment (In-Memory Stage 5 Prototype)
+ * Book a new appointment in PostgreSQL
  */
-router.post('/', (req, res) => {
-  const data = req.body;
-  if (!data || !data.patientName || !data.doctorName) {
-    return sendError(res, 'Patient name and Doctor name are required.', 400);
+router.post('/', async (req, res, next) => {
+  try {
+    const data = req.body;
+    if (!data || !data.patientName || !data.doctorName) {
+      return sendError(res, 'Patient name and Doctor name are required.', 400);
+    }
+
+    const newApt = await prisma.appointment.create({
+      data: {
+        id: data.id || `APT-${Date.now()}`,
+        patientId: data.patientId || null,
+        patientName: data.patientName,
+        patientPhone: data.patientPhone || '',
+        doctorId: data.doctorId || null,
+        doctorName: data.doctorName,
+        department: data.department || 'General Medicine',
+        date: data.date || new Date().toISOString().slice(0, 10),
+        time: data.time || '10:00 AM',
+        room: data.room || 'Consultation Room 1',
+        status: data.status || 'Confirmed',
+        type: data.type || 'Consultation',
+        feeLKR: typeof data.feeLKR === 'number' ? data.feeLKR : 3500,
+      },
+    });
+
+    return sendSuccess(res, newApt, 'Appointment scheduled successfully in PostgreSQL.', 201);
+  } catch (error) {
+    next(error);
   }
-
-  const newApt = {
-    id: `APT-${Date.now()}`,
-    patientId: data.patientId || `PAT-${Date.now()}`,
-    patientName: data.patientName,
-    patientPhone: data.patientPhone || '',
-    doctorId: data.doctorId || '',
-    doctorName: data.doctorName,
-    department: data.department || 'General Medicine',
-    date: data.date || new Date().toISOString().slice(0, 10),
-    time: data.time || '10:00 AM',
-    room: data.room || 'Consultation Room 1',
-    status: data.status || 'Confirmed',
-    type: data.type || 'Consultation',
-    feeLKR: data.feeLKR || 3500,
-  };
-
-  appointments.unshift(newApt);
-  return sendSuccess(res, newApt, 'Appointment scheduled successfully (in-memory).', 201);
 });
 
 /**
  * PATCH & PUT /api/appointments/:id/status
- * Update appointment status (e.g. Confirmed, Completed, Cancelled, Waiting)
+ * Update appointment status in PostgreSQL
  */
-const updateStatus = (req, res) => {
-  const index = appointments.findIndex((a) => a.id === req.params.id);
-  if (index === -1) {
-    return sendError(res, `Appointment with ID '${req.params.id}' not found.`, 404);
-  }
+const updateStatus = async (req, res, next) => {
+  try {
+    const { status } = req.body;
+    if (!status) {
+      return sendError(res, 'Status is required.', 400);
+    }
 
-  const { status } = req.body;
-  if (!status) {
-    return sendError(res, 'Status is required.', 400);
-  }
+    const existing = await prisma.appointment.findUnique({
+      where: { id: req.params.id },
+    });
 
-  appointments[index].status = status;
-  return sendSuccess(res, appointments[index], `Appointment status updated to '${status}'.`);
+    if (!existing) {
+      return sendError(res, `Appointment with ID '${req.params.id}' not found.`, 404);
+    }
+
+    const updated = await prisma.appointment.update({
+      where: { id: req.params.id },
+      data: { status },
+    });
+
+    return sendSuccess(res, updated, `Appointment status updated to '${status}'.`);
+  } catch (error) {
+    next(error);
+  }
 };
 
 router.patch('/:id/status', updateStatus);

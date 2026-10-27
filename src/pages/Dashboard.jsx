@@ -43,16 +43,16 @@ export const Dashboard = () => {
   return (
     <div className="space-y-6">
       {/* Welcome Banner & Quick Action Buttons */}
-      <div className="bg-white rounded-lg border border-[#E2E8F0] p-5 shadow-xs flex flex-col lg:flex-row lg:items-center justify-between gap-5">
+      <div className="bg-white dark:bg-[#1E293B] rounded-lg border border-[#E2E8F0] dark:border-[#334155] p-5 shadow-xs flex flex-col lg:flex-row lg:items-center justify-between gap-5 transition-colors">
         <div>
-          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-blue-50 text-[#2563EB] text-xs font-semibold mb-2">
-            <HeartPulse className="w-3.5 h-3.5 text-[#2563EB]" />
+          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-blue-50 dark:bg-blue-950/60 text-[#2563EB] dark:text-[#60A5FA] text-xs font-semibold mb-2">
+            <HeartPulse className="w-3.5 h-3.5 text-[#2563EB] dark:text-[#60A5FA]" />
             Operational Status: Normal
           </div>
-          <h2 className="text-xl sm:text-2xl font-bold text-[#1E3A5F] tracking-tight">
+          <h2 className="text-xl sm:text-2xl font-bold text-[#1E3A5F] dark:text-[#F1F5F9] tracking-tight">
             MediCare Plus Clinical Administration
           </h2>
-          <p className="text-xs sm:text-sm text-[#64748B] mt-1 max-w-xl">
+          <p className="text-xs sm:text-sm text-[#64748B] dark:text-[#CBD5E1] mt-1 max-w-xl">
             Real-time hospital intelligence overview for {hospitalProfile.name}. Managing patient admissions, specialist consultations, and bed capacities.
           </p>
         </div>
@@ -203,7 +203,7 @@ export const Dashboard = () => {
         >
           <div className="overflow-x-auto">
             <table className="w-full text-left text-xs sm:text-sm">
-              <thead className="bg-[#F7F9FC] border-b border-[#E2E8F0] text-[#64748B] font-semibold uppercase tracking-wider text-[11px]">
+              <thead className="bg-[#F7F9FC] dark:bg-slate-800/90 border-b border-[#E2E8F0] dark:border-[#334155] text-[#64748B] dark:text-[#CBD5E1] font-semibold uppercase tracking-wider text-[11px]">
                 <tr>
                   <th className="px-5 py-3">Patient</th>
                   <th className="px-5 py-3">Doctor & Dept</th>
@@ -211,18 +211,18 @@ export const Dashboard = () => {
                   <th className="px-5 py-3">Status</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-[#E2E8F0]">
+              <tbody className="divide-y divide-[#E2E8F0] dark:divide-[#334155]">
                 {upcomingAppointments.map((apt) => (
-                  <tr key={apt.id} className="hover:bg-blue-50/20 transition-colors">
+                  <tr key={apt.id} className="hover:bg-blue-50/20 dark:hover:bg-slate-700/30 transition-colors">
                     <td className="px-5 py-3.5">
-                      <p className="font-semibold text-[#1E3A5F]">{apt.patientName}</p>
-                      <span className="text-[11px] text-[#64748B]">{apt.patientId}</span>
+                      <p className="font-semibold text-[#1E3A5F] dark:text-[#F1F5F9]">{apt.patientName}</p>
+                      <span className="text-[11px] text-[#64748B] dark:text-[#CBD5E1]">{apt.patientId}</span>
                     </td>
                     <td className="px-5 py-3.5">
-                      <p className="font-medium text-[#334155]">{apt.doctorName}</p>
-                      <span className="text-[11px] text-[#64748B]">{apt.department}</span>
+                      <p className="font-medium text-[#334155] dark:text-[#F1F5F9]">{apt.doctorName}</p>
+                      <span className="text-[11px] text-[#64748B] dark:text-[#CBD5E1]">{apt.department}</span>
                     </td>
-                    <td className="px-5 py-3.5 text-[#334155] font-medium whitespace-nowrap">
+                    <td className="px-5 py-3.5 text-[#334155] dark:text-[#CBD5E1] font-medium whitespace-nowrap">
                       {formatTime(apt.time)}
                     </td>
                     <td className="px-5 py-3.5 whitespace-nowrap">
@@ -253,7 +253,7 @@ export const Dashboard = () => {
         >
           <div className="overflow-x-auto">
             <table className="w-full text-left text-xs sm:text-sm">
-              <thead className="bg-[#F7F9FC] border-b border-[#E2E8F0] text-[#64748B] font-semibold uppercase tracking-wider text-[11px]">
+              <thead className="bg-[#F7F9FC] dark:bg-slate-800/90 border-b border-[#E2E8F0] dark:border-[#334155] text-[#64748B] dark:text-[#CBD5E1] font-semibold uppercase tracking-wider text-[11px]">
                 <tr>
                   <th className="px-5 py-3">Patient</th>
                   <th className="px-5 py-3">Age / Blood</th>
@@ -261,20 +261,20 @@ export const Dashboard = () => {
                   <th className="px-5 py-3">Category</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-[#E2E8F0]">
+              <tbody className="divide-y divide-[#E2E8F0] dark:divide-[#334155]">
                 {recentPatients.map((pat) => (
-                  <tr key={pat.id} className="hover:bg-blue-50/20 transition-colors">
+                  <tr key={pat.id} className="hover:bg-blue-50/20 dark:hover:bg-slate-700/30 transition-colors">
                     <td className="px-5 py-3.5">
-                      <p className="font-semibold text-[#1E3A5F]">{pat.name}</p>
-                      <span className="text-[11px] text-[#64748B]">{pat.id}</span>
+                      <p className="font-semibold text-[#1E3A5F] dark:text-[#F1F5F9]">{pat.name}</p>
+                      <span className="text-[11px] text-[#64748B] dark:text-[#CBD5E1]">{pat.id}</span>
                     </td>
                     <td className="px-5 py-3.5">
-                      <span className="font-medium text-[#334155]">{pat.age} yrs</span>
-                      <span className="text-[11px] ml-1.5 px-1.5 py-0.5 rounded bg-[#F7F9FC] border border-[#E2E8F0] font-semibold text-[#64748B]">
+                      <span className="font-medium text-[#334155] dark:text-[#F1F5F9]">{pat.age} yrs</span>
+                      <span className="text-[11px] ml-1.5 px-1.5 py-0.5 rounded bg-[#F7F9FC] dark:bg-slate-800 border border-[#E2E8F0] dark:border-[#334155] font-semibold text-[#64748B] dark:text-[#CBD5E1]">
                         {pat.bloodGroup}
                       </span>
                     </td>
-                    <td className="px-5 py-3.5 text-[#64748B] text-xs whitespace-nowrap">
+                    <td className="px-5 py-3.5 text-[#64748B] dark:text-[#CBD5E1] text-xs whitespace-nowrap">
                       {formatDate(pat.registeredDate)}
                     </td>
                     <td className="px-5 py-3.5 whitespace-nowrap">
@@ -307,22 +307,22 @@ export const Dashboard = () => {
           {departments.slice(0, 4).map((dept) => (
             <div
               key={dept.id}
-              className="p-4 rounded-lg bg-[#F7F9FC] border border-[#E2E8F0] hover:border-blue-300 transition-colors"
+              className="p-4 rounded-lg bg-[#F7F9FC] dark:bg-slate-800/90 border border-[#E2E8F0] dark:border-[#334155] hover:border-blue-300 dark:hover:border-blue-500 transition-colors"
             >
               <div className="flex items-center justify-between mb-2">
-                <span className="text-xs font-bold text-[#2563EB] bg-blue-50 px-2 py-0.5 rounded-md">
+                <span className="text-xs font-bold text-[#2563EB] dark:text-[#60A5FA] bg-blue-50 dark:bg-blue-900/40 px-2 py-0.5 rounded-md">
                   {dept.code}
                 </span>
-                <span className="text-xs font-semibold text-[#15803D] flex items-center gap-1">
-                  <span className="w-1.5 h-1.5 rounded-full bg-[#15803D]" />
+                <span className="text-xs font-semibold text-[#15803D] dark:text-[#4ADE80] flex items-center gap-1">
+                  <span className="w-1.5 h-1.5 rounded-full bg-[#15803D] dark:bg-[#4ADE80]" />
                   {dept.status}
                 </span>
               </div>
-              <h4 className="font-semibold text-[#1E3A5F] text-sm truncate">{dept.name}</h4>
-              <p className="text-xs text-[#64748B] mt-0.5 truncate">{dept.headOfDepartment}</p>
-              <div className="mt-3 pt-2 border-t border-[#E2E8F0] flex items-center justify-between text-xs text-[#64748B]">
+              <h4 className="font-semibold text-[#1E3A5F] dark:text-[#F1F5F9] text-sm truncate">{dept.name}</h4>
+              <p className="text-xs text-[#64748B] dark:text-[#CBD5E1] mt-0.5 truncate">{dept.headOfDepartment}</p>
+              <div className="mt-3 pt-2 border-t border-[#E2E8F0] dark:border-[#334155] flex items-center justify-between text-xs text-[#64748B] dark:text-[#CBD5E1]">
                 <span>{dept.doctorCount} Doctors</span>
-                <span className="font-semibold text-[#1E3A5F]">{dept.bedCount} Beds</span>
+                <span className="font-semibold text-[#1E3A5F] dark:text-[#F1F5F9]">{dept.bedCount} Beds</span>
               </div>
             </div>
           ))}

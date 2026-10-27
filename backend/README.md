@@ -1,212 +1,140 @@
-# MediCare Plus — Backend (Stage 5)
+# MediCare Plus — Backend (Stage 6: PostgreSQL Database Integration)
 
-Clean, modular Node.js + Express.js backend foundation for the MediCare Plus Hospital Management System.
+Modular Node.js + Express backend integrated with PostgreSQL using Prisma ORM for the MediCare Plus Hospital Management System.
 
 ---
 
-## Stage 5 Scope & Implementation Highlights
+## Stage 6 Scope & Implementation Highlights
 
 - **Framework**: Express.js with native ES modules (`"type": "module"`).
-- **CORS Configuration**: Configured for Vite frontend running on `http://localhost:5173` with credentials support.
-- **Environment Management**: Configured via `dotenv` with `backend/.env.example`. Real `.env` files are excluded from Git via `.gitignore`.
-- **Health Check**: Operational health endpoint at `GET /api/health`.
-- **User Theme Preference API**: Independent per-user Light / Dark theme selection via `GET /api/settings/theme` and `PUT /api/settings/theme` with strict validation.
-- **Modular Route Architecture**: Prepared modular routes for Patients, Doctors, Departments, Appointments, Admissions, Billing/Invoices, Pharmacy/Inventory, Staff, Reports, and Settings.
-- **Error Handling**: Centralized 404 handler and error middleware delivering standardized JSON response envelopes.
-- **Data Persistence Mode**: Temporary in-memory development store (`backend/src/data/memoryStore.js`). **No MongoDB connection is implemented yet** (strictly scheduled for Stage 6).
-- **Authentication Mode**: Temporary development header scaffolding (`devUserResolver.js`). **No production JWT authentication is implemented yet** (strictly scheduled for Stage 7).
+- **Database Engine**: PostgreSQL (tested with PostgreSQL 17 on Windows x64).
+- **ORM**: Prisma ORM (`@prisma/client` and `prisma` CLI).
+- **Database Name**: `MediCare_Plus`.
+- **Relational Data Models**:
+  - `Department`: Clinical and non-clinical departments.
+  - `Doctor`: Doctor profiles and consultation fees, linked to departments.
+  - `Patient`: Comprehensive patient clinical history, contact information, and status.
+  - `Appointment`: Clinical bookings linking patients and attending doctors.
+  - `Admission`: Inpatient ward tracking and bed assignments.
+  - `Invoice`: Financial billing records with transactional payment support.
+  - `Medicine`: Pharmaceutical inventory with transactional stock level updates.
+  - `Staff`: Hospital administrative, nursing, and clinical staff.
+  - `UserSetting`: Isolated per-user appearance preferences (`light` | `dark`).
+  - `HospitalProfile`: Hospital institutional metadata and bed capacity.
+- **Transactional Consistency**: Financial payment settlements and pharmaceutical stock adjustments use atomic `prisma.$transaction(...)` blocks.
+- **Per-User Theme Isolation**: Each user's theme selection is stored in the `user_settings` PostgreSQL table, ensuring independent user preferences.
+- **Health Check & Database Probe**: `GET /api/health` queries PostgreSQL (`SELECT 1`) to report live database connectivity alongside uptime.
+- **Migration & Idempotent Seeding**: Initial database migration applied cleanly with automated, repeatable seeding (upserts avoid duplicate records).
 
 ---
 
-## Getting Started
+## Prerequisites
 
-### 1. Prerequisites
-- Node.js `v20+` (Tested on Node `v24.15.0`)
-- npm `v10+`
+1. **Node.js**: `v20+` (tested on Node `v24.15.0`)
+2. **npm**: `v10+` (tested on npm `11.12.1`)
+3. **PostgreSQL**: PostgreSQL 14+ (tested on PostgreSQL 17 running on localhost:5432)
 
-### 2. Installation
-From the project root:
-```bash
-npm install --prefix backend
-```
-Or directly inside the `backend/` directory:
-```bash
-cd backend
-npm install
-```
+---
 
-### 3. Environment Variables
-Copy `.env.example` to create your local `.env` file:
-```bash
-cp backend/.env.example backend/.env
-```
-Default configuration:
+## Environment Configuration
+
+Create or update `backend/.env` with your PostgreSQL database credentials:
+
 ```env
 PORT=5000
 NODE_ENV=development
 CORS_ORIGIN=http://localhost:5173
+
+# PostgreSQL Database Connection URL (Prisma ORM)
+DATABASE_URL="postgresql://USERNAME:PASSWORD@localhost:5432/MediCare_Plus?schema=public"
 ```
 
-### 4. Running the Backend
-From the project root:
+> **Security Note**: Never commit `backend/.env` to Git. The file is excluded by `.gitignore`. Use `backend/.env.example` as a safe placeholder template.
+
+---
+
+## Database Setup & Prisma Migrations
+
+### 1. Generate Prisma Client
 ```bash
-# Start server in production mode
+cd backend
+npx prisma generate
+```
+
+### 2. Apply Database Migrations
+```bash
+cd backend
+npx prisma migrate dev --name init_postgres_schema
+```
+*(If the `medicare` database does not exist, Prisma will prompt to create it automatically.)*
+
+### 3. Seed Sample Data (Optional / Repeatable)
+The seed script uses `upsert` queries to prevent duplicate entries:
+```bash
+cd backend
+npm run prisma:seed
+# or
+npx prisma db seed
+```
+
+---
+
+## Running the Backend
+
+From the workspace root:
+```bash
+# Start backend in production mode
 npm run server
 
-# Start server in development mode (with native file watcher)
+# Start backend in development mode with automatic reload
 npm run server:dev
 ```
-Or from within `backend/`:
+
+Or from inside `backend/`:
 ```bash
 cd backend
 npm start
-# or
 npm run dev
 ```
 
 ---
 
-## API Endpoints Reference
+## Verification & Testing
 
-All endpoints return a standardized JSON response envelope:
-```json
-{
-  "success": true,
-  "message": "Human readable description",
-  "data": { ... },
-  "timestamp": "2026-10-27T08:15:00.000Z"
-}
+### Run Backend Test Suite
+```bash
+# From workspace root
+npm run test:backend
+
+# Or from inside backend/
+cd backend
+npm test
 ```
-
-### 1. Health & System
-| Method | Endpoint | Description |
-| :--- | :--- | :--- |
-| `GET` | `/api/health` | Service uptime, status, environment, and timestamp |
-
-### 2. User Theme Preference & Settings
-| Method | Endpoint | Description |
-| :--- | :--- | :--- |
-| `GET` | `/api/settings/theme` | Retrieve theme preference for current user (`x-user-id` header or `?userId=`) |
-| `PUT` | `/api/settings/theme` | Update theme preference for current user. Payload: `{"themeMode": "dark" \| "light"}` |
-| `GET` | `/api/settings/hospital` | Retrieve hospital institutional details |
-| `PUT` | `/api/settings/hospital` | Update hospital institutional profile |
-
-### 3. Patients
-| Method | Endpoint | Description |
-| :--- | :--- | :--- |
-| `GET` | `/api/patients` | Retrieve all patients (supports `?search=`) |
-| `GET` | `/api/patients/:id` | Retrieve patient by ID |
-| `POST` | `/api/patients` | Register new patient record |
-| `PUT` | `/api/patients/:id` | Update patient record |
-| `DELETE` | `/api/patients/:id` | Archive patient record |
-
-### 4. Doctors
-| Method | Endpoint | Description |
-| :--- | :--- | :--- |
-| `GET` | `/api/doctors` | Retrieve all doctors (supports `?department=`, `?status=`) |
-| `GET` | `/api/doctors/:id` | Retrieve doctor by ID |
-| `POST` | `/api/doctors` | Register new doctor |
-| `PUT` | `/api/doctors/:id` | Update doctor profile |
-
-### 5. Departments
-| Method | Endpoint | Description |
-| :--- | :--- | :--- |
-| `GET` | `/api/departments` | Retrieve all clinical departments |
-| `GET` | `/api/departments/:id` | Retrieve department by ID |
-
-### 6. Appointments
-| Method | Endpoint | Description |
-| :--- | :--- | :--- |
-| `GET` | `/api/appointments` | Retrieve appointments (supports `?status=`, `?date=`) |
-| `GET` | `/api/appointments/:id` | Retrieve appointment by ID |
-| `POST` | `/api/appointments` | Schedule new appointment |
-| `PUT` / `PATCH` | `/api/appointments/:id/status` | Update appointment status (`Confirmed`, `Completed`, etc.) |
-
-### 7. Admissions
-| Method | Endpoint | Description |
-| :--- | :--- | :--- |
-| `GET` | `/api/admissions` | Retrieve inpatient admissions |
-| `GET` | `/api/admissions/:id` | Retrieve admission by ID |
-| `POST` | `/api/admissions` | Admit a patient |
-| `PUT` | `/api/admissions/:id` | Update admission record (ward, bed, status) |
-
-### 8. Billing & Invoices
-| Method | Endpoint | Description |
-| :--- | :--- | :--- |
-| `GET` | `/api/billing` | Retrieve all invoices (alias: `/api/invoices`) |
-| `GET` | `/api/billing/:id` | Retrieve invoice by ID |
-| `POST` | `/api/billing` | Create new billing invoice |
-| `POST` | `/api/billing/:id/payment` | Record payment against an invoice |
-
-### 9. Pharmacy & Inventory
-| Method | Endpoint | Description |
-| :--- | :--- | :--- |
-| `GET` | `/api/pharmacy` | Retrieve medicines list (alias: `/api/inventory`) |
-| `GET` | `/api/pharmacy/:id` | Retrieve medicine details by ID |
-| `POST` | `/api/pharmacy` | Add new medicine |
-| `PUT` | `/api/pharmacy/:id/stock` | Adjust stock quantity |
-
-### 10. Staff
-| Method | Endpoint | Description |
-| :--- | :--- | :--- |
-| `GET` | `/api/staff` | Retrieve hospital staff list |
-| `GET` | `/api/staff/:id` | Retrieve staff member by ID |
-| `POST` | `/api/staff` | Register new staff member |
-
-### 11. Reports
-| Method | Endpoint | Description |
-| :--- | :--- | :--- |
-| `GET` | `/api/reports/summary` | Executive summary KPI metrics |
-| `GET` | `/api/reports/trends` | Monthly appointment trends dataset |
-| `GET` | `/api/reports/distribution` | Department patient distribution dataset |
+The test suite verifies:
+1. `GET /api/health` returns HTTP 200 with `{ database: { status: 'connected', provider: 'postgresql' } }`.
+2. Per-user theme isolation in PostgreSQL (`doctor-sarah` = `dark`, `nurse-priya` = `light`).
+3. Theme input validation (rejecting non-`light`/`dark` values with HTTP 400).
+4. Full CRUD operations against PostgreSQL for Patients.
+5. Directory reads for Doctors, Departments, Appointments, Admissions, Invoices, Medicines, and Staff.
+6. Transactional payment recording against invoices (`POST /api/billing/:id/payment`).
+7. Transactional stock adjustments for medicines (`PUT /api/pharmacy/:id/stock`).
+8. Executive KPI metrics calculation directly from PostgreSQL collections.
+9. Centralized 404 and 500 error interception.
 
 ---
 
-## Testing the Backend
+## Common Connection & Migration Errors
 
-### Testing with PowerShell or cURL
-
-1. **Verify Health Endpoint**:
-```bash
-curl http://localhost:5000/api/health
-```
-
-2. **Retrieve Current User Theme (Default User)**:
-```bash
-curl http://localhost:5000/api/settings/theme
-```
-
-3. **Update Theme to Dark for User 'doctor-01'**:
-```bash
-curl -X PUT http://localhost:5000/api/settings/theme \
-  -H "Content-Type: application/json" \
-  -H "x-user-id: doctor-01" \
-  -d '{"themeMode": "dark"}'
-```
-
-4. **Verify Independent Theme for User 'nurse-02'**:
-```bash
-curl -X PUT http://localhost:5000/api/settings/theme \
-  -H "Content-Type: application/json" \
-  -H "x-user-id: nurse-02" \
-  -d '{"themeMode": "light"}'
-
-# Verify 'doctor-01' is dark while 'nurse-02' is light
-curl -H "x-user-id: doctor-01" http://localhost:5000/api/settings/theme
-curl -H "x-user-id: nurse-02" http://localhost:5000/api/settings/theme
-```
-
-5. **Test Invalid Theme Mode Validation (Returns 400 Bad Request)**:
-```bash
-curl -X PUT http://localhost:5000/api/settings/theme \
-  -H "Content-Type: application/json" \
-  -d '{"themeMode": "high-contrast"}'
-```
+| Error | Cause | Solution |
+| :--- | :--- | :--- |
+| `fe_sendauth: no password supplied` | PostgreSQL requires password authentication but password was omitted. | Ensure `DATABASE_URL` in `backend/.env` includes the correct password: `postgresql://user:password@localhost:5432/MediCare_Plus?schema=public`. |
+| `Database MediCare_Plus does not exist` | Database has not been initialized yet in pgAdmin or PostgreSQL. | Create the database in pgAdmin or run `CREATE DATABASE "MediCare_Plus";` in `psql`, then apply migrations. |
+| `Environment variable not found: DATABASE_URL` | Prisma command was executed outside `backend/` where `.env` is located. | Change directory to `backend/` before running Prisma commands, or pass `--schema=backend/prisma/schema.prisma`. |
+| `ECONNREFUSED 127.0.0.1:5432` | PostgreSQL service is stopped or port 5432 is blocked. | Verify that the Windows service `postgresql-x64-17` is running (`Get-Service *postgres*`). |
 
 ---
 
 ## Roadmap Alignment (Remaining Stages)
 
-- **Stage 6 — Database Integration**: Connect to MongoDB via Mongoose, implement Schemas & Models, and migrate in-memory stores to persistent collections.
 - **Stage 7 — Authentication & Authorization**: Implement JWT authentication, bcrypt password hashing, login/register endpoints, and role-based access control (Admin, Doctor, Nurse, Staff). Replace `devUserResolver` with secure token verification.
-- **Stage 8 — Frontend-Backend Integration**: Wire React frontend service modules (`api.js`, `themeService.js`, etc.) to live Express endpoints, replacing mock delays with async HTTP client calls.
+- **Stage 8 — Frontend-Backend Integration**: Wire React frontend service modules (`src/services/*.js`) to live Express endpoints, replacing mock delays with async HTTP client calls.

@@ -204,7 +204,7 @@ export const Doctors = () => {
       header: 'Consultation Fee',
       key: 'consultationFee',
       render: (row) => (
-        <span className="font-semibold text-xs text-slate-900">
+        <span className="font-semibold text-xs text-slate-900 dark:text-[#F1F5F9]">
           {formatLKR(row.consultationFee)}
         </span>
       ),
@@ -223,21 +223,21 @@ export const Doctors = () => {
         <div className="flex items-center justify-end gap-1" onClick={(e) => e.stopPropagation()}>
           <button
             onClick={() => handleOpenView(row)}
-            className="p-1.5 rounded-lg text-[#64748B] hover:text-[#2563EB] hover:bg-blue-50 transition-colors"
+            className="p-1.5 rounded-lg text-[#64748B] dark:text-[#CBD5E1] hover:text-[#2563EB] dark:hover:text-[#60A5FA] hover:bg-blue-50 dark:hover:bg-blue-900/40 transition-colors"
             title="View Details"
           >
             <Eye className="w-4 h-4" />
           </button>
           <button
             onClick={() => handleOpenEdit(row)}
-            className="p-1.5 rounded-lg text-[#64748B] hover:text-[#0F766E] hover:bg-teal-50 transition-colors"
+            className="p-1.5 rounded-lg text-[#64748B] dark:text-[#CBD5E1] hover:text-[#0F766E] dark:hover:text-[#2DD4BF] hover:bg-teal-50 dark:hover:bg-teal-900/40 transition-colors"
             title="Edit Doctor"
           >
             <Edit2 className="w-4 h-4" />
           </button>
           <button
             onClick={() => handleOpenDelete(row)}
-            className="p-1.5 rounded-lg text-[#64748B] hover:text-[#B91C1C] hover:bg-red-50 transition-colors"
+            className="p-1.5 rounded-lg text-[#64748B] dark:text-[#CBD5E1] hover:text-[#B91C1C] dark:hover:text-[#F87171] hover:bg-red-50 dark:hover:bg-red-950/40 transition-colors"
             title="Delete Doctor"
           >
             <Trash2 className="w-4 h-4" />
@@ -252,20 +252,20 @@ export const Doctors = () => {
       {/* Page Header */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
-          <h2 className="text-xl font-bold text-[#1E3A5F] tracking-tight">Doctor Directory</h2>
-          <p className="text-xs sm:text-sm text-[#64748B] mt-0.5">
+          <h2 className="text-xl font-bold text-[#1E3A5F] dark:text-[#F1F5F9] tracking-tight">Doctor Directory</h2>
+          <p className="text-xs sm:text-sm text-[#64748B] dark:text-[#CBD5E1] mt-0.5">
             Specialist consultants, clinical schedules, and department affiliations
           </p>
         </div>
         <div className="flex items-center gap-2">
           {/* View Mode Toggle */}
-          <div className="flex items-center bg-white border border-[#E2E8F0] rounded-lg p-1">
+          <div className="flex items-center bg-white dark:bg-[#1E293B] border border-[#E2E8F0] dark:border-[#334155] rounded-lg p-1">
             <button
               onClick={() => setViewMode('grid')}
               className={`p-1.5 rounded-lg transition-colors ${
                 viewMode === 'grid'
-                  ? 'bg-blue-50 text-[#2563EB]'
-                  : 'text-[#64748B] hover:text-[#1E3A5F]'
+                  ? 'bg-blue-50 dark:bg-slate-700 text-[#2563EB] dark:text-[#60A5FA]'
+                  : 'text-[#64748B] dark:text-[#CBD5E1] hover:text-[#1E3A5F] dark:hover:text-[#F1F5F9]'
               }`}
               title="Card Grid View"
             >
@@ -275,8 +275,8 @@ export const Doctors = () => {
               onClick={() => setViewMode('table')}
               className={`p-1.5 rounded-lg transition-colors ${
                 viewMode === 'table'
-                  ? 'bg-blue-50 text-[#2563EB]'
-                  : 'text-[#64748B] hover:text-[#1E3A5F]'
+                  ? 'bg-blue-50 dark:bg-slate-700 text-[#2563EB] dark:text-[#60A5FA]'
+                  : 'text-[#64748B] dark:text-[#CBD5E1] hover:text-[#1E3A5F] dark:hover:text-[#F1F5F9]'
               }`}
               title="Table View"
             >
@@ -291,7 +291,7 @@ export const Doctors = () => {
       </div>
 
       {/* Filter and Search Bar */}
-      <div className="bg-white p-4 rounded-lg border border-[#E2E8F0] shadow-xs flex flex-col md:flex-row md:items-center justify-between gap-3">
+      <div className="bg-white dark:bg-[#1E293B] p-4 rounded-lg border border-[#E2E8F0] dark:border-[#334155] shadow-xs flex flex-col md:flex-row md:items-center justify-between gap-3 transition-colors">
         <div className="flex-1 max-w-md">
           <SearchInput
             value={searchQuery}
@@ -301,7 +301,7 @@ export const Doctors = () => {
         </div>
 
         <div className="flex flex-wrap items-center gap-2.5">
-          <div className="flex items-center gap-1.5 text-xs text-[#64748B]">
+          <div className="flex items-center gap-1.5 text-xs text-[#64748B] dark:text-[#CBD5E1]">
             <Filter className="w-3.5 h-3.5" />
             <span>Filters:</span>
           </div>
@@ -309,7 +309,7 @@ export const Doctors = () => {
           <select
             value={departmentFilter}
             onChange={(e) => setDepartmentFilter(e.target.value)}
-            className="text-xs bg-[#F7F9FC] border border-[#E2E8F0] rounded-lg px-3 py-2 text-[#334155] font-medium focus:outline-none focus:ring-2 focus:ring-[#2563EB]/20 focus:border-[#2563EB]"
+            className="text-xs bg-[#F7F9FC] dark:bg-slate-800 border border-[#E2E8F0] dark:border-[#334155] rounded-lg px-3 py-2 text-[#334155] dark:text-[#F1F5F9] font-medium focus:outline-none focus:ring-2 focus:ring-[#2563EB]/20 dark:focus:ring-[#60A5FA]/20 focus:border-[#2563EB] dark:focus:border-[#60A5FA]"
           >
             <option value="ALL">All Departments</option>
             {departments.map((d) => (
@@ -322,7 +322,7 @@ export const Doctors = () => {
           <select
             value={availabilityFilter}
             onChange={(e) => setAvailabilityFilter(e.target.value)}
-            className="text-xs bg-[#F7F9FC] border border-[#E2E8F0] rounded-lg px-3 py-2 text-[#334155] font-medium focus:outline-none focus:ring-2 focus:ring-[#2563EB]/20 focus:border-[#2563EB]"
+            className="text-xs bg-[#F7F9FC] dark:bg-slate-800 border border-[#E2E8F0] dark:border-[#334155] rounded-lg px-3 py-2 text-[#334155] dark:text-[#F1F5F9] font-medium focus:outline-none focus:ring-2 focus:ring-[#2563EB]/20 dark:focus:ring-[#60A5FA]/20 focus:border-[#2563EB] dark:focus:border-[#60A5FA]"
           >
             <option value="ALL">All Availabilities</option>
             <option value="Available">Available</option>
@@ -338,7 +338,7 @@ export const Doctors = () => {
                 setDepartmentFilter('ALL');
                 setAvailabilityFilter('ALL');
               }}
-              className="text-xs text-[#2563EB] hover:text-[#1D4ED8] font-medium px-2 py-1"
+              className="text-xs text-[#2563EB] dark:text-[#60A5FA] hover:underline font-medium px-2 py-1"
             >
               Reset
             </button>
@@ -353,13 +353,13 @@ export const Doctors = () => {
             {filteredDoctors.map((doc) => (
               <div
                 key={doc.id}
-                className="bg-white rounded-lg border border-[#E2E8F0] p-5 shadow-xs transition-colors flex flex-col justify-between"
+                className="bg-white dark:bg-[#1E293B] rounded-lg border border-[#E2E8F0] dark:border-[#334155] p-5 shadow-xs transition-colors flex flex-col justify-between"
               >
                 <div>
                   {/* Header snippet */}
                   <div className="flex items-start justify-between gap-3 mb-3">
                     <div className="flex items-center gap-3">
-                      <div className="w-12 h-12 rounded-lg bg-blue-50 text-[#2563EB] flex items-center justify-center font-bold text-sm border border-blue-200 shrink-0">
+                      <div className="w-12 h-12 rounded-lg bg-blue-50 dark:bg-slate-700 text-[#2563EB] dark:text-[#60A5FA] flex items-center justify-center font-bold text-sm border border-blue-200 dark:border-blue-800/40 shrink-0">
                         {doc.name
                           .replace('Dr. ', '')
                           .split(' ')
@@ -368,33 +368,33 @@ export const Doctors = () => {
                           .substring(0, 2)}
                       </div>
                       <div>
-                        <h3 className="font-bold text-[#1E3A5F] text-sm">{doc.name}</h3>
-                        <p className="text-xs text-[#64748B]">{doc.title}</p>
+                        <h3 className="font-bold text-[#1E3A5F] dark:text-[#F1F5F9] text-sm">{doc.name}</h3>
+                        <p className="text-xs text-[#64748B] dark:text-[#CBD5E1]">{doc.title}</p>
                       </div>
                     </div>
                     <Badge status={doc.status} size="sm" />
                   </div>
 
-                  <div className="space-y-2 text-xs text-[#334155] mt-4 pt-3 border-t border-[#E2E8F0]">
+                  <div className="space-y-2 text-xs text-[#334155] dark:text-[#CBD5E1] mt-4 pt-3 border-t border-[#E2E8F0] dark:border-[#334155]">
                     <div className="flex items-center gap-2">
-                      <Award className="w-3.5 h-3.5 text-[#2563EB] shrink-0" />
-                      <span className="font-medium text-[#1E3A5F]">{doc.department}</span>
-                      <span className="text-[#64748B]">({doc.specialty})</span>
+                      <Award className="w-3.5 h-3.5 text-[#2563EB] dark:text-[#60A5FA] shrink-0" />
+                      <span className="font-medium text-[#1E3A5F] dark:text-[#F1F5F9]">{doc.department}</span>
+                      <span className="text-[#64748B] dark:text-slate-400">({doc.specialty})</span>
                     </div>
 
                     <div className="flex items-center gap-2">
-                      <Clock className="w-3.5 h-3.5 text-[#0F766E] shrink-0" />
+                      <Clock className="w-3.5 h-3.5 text-[#0F766E] dark:text-[#2DD4BF] shrink-0" />
                       <span className="truncate">{doc.availability}</span>
                     </div>
 
                     <div className="flex items-center gap-2">
-                      <MapPin className="w-3.5 h-3.5 text-[#64748B] shrink-0" />
+                      <MapPin className="w-3.5 h-3.5 text-[#64748B] dark:text-slate-400 shrink-0" />
                       <span>{doc.roomNumber}</span>
                     </div>
 
-                    <div className="flex items-center justify-between pt-2 border-t border-[#E2E8F0]">
-                      <span className="text-[#64748B]">Consultation Fee</span>
-                      <span className="font-bold text-[#1E3A5F] text-xs">
+                    <div className="flex items-center justify-between pt-2 border-t border-[#E2E8F0] dark:border-[#334155]">
+                      <span className="text-[#64748B] dark:text-[#CBD5E1]">Consultation Fee</span>
+                      <span className="font-bold text-[#1E3A5F] dark:text-[#F1F5F9] text-xs">
                         {formatLKR(doc.consultationFee)}
                       </span>
                     </div>
@@ -402,24 +402,24 @@ export const Doctors = () => {
                 </div>
 
                 {/* Action buttons */}
-                <div className="mt-5 pt-3 border-t border-[#E2E8F0] flex items-center justify-between">
-                  <span className="text-[11px] text-[#64748B] font-mono">{doc.id}</span>
+                <div className="mt-5 pt-3 border-t border-[#E2E8F0] dark:border-[#334155] flex items-center justify-between">
+                  <span className="text-[11px] text-[#64748B] dark:text-slate-400 font-mono">{doc.id}</span>
                   <div className="flex items-center gap-1.5">
                     <button
                       onClick={() => handleOpenView(doc)}
-                      className="px-2.5 py-1 text-xs font-semibold text-[#2563EB] bg-blue-50 hover:bg-blue-100 rounded-lg transition-colors"
+                      className="px-2.5 py-1 text-xs font-semibold text-[#2563EB] dark:text-[#60A5FA] bg-blue-50 dark:bg-blue-900/40 hover:bg-blue-100 dark:hover:bg-blue-900/60 rounded-lg transition-colors"
                     >
                       View
                     </button>
                     <button
                       onClick={() => handleOpenEdit(doc)}
-                      className="px-2.5 py-1 text-xs font-semibold text-[#334155] bg-[#F7F9FC] border border-[#E2E8F0] hover:bg-slate-100 rounded-lg transition-colors"
+                      className="px-2.5 py-1 text-xs font-semibold text-[#334155] dark:text-[#CBD5E1] bg-[#F7F9FC] dark:bg-slate-800 border border-[#E2E8F0] dark:border-[#334155] hover:bg-slate-100 dark:hover:bg-slate-700 rounded-lg transition-colors"
                     >
                       Edit
                     </button>
                     <button
                       onClick={() => handleOpenDelete(doc)}
-                      className="p-1 text-xs text-[#64748B] hover:text-[#B91C1C] hover:bg-red-50 rounded-lg transition-colors"
+                      className="p-1 text-xs text-[#64748B] dark:text-[#CBD5E1] hover:text-[#B91C1C] dark:hover:text-[#F87171] hover:bg-red-50 dark:hover:bg-red-950/40 rounded-lg transition-colors"
                       title="Delete Doctor"
                     >
                       <Trash2 className="w-4 h-4" />
@@ -430,12 +430,12 @@ export const Doctors = () => {
             ))}
           </div>
         ) : (
-          <div className="bg-white rounded-lg border border-[#E2E8F0] p-12 text-center shadow-xs">
-            <div className="w-12 h-12 rounded-lg bg-[#F7F9FC] text-[#64748B] flex items-center justify-center border border-[#E2E8F0] mx-auto mb-3">
+          <div className="bg-white dark:bg-[#1E293B] rounded-lg border border-[#E2E8F0] dark:border-[#334155] p-12 text-center shadow-xs">
+            <div className="w-12 h-12 rounded-lg bg-[#F7F9FC] dark:bg-slate-800 text-[#64748B] dark:text-[#CBD5E1] flex items-center justify-center border border-[#E2E8F0] dark:border-[#334155] mx-auto mb-3">
               <Inbox className="w-6 h-6" />
             </div>
-            <p className="text-sm font-semibold text-[#1E3A5F]">No doctors found</p>
-            <p className="text-xs text-[#64748B] max-w-sm mx-auto mt-1">
+            <p className="text-sm font-semibold text-[#1E3A5F] dark:text-[#F1F5F9]">No doctors found</p>
+            <p className="text-xs text-[#64748B] dark:text-[#CBD5E1] max-w-sm mx-auto mt-1">
               No doctors matching your filters or search terms were found.
             </p>
           </div>
@@ -466,8 +466,8 @@ export const Doctors = () => {
       >
         {selectedDoctor && (
           <div className="space-y-4">
-            <div className="flex items-center gap-4 p-4 rounded-lg bg-teal-50 border border-teal-100">
-              <div className="w-14 h-14 rounded-lg bg-teal-600 text-white flex items-center justify-center font-bold text-lg shadow-sm">
+            <div className="flex items-center gap-4 p-4 rounded-lg bg-teal-50 dark:bg-slate-700/60 border border-teal-100 dark:border-slate-600">
+              <div className="w-14 h-14 rounded-lg bg-teal-600 dark:bg-teal-700 text-white flex items-center justify-center font-bold text-lg shadow-sm">
                 {selectedDoctor.name
                   .replace('Dr. ', '')
                   .split(' ')
@@ -477,37 +477,37 @@ export const Doctors = () => {
               </div>
               <div>
                 <div className="flex items-center gap-2">
-                  <h4 className="text-base font-bold text-slate-900">{selectedDoctor.name}</h4>
+                  <h4 className="text-base font-bold text-slate-900 dark:text-[#F1F5F9]">{selectedDoctor.name}</h4>
                   <Badge status={selectedDoctor.status} size="sm" />
                 </div>
-                <p className="text-xs text-slate-600 mt-0.5">{selectedDoctor.title}</p>
-                <p className="text-xs font-semibold text-teal-700 mt-1">
+                <p className="text-xs text-slate-600 dark:text-[#CBD5E1] mt-0.5">{selectedDoctor.title}</p>
+                <p className="text-xs font-semibold text-teal-700 dark:text-[#2DD4BF] mt-1">
                   {selectedDoctor.department} — {selectedDoctor.specialty}
                 </p>
               </div>
             </div>
 
-            <div className="p-4 rounded-xl bg-slate-50 border border-slate-100 space-y-2.5 text-xs">
-              <p className="text-slate-700">
+            <div className="p-4 rounded-xl bg-slate-50 dark:bg-slate-800/80 border border-slate-100 dark:border-[#334155] space-y-2.5 text-xs">
+              <p className="text-slate-700 dark:text-[#CBD5E1]">
                 <strong>Qualifications:</strong> {selectedDoctor.qualification}
               </p>
-              <p className="text-slate-700">
+              <p className="text-slate-700 dark:text-[#CBD5E1]">
                 <strong>Clinical Experience:</strong> {selectedDoctor.experience}
               </p>
-              <p className="text-slate-700">
+              <p className="text-slate-700 dark:text-[#CBD5E1]">
                 <strong>Consulting Hours:</strong> {selectedDoctor.availability}
               </p>
-              <p className="text-slate-700">
+              <p className="text-slate-700 dark:text-[#CBD5E1]">
                 <strong>Clinic / Room:</strong> {selectedDoctor.roomNumber}
               </p>
-              <p className="text-slate-700">
+              <p className="text-slate-700 dark:text-[#CBD5E1]">
                 <strong>Standard Consultation Fee:</strong>{' '}
-                <span className="font-bold text-slate-900">{formatLKR(selectedDoctor.consultationFee)}</span>
+                <span className="font-bold text-slate-900 dark:text-[#F1F5F9]">{formatLKR(selectedDoctor.consultationFee)}</span>
               </p>
-              <p className="text-slate-700">
+              <p className="text-slate-700 dark:text-[#CBD5E1]">
                 <strong>Direct Phone:</strong> {selectedDoctor.phone}
               </p>
-              <p className="text-slate-700">
+              <p className="text-slate-700 dark:text-[#CBD5E1]">
                 <strong>Institutional Email:</strong> {selectedDoctor.email}
               </p>
             </div>

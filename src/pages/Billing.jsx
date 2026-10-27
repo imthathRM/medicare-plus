@@ -191,8 +191,8 @@ export const Billing = () => {
       key: 'invoiceNumber',
       render: (row) => (
         <div>
-          <span className="font-mono text-xs font-bold text-[#1E3A5F]">{row.invoiceNumber}</span>
-          <p className="text-[11px] text-[#64748B] font-mono">{row.id}</p>
+          <span className="font-mono text-xs font-bold text-[#1E3A5F] dark:text-[#F1F5F9]">{row.invoiceNumber}</span>
+          <p className="text-[11px] text-[#64748B] dark:text-slate-400 font-mono">{row.id}</p>
         </div>
       ),
     },
@@ -201,8 +201,8 @@ export const Billing = () => {
       key: 'patientName',
       render: (row) => (
         <div>
-          <p className="font-semibold text-[#1E3A5F] text-xs sm:text-sm">{row.patientName}</p>
-          <span className="text-[11px] text-[#64748B] font-mono">{row.patientId}</span>
+          <p className="font-semibold text-[#1E3A5F] dark:text-[#F1F5F9] text-xs sm:text-sm">{row.patientName}</p>
+          <span className="text-[11px] text-[#64748B] dark:text-slate-400 font-mono">{row.patientId}</span>
         </div>
       ),
     },
@@ -210,9 +210,9 @@ export const Billing = () => {
       header: 'Invoice Date',
       key: 'date',
       render: (row) => (
-        <div className="text-xs text-[#64748B] whitespace-nowrap">
-          <p className="font-medium text-[#334155]">{formatDate(row.date)}</p>
-          <span className="text-[10px] text-[#64748B]">Due: {formatDate(row.dueDate)}</span>
+        <div className="text-xs text-[#64748B] dark:text-[#CBD5E1] whitespace-nowrap">
+          <p className="font-medium text-[#334155] dark:text-[#F1F5F9]">{formatDate(row.date)}</p>
+          <span className="text-[10px] text-[#64748B] dark:text-slate-400">Due: {formatDate(row.dueDate)}</span>
         </div>
       ),
     },
@@ -221,11 +221,11 @@ export const Billing = () => {
       key: 'totalAmount',
       render: (row) => (
         <div>
-          <span className="font-bold text-[#1E3A5F] text-xs sm:text-sm">
+          <span className="font-bold text-[#1E3A5F] dark:text-[#F1F5F9] text-xs sm:text-sm">
             {formatLKR(row.totalAmount)}
           </span>
           {row.paidAmount > 0 && row.paidAmount < row.totalAmount && (
-            <p className="text-[11px] text-[#B45309] font-medium">
+            <p className="text-[11px] text-[#B45309] dark:text-[#FBBF24] font-medium">
               Paid: {formatLKR(row.paidAmount)}
             </p>
           )}
@@ -246,7 +246,7 @@ export const Billing = () => {
         <div className="flex items-center justify-end gap-1" onClick={(e) => e.stopPropagation()}>
           <button
             onClick={() => handleOpenView(row)}
-            className="p-1.5 rounded-lg text-[#64748B] hover:text-[#2563EB] hover:bg-blue-50 transition-colors"
+            className="p-1.5 rounded-lg text-[#64748B] dark:text-[#CBD5E1] hover:text-[#2563EB] dark:hover:text-[#60A5FA] hover:bg-blue-50 dark:hover:bg-blue-900/40 transition-colors"
             title="View Details / Print"
           >
             <Eye className="w-4 h-4" />
@@ -254,7 +254,7 @@ export const Billing = () => {
           {row.status !== 'Paid' && (
             <button
               onClick={() => handleOpenPayment(row)}
-              className="p-1.5 rounded-lg text-[#64748B] hover:text-[#15803D] hover:bg-emerald-50 transition-colors"
+              className="p-1.5 rounded-lg text-[#64748B] dark:text-[#CBD5E1] hover:text-[#15803D] dark:hover:text-[#4ADE80] hover:bg-emerald-50 dark:hover:bg-emerald-950/40 transition-colors"
               title="Record Payment"
             >
               <CreditCard className="w-4 h-4" />
@@ -270,8 +270,8 @@ export const Billing = () => {
       {/* Page Header */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
-          <h2 className="text-xl font-bold text-[#1E3A5F] tracking-tight">Hospital Invoicing & Billing</h2>
-          <p className="text-xs sm:text-sm text-[#64748B] mt-0.5">
+          <h2 className="text-xl font-bold text-[#1E3A5F] dark:text-[#F1F5F9] tracking-tight">Hospital Invoicing & Billing</h2>
+          <p className="text-xs sm:text-sm text-[#64748B] dark:text-[#CBD5E1] mt-0.5">
             Generate patient billing invoices, process settlements (in LKR), and track insurance claims
           </p>
         </div>
@@ -281,7 +281,7 @@ export const Billing = () => {
       </div>
 
       {/* Filter and Search Bar */}
-      <div className="bg-white p-4 rounded-lg border border-[#E2E8F0] shadow-xs flex flex-col md:flex-row md:items-center justify-between gap-3">
+      <div className="bg-white dark:bg-[#1E293B] p-4 rounded-lg border border-[#E2E8F0] dark:border-[#334155] shadow-xs flex flex-col md:flex-row md:items-center justify-between gap-3 transition-colors">
         <div className="flex-1 max-w-md">
           <SearchInput
             value={searchQuery}
@@ -291,7 +291,7 @@ export const Billing = () => {
         </div>
 
         <div className="flex flex-wrap items-center gap-2.5">
-          <div className="flex items-center gap-1.5 text-xs text-[#64748B]">
+          <div className="flex items-center gap-1.5 text-xs text-[#64748B] dark:text-[#CBD5E1]">
             <Filter className="w-3.5 h-3.5" />
             <span>Status:</span>
           </div>
@@ -299,7 +299,7 @@ export const Billing = () => {
           <select
             value={statusFilter}
             onChange={(e) => setStatusFilter(e.target.value)}
-            className="text-xs bg-[#F7F9FC] border border-[#E2E8F0] rounded-lg px-3 py-2 text-[#334155] font-medium focus:outline-none focus:ring-2 focus:ring-[#2563EB]/20 focus:border-[#2563EB]"
+            className="text-xs bg-[#F7F9FC] dark:bg-slate-800 border border-[#E2E8F0] dark:border-[#334155] rounded-lg px-3 py-2 text-[#334155] dark:text-[#F1F5F9] font-medium focus:outline-none focus:ring-2 focus:ring-[#2563EB]/20 dark:focus:ring-[#60A5FA]/20 focus:border-[#2563EB] dark:focus:border-[#60A5FA]"
           >
             <option value="ALL">All Invoices</option>
             <option value="Paid">Paid</option>
@@ -314,7 +314,7 @@ export const Billing = () => {
                 setSearchQuery('');
                 setStatusFilter('ALL');
               }}
-              className="text-xs text-[#2563EB] hover:text-[#1D4ED8] font-medium px-2 py-1"
+              className="text-xs text-[#2563EB] dark:text-[#60A5FA] hover:underline font-medium px-2 py-1"
             >
               Reset
             </button>
@@ -360,42 +360,42 @@ export const Billing = () => {
         {selectedInvoice && (
           <div className="space-y-6 text-xs print-card p-1">
             {/* Invoice Header */}
-            <div className="flex items-start justify-between border-b border-slate-200 pb-4">
+            <div className="flex items-start justify-between border-b border-slate-200 dark:border-[#334155] pb-4">
               <div>
-                <h3 className="text-lg font-bold text-slate-900 tracking-tight">
+                <h3 className="text-lg font-bold text-slate-900 dark:text-[#F1F5F9] tracking-tight">
                   {hospitalProfile.name}
                 </h3>
-                <p className="text-slate-500 text-xs mt-0.5">{hospitalProfile.address}</p>
-                <p className="text-slate-500 text-xs">Hotline: {hospitalProfile.hotline} • Reg: {hospitalProfile.registrationNumber}</p>
-                <p className="text-slate-500 text-xs">Tax ID: {hospitalProfile.taxId}</p>
+                <p className="text-slate-500 dark:text-slate-400 text-xs mt-0.5">{hospitalProfile.address}</p>
+                <p className="text-slate-500 dark:text-slate-400 text-xs">Hotline: {hospitalProfile.hotline} • Reg: {hospitalProfile.registrationNumber}</p>
+                <p className="text-slate-500 dark:text-slate-400 text-xs">Tax ID: {hospitalProfile.taxId}</p>
               </div>
               <div className="text-right">
                 <Badge status={selectedInvoice.status} size="md" />
-                <p className="text-sm font-mono font-bold text-slate-900 mt-2">
+                <p className="text-sm font-mono font-bold text-slate-900 dark:text-[#F1F5F9] mt-2">
                   {selectedInvoice.invoiceNumber}
                 </p>
-                <p className="text-slate-500 text-[11px]">Issued: {formatDate(selectedInvoice.date)}</p>
-                <p className="text-slate-500 text-[11px]">Due: {formatDate(selectedInvoice.dueDate)}</p>
+                <p className="text-slate-500 dark:text-slate-400 text-[11px]">Issued: {formatDate(selectedInvoice.date)}</p>
+                <p className="text-slate-500 dark:text-slate-400 text-[11px]">Due: {formatDate(selectedInvoice.dueDate)}</p>
               </div>
             </div>
 
             {/* Billed To */}
-            <div className="p-4 rounded-xl bg-slate-50 border border-slate-100 flex justify-between">
+            <div className="p-4 rounded-xl bg-slate-50 dark:bg-slate-800/80 border border-slate-100 dark:border-[#334155] flex justify-between">
               <div>
-                <p className="text-[11px] font-bold text-slate-500 uppercase tracking-wider">Billed To (Patient)</p>
-                <h4 className="text-sm font-bold text-slate-900 mt-0.5">{selectedInvoice.patientName}</h4>
-                <p className="text-slate-500 font-mono text-[11px] mt-0.5">Patient ID: {selectedInvoice.patientId}</p>
+                <p className="text-[11px] font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider">Billed To (Patient)</p>
+                <h4 className="text-sm font-bold text-slate-900 dark:text-[#F1F5F9] mt-0.5">{selectedInvoice.patientName}</h4>
+                <p className="text-slate-500 dark:text-slate-400 font-mono text-[11px] mt-0.5">Patient ID: {selectedInvoice.patientId}</p>
               </div>
               <div className="text-right">
-                <p className="text-[11px] font-bold text-slate-500 uppercase tracking-wider">Payment Method</p>
-                <p className="text-slate-800 font-medium mt-0.5">{selectedInvoice.paymentMethod || 'Cash / Credit'}</p>
+                <p className="text-[11px] font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider">Payment Method</p>
+                <p className="text-slate-800 dark:text-[#CBD5E1] font-medium mt-0.5">{selectedInvoice.paymentMethod || 'Cash / Credit'}</p>
               </div>
             </div>
 
             {/* Line Items Table */}
-            <div className="border border-slate-200 rounded-xl overflow-hidden">
+            <div className="border border-slate-200 dark:border-[#334155] rounded-xl overflow-hidden">
               <table className="w-full text-left">
-                <thead className="bg-slate-50 text-[11px] font-semibold text-slate-600 uppercase border-b border-slate-200">
+                <thead className="bg-slate-50 dark:bg-slate-800/90 text-[11px] font-semibold text-slate-600 dark:text-[#CBD5E1] uppercase border-b border-slate-200 dark:border-[#334155]">
                   <tr>
                     <th className="px-4 py-2.5">Service Description</th>
                     <th className="px-4 py-2.5 text-center">Qty</th>
@@ -403,13 +403,13 @@ export const Billing = () => {
                     <th className="px-4 py-2.5 text-right">Amount (LKR)</th>
                   </tr>
                 </thead>
-                <tbody className="divide-y divide-slate-100">
+                <tbody className="divide-y divide-slate-100 dark:divide-[#334155]">
                   {selectedInvoice.items?.map((item, idx) => (
                     <tr key={idx}>
-                      <td className="px-4 py-2.5 font-medium text-slate-800">{item.description}</td>
-                      <td className="px-4 py-2.5 text-center text-slate-600">{item.quantity}</td>
-                      <td className="px-4 py-2.5 text-right text-slate-600">{formatLKR(item.unitPrice)}</td>
-                      <td className="px-4 py-2.5 text-right font-semibold text-slate-900">{formatLKR(item.amount)}</td>
+                      <td className="px-4 py-2.5 font-medium text-slate-800 dark:text-[#F1F5F9]">{item.description}</td>
+                      <td className="px-4 py-2.5 text-center text-slate-600 dark:text-[#CBD5E1]">{item.quantity}</td>
+                      <td className="px-4 py-2.5 text-right text-slate-600 dark:text-[#CBD5E1]">{formatLKR(item.unitPrice)}</td>
+                      <td className="px-4 py-2.5 text-right font-semibold text-slate-900 dark:text-[#F1F5F9]">{formatLKR(item.amount)}</td>
                     </tr>
                   ))}
                 </tbody>
@@ -419,25 +419,25 @@ export const Billing = () => {
             {/* Totals Summary */}
             <div className="flex justify-end">
               <div className="w-64 space-y-2 text-xs">
-                <div className="flex justify-between text-slate-600">
+                <div className="flex justify-between text-slate-600 dark:text-[#CBD5E1]">
                   <span>Subtotal:</span>
-                  <span className="font-medium text-slate-800">{formatLKR(selectedInvoice.subtotal || selectedInvoice.totalAmount)}</span>
+                  <span className="font-medium text-slate-800 dark:text-[#F1F5F9]">{formatLKR(selectedInvoice.subtotal || selectedInvoice.totalAmount)}</span>
                 </div>
                 {selectedInvoice.discount > 0 && (
-                  <div className="flex justify-between text-emerald-600">
+                  <div className="flex justify-between text-emerald-600 dark:text-[#4ADE80]">
                     <span>Discount:</span>
                     <span>-{formatLKR(selectedInvoice.discount)}</span>
                   </div>
                 )}
-                <div className="flex justify-between text-sm font-bold text-slate-900 border-t border-slate-200 pt-2">
+                <div className="flex justify-between text-sm font-bold text-slate-900 dark:text-[#F1F5F9] border-t border-slate-200 dark:border-[#334155] pt-2">
                   <span>Total Amount:</span>
-                  <span className="text-sky-700">{formatLKR(selectedInvoice.totalAmount)}</span>
+                  <span className="text-sky-700 dark:text-[#60A5FA]">{formatLKR(selectedInvoice.totalAmount)}</span>
                 </div>
-                <div className="flex justify-between text-xs text-slate-600">
+                <div className="flex justify-between text-xs text-slate-600 dark:text-[#CBD5E1]">
                   <span>Amount Settled:</span>
-                  <span className="font-semibold text-emerald-700">{formatLKR(selectedInvoice.paidAmount || 0)}</span>
+                  <span className="font-semibold text-emerald-700 dark:text-[#4ADE80]">{formatLKR(selectedInvoice.paidAmount || 0)}</span>
                 </div>
-                <div className="flex justify-between text-xs font-bold text-rose-600 border-t border-dashed border-slate-200 pt-1.5">
+                <div className="flex justify-between text-xs font-bold text-rose-600 dark:text-[#F87171] border-t border-dashed border-slate-200 dark:border-[#334155] pt-1.5">
                   <span>Balance Due:</span>
                   <span>{formatLKR(Math.max(0, selectedInvoice.totalAmount - (selectedInvoice.paidAmount || 0)))}</span>
                 </div>
@@ -445,7 +445,7 @@ export const Billing = () => {
             </div>
 
             {selectedInvoice.notes && (
-              <p className="text-[11px] text-slate-500 italic border-t border-slate-100 pt-3">
+              <p className="text-[11px] text-slate-500 dark:text-slate-400 italic border-t border-slate-100 dark:border-[#334155] pt-3">
                 Note: {selectedInvoice.notes}
               </p>
             )}

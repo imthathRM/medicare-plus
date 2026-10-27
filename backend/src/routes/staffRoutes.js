@@ -1,67 +1,85 @@
 import { Router } from 'express';
-import { staff } from '../data/memoryStore.js';
+import prisma from '../config/prisma.js';
 import { sendSuccess, sendError } from '../utils/response.js';
 
 const router = Router();
 
 /**
  * GET /api/staff
- * Retrieve all hospital administrative, nursing, and clinical staff
+ * Retrieve all hospital administrative, nursing, and clinical staff from PostgreSQL
  */
-router.get('/', (req, res) => {
-  const { department, role } = req.query;
-  let result = [...staff];
+router.get('/', async (req, res, next) => {
+  try {
+    const { department, role } = req.query;
+    const where = {};
 
-  if (department) {
-    result = result.filter(
-      (s) => s.department.toLowerCase() === String(department).toLowerCase()
-    );
+    if (department) {
+      where.department = { equals: String(department), mode: 'insensitive' };
+    }
+
+    if (role) {
+      where.role = { equals: String(role), mode: 'insensitive' };
+    }
+
+    const staffList = await prisma.staff.findMany({
+      where,
+      orderBy: { id: 'asc' },
+    });
+
+    return sendSuccess(res, staffList, `Retrieved ${staffList.length} staff member(s).`);
+  } catch (error) {
+    next(error);
   }
-
-  if (role) {
-    result = result.filter(
-      (s) => s.role.toLowerCase() === String(role).toLowerCase()
-    );
-  }
-
-  return sendSuccess(res, result, `Retrieved ${result.length} staff member(s).`);
 });
 
 /**
  * GET /api/staff/:id
- * Retrieve staff member by ID
+ * Retrieve staff member by ID from PostgreSQL
  */
-router.get('/:id', (req, res) => {
-  const member = staff.find((s) => s.id === req.params.id);
-  if (!member) {
-    return sendError(res, `Staff member with ID '${req.params.id}' not found.`, 404);
+router.get('/:id', async (req, res, next) => {
+  try {
+    const member = await prisma.staff.findUnique({
+      where: { id: req.params.id },
+    });
+
+    if (!member) {
+      return sendError(res, `Staff member with ID '${req.params.id}' not found.`, 404);
+    }
+
+    return sendSuccess(res, member, 'Staff member retrieved.');
+  } catch (error) {
+    next(error);
   }
-  return sendSuccess(res, member, 'Staff member retrieved.');
 });
 
 /**
  * POST /api/staff
- * Register a new staff member (In-Memory Stage 5 Prototype)
+ * Register a new staff member in PostgreSQL
  */
-router.post('/', (req, res) => {
-  const data = req.body;
-  if (!data || !data.name || !data.role) {
-    return sendError(res, 'Staff name and role are required.', 400);
+router.post('/', async (req, res, next) => {
+  try {
+    const data = req.body;
+    if (!data || !data.name || !data.role) {
+      return sendError(res, 'Staff name and role are required.', 400);
+    }
+
+    const newStaff = await prisma.staff.create({
+      data: {
+        id: data.id || `STF-${Date.now()}`,
+        name: data.name,
+        role: data.role,
+        department: data.department || 'General Services',
+        phone: data.phone || '',
+        email: data.email || '',
+        status: data.status || 'Active',
+        shift: data.shift || 'General',
+      },
+    });
+
+    return sendSuccess(res, newStaff, 'Staff member registered successfully in PostgreSQL.', 201);
+  } catch (error) {
+    next(error);
   }
-
-  const newStaff = {
-    id: `STF-${Date.now()}`,
-    name: data.name,
-    role: data.role,
-    department: data.department || 'General Services',
-    phone: data.phone || '',
-    email: data.email || '',
-    status: data.status || 'Active',
-    shift: data.shift || 'General',
-  };
-
-  staff.push(newStaff);
-  return sendSuccess(res, newStaff, 'Staff member registered successfully (in-memory).', 201);
 });
 
 export default router;

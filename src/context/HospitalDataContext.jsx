@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useState, useMemo } from 'react';
+import React, { createContext, useContext, useState, useMemo, useEffect } from 'react';
 import {
   initialDepartments,
   initialDoctors,
@@ -27,7 +27,29 @@ export const HospitalDataProvider = ({ children }) => {
   const [medicines, setMedicines] = useState(initialMedicines);
   const [staff, setStaff] = useState(initialStaff);
   const [hospitalProfile, setHospitalProfile] = useState(initialHospitalProfile);
-  const [appSettings, setAppSettings] = useState(initialAppSettings);
+  const [appSettings, setAppSettings] = useState(() => {
+    try {
+      const savedTheme = localStorage.getItem('medicare_global_theme');
+      if (savedTheme === 'dark' || savedTheme === 'light') {
+        return { ...initialAppSettings, themeMode: savedTheme };
+      }
+    } catch {
+      // fallback
+    }
+    return initialAppSettings;
+  });
+
+  // Global theme synchronization across entire hospital system
+  useEffect(() => {
+    const isDark = appSettings.themeMode === 'dark';
+    document.documentElement.classList.toggle('dark', isDark);
+    document.documentElement.setAttribute('data-theme', isDark ? 'dark' : 'light');
+    try {
+      localStorage.setItem('medicare_global_theme', isDark ? 'dark' : 'light');
+    } catch {
+      // ignore
+    }
+  }, [appSettings.themeMode]);
 
   // --- Patients CRUD ---
   const addPatient = (patientData) => {
@@ -287,9 +309,26 @@ export const HospitalDataProvider = ({ children }) => {
     success('Settings Saved', 'Hospital institutional profile updated.');
   };
 
-  const updateAppSettings = (newSettings) => {
+  const updateAppSettings = (newSettings, customToast) => {
     setAppSettings(newSettings);
-    success('Preferences Saved', 'Application preferences saved.');
+    if (customToast) {
+      success(customToast.title, customToast.message);
+    } else {
+      success('Preferences Saved', 'Application preferences saved.');
+    }
+  };
+
+  const setGlobalThemeMode = (mode) => {
+    setAppSettings((prev) => ({ ...prev, themeMode: mode }));
+    success(
+      'Hospital Theme Updated',
+      `Hospital-wide theme switched to ${mode === 'dark' ? 'Clinical Dark' : 'Professional Light'} Mode.`
+    );
+  };
+
+  const toggleGlobalTheme = () => {
+    const nextMode = appSettings.themeMode === 'dark' ? 'light' : 'dark';
+    setGlobalThemeMode(nextMode);
   };
 
   // Live computed dashboard KPIs
@@ -355,6 +394,8 @@ export const HospitalDataProvider = ({ children }) => {
         deleteStaff,
         updateHospitalProfile,
         updateAppSettings,
+        setGlobalThemeMode,
+        toggleGlobalTheme,
       }}
     >
       {children}

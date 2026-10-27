@@ -9,6 +9,7 @@ import {
   ResponsiveContainer,
 } from 'recharts';
 import { formatLKR } from '../../utils/formatters';
+import { useHospitalData } from '../../context/HospitalDataContext';
 
 const defaultData = [
   { month: 'May', inpatient: 4800000, outpatient: 2100000 },
@@ -20,6 +21,9 @@ const defaultData = [
 ];
 
 export const RevenueTrendChart = ({ data = defaultData, height = 280 }) => {
+  const { appSettings } = useHospitalData();
+  const isDark = appSettings?.themeMode === 'dark';
+
   return (
     <div className="w-full" style={{ height }}>
       <ResponsiveContainer width="100%" height="100%">
@@ -28,18 +32,22 @@ export const RevenueTrendChart = ({ data = defaultData, height = 280 }) => {
           margin={{ top: 10, right: 10, left: 10, bottom: 0 }}
           barSize={16}
         >
-          <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#E2E8F0" />
+          <CartesianGrid
+            strokeDasharray="3 3"
+            vertical={false}
+            stroke={isDark ? '#334155' : '#E2E8F0'}
+          />
           <XAxis
             dataKey="month"
             axisLine={false}
             tickLine={false}
-            tick={{ fill: '#64748B', fontSize: 12 }}
+            tick={{ fill: isDark ? '#94A3B8' : '#64748B', fontSize: 12 }}
             dy={8}
           />
           <YAxis
             axisLine={false}
             tickLine={false}
-            tick={{ fill: '#64748B', fontSize: 12 }}
+            tick={{ fill: isDark ? '#94A3B8' : '#64748B', fontSize: 12 }}
             tickFormatter={(val) => `LKR ${(val / 1000000).toFixed(1)}M`}
           />
           <Tooltip
@@ -48,24 +56,25 @@ export const RevenueTrendChart = ({ data = defaultData, height = 280 }) => {
               name === 'inpatient' ? 'Inpatient Revenue' : 'Outpatient & Pharmacy',
             ]}
             contentStyle={{
-              backgroundColor: '#FFFFFF',
+              backgroundColor: isDark ? '#1E293B' : '#FFFFFF',
               borderRadius: '8px',
-              border: '1px solid #E2E8F0',
-              boxShadow: '0 2px 8px rgba(0, 0, 0, 0.05)',
+              border: `1px solid ${isDark ? '#334155' : '#E2E8F0'}`,
+              boxShadow: '0 4px 12px rgba(0, 0, 0, 0.15)',
               fontSize: '12px',
-              color: '#334155',
+              color: isDark ? '#F1F5F9' : '#334155',
             }}
+            itemStyle={{ color: isDark ? '#F1F5F9' : '#334155' }}
           />
           <Bar
             dataKey="inpatient"
             name="Inpatient"
-            fill="#2563EB"
+            fill={isDark ? '#60A5FA' : '#2563EB'}
             radius={[4, 4, 0, 0]}
           />
           <Bar
             dataKey="outpatient"
             name="Outpatient"
-            fill="#0F766E"
+            fill={isDark ? '#2DD4BF' : '#0F766E'}
             radius={[4, 4, 0, 0]}
           />
         </BarChart>

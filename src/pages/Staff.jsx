@@ -140,7 +140,7 @@ export const Staff = () => {
       key: 'name',
       render: (row) => (
         <div className="flex items-center gap-3">
-          <div className="w-9 h-9 rounded-full bg-slate-100 text-slate-700 flex items-center justify-center font-bold text-xs ring-2 ring-white shrink-0">
+          <div className="w-9 h-9 rounded-full bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-200 flex items-center justify-center font-bold text-xs ring-2 ring-white dark:ring-slate-700 shrink-0">
             {row.name
               .split(' ')
               .map((n) => n[0])
@@ -148,8 +148,8 @@ export const Staff = () => {
               .substring(0, 2)}
           </div>
           <div>
-            <p className="font-semibold text-slate-900 text-xs sm:text-sm">{row.name}</p>
-            <span className="text-[11px] text-slate-400 font-mono">{row.id}</span>
+            <p className="font-semibold text-slate-900 dark:text-slate-100 text-xs sm:text-sm">{row.name}</p>
+            <span className="text-[11px] text-slate-400 dark:text-slate-500 font-mono">{row.id}</span>
           </div>
         </div>
       ),
@@ -159,8 +159,8 @@ export const Staff = () => {
       key: 'role',
       render: (row) => (
         <div>
-          <span className="font-medium text-slate-800 text-xs">{row.role}</span>
-          <p className="text-[11px] text-slate-500">{row.department}</p>
+          <span className="font-medium text-slate-800 dark:text-slate-200 text-xs">{row.role}</span>
+          <p className="text-[11px] text-slate-500 dark:text-slate-400">{row.department}</p>
         </div>
       ),
     },
@@ -169,8 +169,8 @@ export const Staff = () => {
       key: 'contact',
       render: (row) => (
         <div className="text-xs">
-          <p className="text-slate-800 font-medium">{row.phone}</p>
-          <p className="text-slate-400 text-[11px] truncate max-w-[150px]">{row.email}</p>
+          <p className="text-slate-800 dark:text-slate-200 font-medium">{row.phone}</p>
+          <p className="text-slate-400 dark:text-slate-500 text-[11px] truncate max-w-[150px]">{row.email}</p>
         </div>
       ),
     },
@@ -178,7 +178,7 @@ export const Staff = () => {
       header: 'Assigned Shift',
       key: 'shift',
       render: (row) => (
-        <span className="text-xs text-slate-600 bg-slate-50 border border-slate-200/60 px-2.5 py-1 rounded-lg">
+        <span className="text-xs text-slate-600 dark:text-slate-300 bg-slate-50 dark:bg-slate-800/80 border border-slate-200/60 dark:border-slate-700 px-2.5 py-1 rounded-lg">
           {row.shift}
         </span>
       ),
@@ -197,21 +197,21 @@ export const Staff = () => {
         <div className="flex items-center justify-end gap-1" onClick={(e) => e.stopPropagation()}>
           <button
             onClick={() => handleOpenView(row)}
-            className="p-1.5 rounded-lg text-[#64748B] hover:text-[#2563EB] hover:bg-blue-50 transition-colors"
+            className="p-1.5 rounded-lg text-[#64748B] hover:text-[#2563EB] hover:bg-blue-50 dark:hover:bg-blue-950/40 dark:text-slate-400 transition-colors"
             title="View Dossier"
           >
             <Eye className="w-4 h-4" />
           </button>
           <button
             onClick={() => handleOpenEdit(row)}
-            className="p-1.5 rounded-lg text-[#64748B] hover:text-[#0F766E] hover:bg-teal-50 transition-colors"
+            className="p-1.5 rounded-lg text-[#64748B] hover:text-[#0F766E] hover:bg-teal-50 dark:hover:bg-teal-950/40 dark:text-slate-400 transition-colors"
             title="Edit Details"
           >
             <Edit2 className="w-4 h-4" />
           </button>
           <button
             onClick={() => handleOpenDelete(row)}
-            className="p-1.5 rounded-lg text-[#64748B] hover:text-[#B91C1C] hover:bg-red-50 transition-colors"
+            className="p-1.5 rounded-lg text-[#64748B] hover:text-[#B91C1C] hover:bg-red-50 dark:hover:bg-red-950/40 dark:text-slate-400 transition-colors"
             title="Delete Staff Member"
           >
             <Trash2 className="w-4 h-4" />
@@ -226,8 +226,8 @@ export const Staff = () => {
       {/* Page Header */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
-          <h2 className="text-xl font-bold text-[#1E3A5F] tracking-tight">Hospital Staff Directory</h2>
-          <p className="text-xs sm:text-sm text-[#64748B] mt-0.5">
+          <h2 className="text-xl font-bold text-[#1E3A5F] dark:text-[#F1F5F9] tracking-tight">Hospital Staff Directory</h2>
+          <p className="text-xs sm:text-sm text-[#64748B] dark:text-[#CBD5E1] mt-0.5">
             Nursing administration, laboratory technologists, pharmacy staff, and clinical officers
           </p>
         </div>
@@ -237,7 +237,7 @@ export const Staff = () => {
       </div>
 
       {/* Filter and Search Bar */}
-      <div className="bg-white p-4 rounded-lg border border-[#E2E8F0] shadow-xs flex flex-col md:flex-row md:items-center justify-between gap-3">
+      <div className="bg-white dark:bg-[#1E293B] p-4 rounded-lg border border-[#E2E8F0] dark:border-[#334155] shadow-xs flex flex-col md:flex-row md:items-center justify-between gap-3">
         <div className="flex-1 max-w-md">
           <SearchInput
             value={searchQuery}
@@ -247,7 +247,7 @@ export const Staff = () => {
         </div>
 
         <div className="flex flex-wrap items-center gap-2.5">
-          <div className="flex items-center gap-1.5 text-xs text-[#64748B]">
+          <div className="flex items-center gap-1.5 text-xs text-[#64748B] dark:text-[#CBD5E1]">
             <Filter className="w-3.5 h-3.5" />
             <span>Filters:</span>
           </div>
@@ -255,7 +255,7 @@ export const Staff = () => {
           <select
             value={departmentFilter}
             onChange={(e) => setDepartmentFilter(e.target.value)}
-            className="text-xs bg-[#F7F9FC] border border-[#E2E8F0] rounded-lg px-3 py-2 text-[#334155] font-medium focus:outline-none focus:ring-2 focus:ring-[#2563EB]/20 focus:border-[#2563EB]"
+            className="text-xs bg-[#F7F9FC] dark:bg-slate-800 border border-[#E2E8F0] dark:border-[#334155] rounded-lg px-3 py-2 text-[#334155] dark:text-[#F1F5F9] font-medium focus:outline-none focus:ring-2 focus:ring-[#2563EB]/20 focus:border-[#2563EB]"
           >
             <option value="ALL">All Departments</option>
             {departments.map((d) => (
@@ -268,7 +268,7 @@ export const Staff = () => {
           <select
             value={statusFilter}
             onChange={(e) => setStatusFilter(e.target.value)}
-            className="text-xs bg-[#F7F9FC] border border-[#E2E8F0] rounded-lg px-3 py-2 text-[#334155] font-medium focus:outline-none focus:ring-2 focus:ring-[#2563EB]/20 focus:border-[#2563EB]"
+            className="text-xs bg-[#F7F9FC] dark:bg-slate-800 border border-[#E2E8F0] dark:border-[#334155] rounded-lg px-3 py-2 text-[#334155] dark:text-[#F1F5F9] font-medium focus:outline-none focus:ring-2 focus:ring-[#2563EB]/20 focus:border-[#2563EB]"
           >
             <option value="ALL">All Statuses</option>
             <option value="Active">Active</option>
@@ -282,7 +282,7 @@ export const Staff = () => {
                 setDepartmentFilter('ALL');
                 setStatusFilter('ALL');
               }}
-              className="text-xs text-[#2563EB] hover:text-[#1D4ED8] font-medium px-2 py-1"
+              className="text-xs text-[#2563EB] dark:text-blue-400 hover:text-[#1D4ED8] dark:hover:text-blue-300 font-medium px-2 py-1"
             >
               Reset
             </button>
@@ -315,8 +315,8 @@ export const Staff = () => {
       >
         {selectedStaff && (
           <div className="space-y-4 text-xs">
-            <div className="flex items-center gap-3 p-3.5 rounded-xl bg-slate-50 border border-slate-100">
-              <div className="w-12 h-12 rounded-xl bg-slate-200 text-slate-700 flex items-center justify-center font-bold text-sm">
+            <div className="flex items-center gap-3 p-3.5 rounded-xl bg-slate-50 dark:bg-slate-800/60 border border-slate-100 dark:border-slate-700/60">
+              <div className="w-12 h-12 rounded-xl bg-slate-200 dark:bg-slate-700 text-slate-700 dark:text-slate-200 flex items-center justify-center font-bold text-sm">
                 {selectedStaff.name
                   .split(' ')
                   .map((n) => n[0])
@@ -325,15 +325,15 @@ export const Staff = () => {
               </div>
               <div>
                 <div className="flex items-center gap-2">
-                  <h4 className="font-bold text-slate-900 text-sm">{selectedStaff.name}</h4>
+                  <h4 className="font-bold text-slate-900 dark:text-slate-100 text-sm">{selectedStaff.name}</h4>
                   <Badge status={selectedStaff.status} size="sm" />
                 </div>
-                <p className="text-slate-600 font-medium">{selectedStaff.role}</p>
-                <p className="text-slate-400 text-[11px]">{selectedStaff.department}</p>
+                <p className="text-slate-600 dark:text-slate-300 font-medium">{selectedStaff.role}</p>
+                <p className="text-slate-400 dark:text-slate-500 text-[11px]">{selectedStaff.department}</p>
               </div>
             </div>
 
-            <div className="p-4 rounded-xl bg-slate-50 border border-slate-100 space-y-2 text-slate-700">
+            <div className="p-4 rounded-xl bg-slate-50 dark:bg-slate-800/60 border border-slate-100 dark:border-slate-700/60 space-y-2 text-slate-700 dark:text-slate-300">
               <p>
                 <strong>Qualifications:</strong> {selectedStaff.qualification || 'N/A'}
               </p>

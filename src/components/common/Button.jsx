@@ -29,13 +29,13 @@ export const Button = ({
     teal:
       'bg-[#0F766E] hover:bg-[#115E59] text-white shadow-xs focus:ring-[#0F766E] border border-transparent active:bg-[#134E4A]',
     secondary:
-      'bg-white hover:bg-[#F7F9FC] text-[#334155] border border-[#E2E8F0] shadow-xs focus:ring-[#2563EB] active:bg-slate-100',
+      'bg-white dark:bg-[#1E293B] hover:bg-[#F7F9FC] dark:hover:bg-slate-700 text-[#334155] dark:text-[#F1F5F9] border border-[#E2E8F0] dark:border-[#334155] shadow-xs focus:ring-[#2563EB] dark:focus:ring-[#60A5FA] active:bg-slate-100 dark:active:bg-slate-800',
     outline:
-      'bg-transparent hover:bg-blue-50 text-[#2563EB] border border-blue-200 focus:ring-[#2563EB] active:bg-blue-100',
+      'bg-transparent hover:bg-blue-50 dark:hover:bg-slate-800 text-[#2563EB] dark:text-[#60A5FA] border border-blue-200 dark:border-blue-900/50 focus:ring-[#2563EB] dark:focus:ring-[#60A5FA] active:bg-blue-100 dark:active:bg-slate-700',
     danger:
       'bg-[#B91C1C] hover:bg-[#991B1B] text-white shadow-xs focus:ring-[#B91C1C] border border-transparent active:bg-[#7F1D1D]',
     ghost:
-      'bg-transparent hover:bg-[#F7F9FC] text-[#64748B] hover:text-[#334155] focus:ring-slate-300 border border-transparent',
+      'bg-transparent hover:bg-[#F7F9FC] dark:hover:bg-slate-800 text-[#64748B] dark:text-[#CBD5E1] hover:text-[#334155] dark:hover:text-[#F1F5F9] focus:ring-slate-300 dark:focus:ring-slate-600 border border-transparent',
   };
 
   return (

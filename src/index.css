@@ -1,5 +1,7 @@
 @import "tailwindcss";
 
+@custom-variant dark (&:where(.dark, .dark *));
+
 @theme {
   --color-primary: #2563EB;
   --color-primary-hover: #1D4ED8;
@@ -25,10 +27,20 @@
     color: #334155;
     margin: 0;
     padding: 0;
+    transition: background-color 0.2s ease, color 0.2s ease;
+  }
+
+  html.dark body {
+    background-color: #0F172A;
+    color: #F1F5F9;
   }
 
   h1, h2, h3, h4, h5, h6 {
     color: #1E3A5F;
+  }
+
+  html.dark h1, html.dark h2, html.dark h3, html.dark h4, html.dark h5, html.dark h6 {
+    color: #F1F5F9;
   }
 }
 
@@ -40,12 +52,21 @@
 ::-webkit-scrollbar-track {
   background: #F7F9FC;
 }
+html.dark ::-webkit-scrollbar-track {
+  background: #0F172A;
+}
 ::-webkit-scrollbar-thumb {
   background: #CBD5E1;
   border-radius: 9999px;
 }
+html.dark ::-webkit-scrollbar-thumb {
+  background: #334155;
+}
 ::-webkit-scrollbar-thumb:hover {
   background: #94A3B8;
+}
+html.dark ::-webkit-scrollbar-thumb:hover {
+  background: #475569;
 }
 
 /* Print media rules for invoices and clinical reports */
@@ -55,6 +76,7 @@
   }
   body, #root, main {
     background: white !important;
+    color: #334155 !important;
     padding: 0 !important;
     margin: 0 !important;
     min-height: auto !important;

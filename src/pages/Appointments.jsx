@@ -138,15 +138,15 @@ export const Appointments = () => {
     {
       header: 'Appt ID',
       key: 'id',
-      render: (row) => <span className="font-mono text-xs text-slate-700 font-semibold">{row.id}</span>,
+      render: (row) => <span className="font-mono text-xs text-slate-700 dark:text-[#CBD5E1] font-semibold">{row.id}</span>,
     },
     {
       header: 'Patient',
       key: 'patientName',
       render: (row) => (
         <div>
-          <p className="font-semibold text-[#1E3A5F] text-xs sm:text-sm">{row.patientName}</p>
-          <span className="text-[11px] text-[#64748B] font-mono">{row.patientId}</span>
+          <p className="font-semibold text-[#1E3A5F] dark:text-[#F1F5F9] text-xs sm:text-sm">{row.patientName}</p>
+          <span className="text-[11px] text-[#64748B] dark:text-slate-400 font-mono">{row.patientId}</span>
         </div>
       ),
     },
@@ -155,8 +155,8 @@ export const Appointments = () => {
       key: 'doctorName',
       render: (row) => (
         <div>
-          <p className="font-medium text-[#334155] text-xs sm:text-sm">{row.doctorName}</p>
-          <span className="text-[11px] text-[#64748B]">{row.department}</span>
+          <p className="font-medium text-[#334155] dark:text-[#F1F5F9] text-xs sm:text-sm">{row.doctorName}</p>
+          <span className="text-[11px] text-[#64748B] dark:text-slate-400">{row.department}</span>
         </div>
       ),
     },
@@ -165,8 +165,8 @@ export const Appointments = () => {
       key: 'dateTime',
       render: (row) => (
         <div className="text-xs">
-          <p className="font-medium text-[#334155] whitespace-nowrap">{formatDate(row.date)}</p>
-          <span className="text-[#64748B] font-medium">{formatTime(row.time)}</span>
+          <p className="font-medium text-[#334155] dark:text-[#CBD5E1] whitespace-nowrap">{formatDate(row.date)}</p>
+          <span className="text-[#64748B] dark:text-slate-400 font-medium">{formatTime(row.time)}</span>
         </div>
       ),
     },
@@ -174,7 +174,7 @@ export const Appointments = () => {
       header: 'Type',
       key: 'type',
       render: (row) => (
-        <span className="text-xs font-medium text-[#334155] bg-[#F7F9FC] border border-[#E2E8F0] px-2.5 py-0.5 rounded-full">
+        <span className="text-xs font-medium text-[#334155] dark:text-[#CBD5E1] bg-[#F7F9FC] dark:bg-slate-800 border border-[#E2E8F0] dark:border-[#334155] px-2.5 py-0.5 rounded-full">
           {row.type}
         </span>
       ),
@@ -193,7 +193,7 @@ export const Appointments = () => {
         <div className="flex items-center justify-end gap-1" onClick={(e) => e.stopPropagation()}>
           <button
             onClick={() => handleOpenView(row)}
-            className="p-1.5 rounded-lg text-[#64748B] hover:text-[#2563EB] hover:bg-blue-50 transition-colors"
+            className="p-1.5 rounded-lg text-[#64748B] dark:text-[#CBD5E1] hover:text-[#2563EB] dark:hover:text-[#60A5FA] hover:bg-blue-50 dark:hover:bg-blue-900/40 transition-colors"
             title="View Details"
           >
             <Eye className="w-4 h-4" />
@@ -201,7 +201,7 @@ export const Appointments = () => {
           {row.status !== 'Completed' && row.status !== 'Cancelled' && (
             <button
               onClick={() => updateAppointmentStatus(row.id, 'Completed')}
-              className="p-1.5 rounded-lg text-[#64748B] hover:text-[#15803D] hover:bg-emerald-50 transition-colors"
+              className="p-1.5 rounded-lg text-[#64748B] dark:text-[#CBD5E1] hover:text-[#15803D] dark:hover:text-[#4ADE80] hover:bg-emerald-50 dark:hover:bg-emerald-950/40 transition-colors"
               title="Mark Completed"
             >
               <CheckCircle2 className="w-4 h-4" />
@@ -210,7 +210,7 @@ export const Appointments = () => {
           {row.status !== 'Cancelled' && row.status !== 'Completed' && (
             <button
               onClick={() => handleOpenCancel(row)}
-              className="p-1.5 rounded-lg text-[#64748B] hover:text-[#B91C1C] hover:bg-red-50 transition-colors"
+              className="p-1.5 rounded-lg text-[#64748B] dark:text-[#CBD5E1] hover:text-[#B91C1C] dark:hover:text-[#F87171] hover:bg-red-50 dark:hover:bg-red-950/40 transition-colors"
               title="Cancel Appointment"
             >
               <XCircle className="w-4 h-4" />
@@ -226,10 +226,10 @@ export const Appointments = () => {
       {/* Page Header */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
-          <h2 className="text-xl font-bold text-[#1E3A5F] tracking-tight">
+          <h2 className="text-xl font-bold text-[#1E3A5F] dark:text-[#F1F5F9] tracking-tight">
             Appointment Scheduling
           </h2>
-          <p className="text-xs sm:text-sm text-[#64748B] mt-0.5">
+          <p className="text-xs sm:text-sm text-[#64748B] dark:text-[#CBD5E1] mt-0.5">
             Book consultations, track specialist queues, and manage clinical visits
           </p>
         </div>
@@ -239,7 +239,7 @@ export const Appointments = () => {
       </div>
 
       {/* Filter and Search Bar */}
-      <div className="bg-white p-4 rounded-lg border border-[#E2E8F0] shadow-xs flex flex-col md:flex-row md:items-center justify-between gap-3">
+      <div className="bg-white dark:bg-[#1E293B] p-4 rounded-lg border border-[#E2E8F0] dark:border-[#334155] shadow-xs flex flex-col md:flex-row md:items-center justify-between gap-3 transition-colors">
         <div className="flex-1 max-w-md">
           <SearchInput
             value={searchQuery}
@@ -249,7 +249,7 @@ export const Appointments = () => {
         </div>
 
         <div className="flex flex-wrap items-center gap-2.5">
-          <div className="flex items-center gap-1.5 text-xs text-[#64748B]">
+          <div className="flex items-center gap-1.5 text-xs text-[#64748B] dark:text-[#CBD5E1]">
             <Filter className="w-3.5 h-3.5" />
             <span>Filters:</span>
           </div>
@@ -257,7 +257,7 @@ export const Appointments = () => {
           <select
             value={statusFilter}
             onChange={(e) => setStatusFilter(e.target.value)}
-            className="text-xs bg-[#F7F9FC] border border-[#E2E8F0] rounded-lg px-3 py-2 text-[#334155] font-medium focus:outline-none focus:ring-2 focus:ring-[#2563EB]/20 focus:border-[#2563EB]"
+            className="text-xs bg-[#F7F9FC] dark:bg-slate-800 border border-[#E2E8F0] dark:border-[#334155] rounded-lg px-3 py-2 text-[#334155] dark:text-[#F1F5F9] font-medium focus:outline-none focus:ring-2 focus:ring-[#2563EB]/20 dark:focus:ring-[#60A5FA]/20 focus:border-[#2563EB] dark:focus:border-[#60A5FA]"
           >
             <option value="ALL">All Statuses</option>
             <option value="Confirmed">Confirmed</option>
@@ -271,7 +271,7 @@ export const Appointments = () => {
             type="date"
             value={dateFilter}
             onChange={(e) => setDateFilter(e.target.value)}
-            className="text-xs bg-[#F7F9FC] border border-[#E2E8F0] rounded-lg px-3 py-1.5 text-[#334155] font-medium focus:outline-none focus:ring-2 focus:ring-[#2563EB]/20 focus:border-[#2563EB]"
+            className="text-xs bg-[#F7F9FC] dark:bg-slate-800 border border-[#E2E8F0] dark:border-[#334155] rounded-lg px-3 py-1.5 text-[#334155] dark:text-[#F1F5F9] font-medium focus:outline-none focus:ring-2 focus:ring-[#2563EB]/20 dark:focus:ring-[#60A5FA]/20 focus:border-[#2563EB] dark:focus:border-[#60A5FA]"
           />
 
           {(searchQuery || statusFilter !== 'ALL' || dateFilter) && (
@@ -281,7 +281,7 @@ export const Appointments = () => {
                 setStatusFilter('ALL');
                 setDateFilter('');
               }}
-              className="text-xs text-[#2563EB] hover:text-[#1D4ED8] font-medium px-2 py-1"
+              className="text-xs text-[#2563EB] dark:text-[#60A5FA] hover:underline font-medium px-2 py-1"
             >
               Reset
             </button>
@@ -314,49 +314,49 @@ export const Appointments = () => {
       >
         {selectedAppointment && (
           <div className="space-y-4 text-xs">
-            <div className="flex items-center justify-between p-3.5 rounded-xl bg-slate-50 border border-slate-100">
+            <div className="flex items-center justify-between p-3.5 rounded-xl bg-slate-50 dark:bg-slate-800/80 border border-slate-100 dark:border-[#334155]">
               <div>
-                <p className="text-[11px] text-slate-500">Booking Reference</p>
-                <p className="font-bold text-slate-900 font-mono text-sm">{selectedAppointment.id}</p>
+                <p className="text-[11px] text-slate-500 dark:text-slate-400">Booking Reference</p>
+                <p className="font-bold text-slate-900 dark:text-[#F1F5F9] font-mono text-sm">{selectedAppointment.id}</p>
               </div>
               <Badge status={selectedAppointment.status} size="md" />
             </div>
 
-            <div className="grid grid-cols-2 gap-3 p-4 rounded-xl bg-slate-50 border border-slate-100 text-slate-700">
+            <div className="grid grid-cols-2 gap-3 p-4 rounded-xl bg-slate-50 dark:bg-slate-800/80 border border-slate-100 dark:border-[#334155] text-slate-700 dark:text-[#CBD5E1]">
               <div>
-                <p className="text-slate-500 text-[11px]">Patient</p>
-                <p className="font-semibold text-slate-900">{selectedAppointment.patientName}</p>
-                <p className="font-mono text-slate-400 text-[10px]">{selectedAppointment.patientId}</p>
+                <p className="text-slate-500 dark:text-slate-400 text-[11px]">Patient</p>
+                <p className="font-semibold text-slate-900 dark:text-[#F1F5F9]">{selectedAppointment.patientName}</p>
+                <p className="font-mono text-slate-400 dark:text-slate-500 text-[10px]">{selectedAppointment.patientId}</p>
               </div>
               <div>
-                <p className="text-slate-500 text-[11px]">Doctor</p>
-                <p className="font-semibold text-slate-900">{selectedAppointment.doctorName}</p>
-                <p className="text-slate-500 text-[11px]">{selectedAppointment.department}</p>
+                <p className="text-slate-500 dark:text-slate-400 text-[11px]">Doctor</p>
+                <p className="font-semibold text-slate-900 dark:text-[#F1F5F9]">{selectedAppointment.doctorName}</p>
+                <p className="text-slate-500 dark:text-slate-400 text-[11px]">{selectedAppointment.department}</p>
               </div>
               <div>
-                <p className="text-slate-500 text-[11px]">Date & Time</p>
-                <p className="font-medium text-slate-800">
+                <p className="text-slate-500 dark:text-slate-400 text-[11px]">Date & Time</p>
+                <p className="font-medium text-slate-800 dark:text-[#F1F5F9]">
                   {formatDate(selectedAppointment.date)} at {formatTime(selectedAppointment.time)}
                 </p>
               </div>
               <div>
-                <p className="text-slate-500 text-[11px]">Clinic Location</p>
-                <p className="font-medium text-slate-800">{selectedAppointment.room || 'Clinic Suite'}</p>
+                <p className="text-slate-500 dark:text-slate-400 text-[11px]">Clinic Location</p>
+                <p className="font-medium text-slate-800 dark:text-[#F1F5F9]">{selectedAppointment.room || 'Clinic Suite'}</p>
               </div>
               <div>
-                <p className="text-slate-500 text-[11px]">Visit Type</p>
-                <p className="font-medium text-slate-800">{selectedAppointment.type}</p>
+                <p className="text-slate-500 dark:text-slate-400 text-[11px]">Visit Type</p>
+                <p className="font-medium text-slate-800 dark:text-[#F1F5F9]">{selectedAppointment.type}</p>
               </div>
               <div>
-                <p className="text-slate-500 text-[11px]">Consultation Fee</p>
-                <p className="font-bold text-slate-900">{formatLKR(selectedAppointment.fee)}</p>
+                <p className="text-slate-500 dark:text-slate-400 text-[11px]">Consultation Fee</p>
+                <p className="font-bold text-slate-900 dark:text-[#F1F5F9]">{formatLKR(selectedAppointment.fee)}</p>
               </div>
             </div>
 
             {selectedAppointment.notes && (
-              <div className="p-3.5 rounded-xl bg-sky-50 border border-sky-100">
-                <p className="font-semibold text-sky-900 text-[11px] mb-1">Clinical Notes & Symptoms</p>
-                <p className="text-sky-800">{selectedAppointment.notes}</p>
+              <div className="p-3.5 rounded-xl bg-sky-50 dark:bg-slate-700/60 border border-sky-100 dark:border-slate-600">
+                <p className="font-semibold text-sky-900 dark:text-[#60A5FA] text-[11px] mb-1">Clinical Notes & Symptoms</p>
+                <p className="text-sky-800 dark:text-[#CBD5E1]">{selectedAppointment.notes}</p>
               </div>
             )}
           </div>

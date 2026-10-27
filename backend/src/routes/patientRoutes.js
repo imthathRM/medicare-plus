@@ -1,109 +1,147 @@
 import { Router } from 'express';
-import { patients } from '../data/memoryStore.js';
+import prisma from '../config/prisma.js';
 import { sendSuccess, sendError } from '../utils/response.js';
 
 const router = Router();
 
 /**
  * GET /api/patients
- * Retrieve all patients (supports query filter: ?search=)
+ * Retrieve all patients from PostgreSQL (supports query filter: ?search=)
  */
-router.get('/', (req, res) => {
-  const { search } = req.query;
-  let result = [...patients];
+router.get('/', async (req, res, next) => {
+  try {
+    const { search } = req.query;
+    const where = search
+      ? {
+          OR: [
+            { name: { contains: String(search), mode: 'insensitive' } },
+            { id: { contains: String(search), mode: 'insensitive' } },
+            { nationalId: { contains: String(search), mode: 'insensitive' } },
+            { phone: { contains: String(search), mode: 'insensitive' } },
+          ],
+        }
+      : {};
 
-  if (search) {
-    const term = String(search).toLowerCase();
-    result = result.filter(
-      (p) =>
-        p.name.toLowerCase().includes(term) ||
-        p.id.toLowerCase().includes(term) ||
-        p.nationalId?.toLowerCase().includes(term) ||
-        p.phone?.toLowerCase().includes(term)
-    );
+    const patients = await prisma.patient.findMany({
+      where,
+      orderBy: { createdAt: 'desc' },
+    });
+
+    return sendSuccess(res, patients, `Retrieved ${patients.length} patient record(s).`);
+  } catch (error) {
+    next(error);
   }
-
-  return sendSuccess(res, result, `Retrieved ${result.length} patient record(s).`);
 });
 
 /**
  * GET /api/patients/:id
- * Retrieve a single patient by ID
+ * Retrieve a single patient by ID from PostgreSQL
  */
-router.get('/:id', (req, res) => {
-  const patient = patients.find((p) => p.id === req.params.id);
-  if (!patient) {
-    return sendError(res, `Patient with ID '${req.params.id}' not found.`, 404);
+router.get('/:id', async (req, res, next) => {
+  try {
+    const patient = await prisma.patient.findUnique({
+      where: { id: req.params.id },
+    });
+
+    if (!patient) {
+      return sendError(res, `Patient with ID '${req.params.id}' not found.`, 404);
+    }
+
+    return sendSuccess(res, patient, 'Patient record retrieved.');
+  } catch (error) {
+    next(error);
   }
-  return sendSuccess(res, patient, 'Patient record retrieved.');
 });
 
 /**
  * POST /api/patients
- * Create a new patient record (In-Memory Stage 5 Prototype)
+ * Create a new patient record in PostgreSQL
  */
-router.post('/', (req, res) => {
-  const data = req.body;
-  if (!data || !data.name) {
-    return sendError(res, 'Patient name is required.', 400);
+router.post('/', async (req, res, next) => {
+  try {
+    const data = req.body;
+    if (!data || !data.name) {
+      return sendError(res, 'Patient name is required.', 400);
+    }
+
+    const newPatient = await prisma.patient.create({
+      data: {
+        id: data.id || `PAT-${Date.now()}`,
+        name: data.name,
+        gender: data.gender || 'Other',
+        dob: data.dob || '',
+        age: typeof data.age === 'number' ? data.age : null,
+        bloodGroup: data.bloodGroup || '',
+        phone: data.phone || '',
+        email: data.email || '',
+        address: data.address || '',
+        nationalId: data.nationalId || '',
+        emergencyContact: data.emergencyContact || '',
+        status: data.status || 'Outpatient',
+        registeredDate: data.registeredDate || new Date().toISOString().slice(0, 10),
+        attendingDoctor: data.attendingDoctor || '',
+        department: data.department || '',
+        allergies: data.allergies || 'None',
+        medicalHistory: data.medicalHistory || '',
+        lastVisit: new Date().toISOString().slice(0, 10),
+      },
+    });
+
+    return sendSuccess(res, newPatient, 'Patient registered successfully in PostgreSQL.', 201);
+  } catch (error) {
+    next(error);
   }
-
-  const newPatient = {
-    id: `PAT-${Date.now()}`,
-    name: data.name,
-    gender: data.gender || 'Other',
-    dob: data.dob || '',
-    age: data.age || null,
-    bloodGroup: data.bloodGroup || '',
-    phone: data.phone || '',
-    email: data.email || '',
-    address: data.address || '',
-    nationalId: data.nationalId || '',
-    emergencyContact: data.emergencyContact || '',
-    status: data.status || 'Outpatient',
-    registeredDate: data.registeredDate || new Date().toISOString().slice(0, 10),
-    attendingDoctor: data.attendingDoctor || '',
-    department: data.department || '',
-    allergies: data.allergies || 'None',
-    medicalHistory: data.medicalHistory || '',
-    lastVisit: new Date().toISOString().slice(0, 10),
-  };
-
-  patients.unshift(newPatient);
-  return sendSuccess(res, newPatient, 'Patient registered successfully (in-memory).', 201);
 });
 
 /**
  * PUT /api/patients/:id
- * Update an existing patient record
+ * Update an existing patient record in PostgreSQL
  */
-router.put('/:id', (req, res) => {
-  const index = patients.findIndex((p) => p.id === req.params.id);
-  if (index === -1) {
-    return sendError(res, `Patient with ID '${req.params.id}' not found.`, 404);
+router.put('/:id', async (req, res, next) => {
+  try {
+    const { id: _id, createdAt: _createdAt, updatedAt: _updatedAt, ...updateData } = req.body;
+
+    const existing = await prisma.patient.findUnique({
+      where: { id: req.params.id },
+    });
+
+    if (!existing) {
+      return sendError(res, `Patient with ID '${req.params.id}' not found.`, 404);
+    }
+
+    const updatedPatient = await prisma.patient.update({
+      where: { id: req.params.id },
+      data: updateData,
+    });
+
+    return sendSuccess(res, updatedPatient, 'Patient record updated successfully.');
+  } catch (error) {
+    next(error);
   }
-
-  patients[index] = {
-    ...patients[index],
-    ...req.body,
-    id: req.params.id, // Immutable ID
-  };
-
-  return sendSuccess(res, patients[index], 'Patient record updated successfully.');
 });
 
 /**
  * DELETE /api/patients/:id
- * Delete or archive a patient record
+ * Delete or archive a patient record in PostgreSQL
  */
-router.delete('/:id', (req, res) => {
-  const index = patients.findIndex((p) => p.id === req.params.id);
-  if (index === -1) {
-    return sendError(res, `Patient with ID '${req.params.id}' not found.`, 404);
-  }
+router.delete('/:id', async (req, res, next) => {
+  try {
+    const existing = await prisma.patient.findUnique({
+      where: { id: req.params.id },
+    });
 
-  const [removed] = patients.splice(index, 1);
-  return sendSuccess(res, { id: removed.id }, `Patient record '${removed.id}' archived successfully.`);
+    if (!existing) {
+      return sendError(res, `Patient with ID '${req.params.id}' not found.`, 404);
+    }
+
+    await prisma.patient.delete({
+      where: { id: req.params.id },
+    });
+
+    return sendSuccess(res, { id: req.params.id }, `Patient record '${req.params.id}' archived successfully.`);
+  } catch (error) {
+    next(error);
+  }
 });
 
 export default router;

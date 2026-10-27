@@ -1,81 +1,111 @@
 import { Router } from 'express';
-import { admissions } from '../data/memoryStore.js';
+import prisma from '../config/prisma.js';
 import { sendSuccess, sendError } from '../utils/response.js';
 
 const router = Router();
 
 /**
  * GET /api/admissions
- * Retrieve all inpatient admissions
+ * Retrieve all inpatient admissions from PostgreSQL
  */
-router.get('/', (req, res) => {
-  const { status } = req.query;
-  let result = [...admissions];
+router.get('/', async (req, res, next) => {
+  try {
+    const { status } = req.query;
+    const where = {};
 
-  if (status) {
-    result = result.filter(
-      (a) => a.status.toLowerCase() === String(status).toLowerCase()
-    );
+    if (status) {
+      where.status = { equals: String(status), mode: 'insensitive' };
+    }
+
+    const admissions = await prisma.admission.findMany({
+      where,
+      orderBy: { createdAt: 'desc' },
+      include: { patient: true },
+    });
+
+    return sendSuccess(res, admissions, `Retrieved ${admissions.length} admission record(s).`);
+  } catch (error) {
+    next(error);
   }
-
-  return sendSuccess(res, result, `Retrieved ${result.length} admission record(s).`);
 });
 
 /**
  * GET /api/admissions/:id
- * Retrieve admission record by ID
+ * Retrieve admission record by ID from PostgreSQL
  */
-router.get('/:id', (req, res) => {
-  const admission = admissions.find((a) => a.id === req.params.id);
-  if (!admission) {
-    return sendError(res, `Admission record with ID '${req.params.id}' not found.`, 404);
+router.get('/:id', async (req, res, next) => {
+  try {
+    const admission = await prisma.admission.findUnique({
+      where: { id: req.params.id },
+      include: { patient: true },
+    });
+
+    if (!admission) {
+      return sendError(res, `Admission record with ID '${req.params.id}' not found.`, 404);
+    }
+
+    return sendSuccess(res, admission, 'Admission record retrieved.');
+  } catch (error) {
+    next(error);
   }
-  return sendSuccess(res, admission, 'Admission record retrieved.');
 });
 
 /**
  * POST /api/admissions
- * Register a new inpatient admission
+ * Register a new inpatient admission in PostgreSQL
  */
-router.post('/', (req, res) => {
-  const data = req.body;
-  if (!data || !data.patientName || !data.ward) {
-    return sendError(res, 'Patient name and ward are required.', 400);
+router.post('/', async (req, res, next) => {
+  try {
+    const data = req.body;
+    if (!data || !data.patientName || !data.ward) {
+      return sendError(res, 'Patient name and ward are required.', 400);
+    }
+
+    const newAdmission = await prisma.admission.create({
+      data: {
+        id: data.id || `ADM-${Date.now()}`,
+        patientId: data.patientId || null,
+        patientName: data.patientName,
+        ward: data.ward,
+        bedNumber: data.bedNumber || 'TBD',
+        admissionDate: data.admissionDate || new Date().toISOString().slice(0, 10),
+        status: data.status || 'Admitted',
+        admittingDoctor: data.admittingDoctor || 'Dr. On Duty',
+        diagnosis: data.diagnosis || 'Under Evaluation',
+      },
+    });
+
+    return sendSuccess(res, newAdmission, 'Patient admitted successfully in PostgreSQL.', 201);
+  } catch (error) {
+    next(error);
   }
-
-  const newAdmission = {
-    id: `ADM-${Date.now()}`,
-    patientId: data.patientId || `PAT-${Date.now()}`,
-    patientName: data.patientName,
-    ward: data.ward,
-    bedNumber: data.bedNumber || 'TBD',
-    admissionDate: data.admissionDate || new Date().toISOString().slice(0, 10),
-    status: data.status || 'Admitted',
-    admittingDoctor: data.admittingDoctor || 'Dr. On Duty',
-    diagnosis: data.diagnosis || 'Under Evaluation',
-  };
-
-  admissions.unshift(newAdmission);
-  return sendSuccess(res, newAdmission, 'Patient admitted successfully (in-memory).', 201);
 });
 
 /**
  * PUT /api/admissions/:id
- * Update admission details (e.g. transfer ward, discharge)
+ * Update admission details in PostgreSQL
  */
-router.put('/:id', (req, res) => {
-  const index = admissions.findIndex((a) => a.id === req.params.id);
-  if (index === -1) {
-    return sendError(res, `Admission record with ID '${req.params.id}' not found.`, 404);
+router.put('/:id', async (req, res, next) => {
+  try {
+    const existing = await prisma.admission.findUnique({
+      where: { id: req.params.id },
+    });
+
+    if (!existing) {
+      return sendError(res, `Admission record with ID '${req.params.id}' not found.`, 404);
+    }
+
+    const { id: _id, createdAt: _createdAt, updatedAt: _updatedAt, patient: _patient, ...updateData } = req.body;
+
+    const updated = await prisma.admission.update({
+      where: { id: req.params.id },
+      data: updateData,
+    });
+
+    return sendSuccess(res, updated, 'Admission record updated successfully.');
+  } catch (error) {
+    next(error);
   }
-
-  admissions[index] = {
-    ...admissions[index],
-    ...req.body,
-    id: req.params.id,
-  };
-
-  return sendSuccess(res, admissions[index], 'Admission record updated successfully.');
 });
 
 export default router;

@@ -136,15 +136,15 @@ export const Admissions = () => {
     {
       header: 'Admission ID',
       key: 'id',
-      render: (row) => <span className="font-mono text-xs font-semibold text-[#334155]">{row.id}</span>,
+      render: (row) => <span className="font-mono text-xs font-semibold text-[#334155] dark:text-[#CBD5E1]">{row.id}</span>,
     },
     {
       header: 'Patient Info',
       key: 'patientName',
       render: (row) => (
         <div>
-          <p className="font-semibold text-[#1E3A5F] text-xs sm:text-sm">{row.patientName}</p>
-          <span className="text-[11px] text-[#64748B] font-mono">{row.patientId}</span>
+          <p className="font-semibold text-[#1E3A5F] dark:text-[#F1F5F9] text-xs sm:text-sm">{row.patientName}</p>
+          <span className="text-[11px] text-[#64748B] dark:text-slate-400 font-mono">{row.patientId}</span>
         </div>
       ),
     },
@@ -153,8 +153,8 @@ export const Admissions = () => {
       key: 'ward',
       render: (row) => (
         <div>
-          <span className="font-semibold text-[#1E3A5F] text-xs">{row.bedNumber}</span>
-          <p className="text-[11px] text-[#64748B] truncate max-w-[180px]">{row.ward}</p>
+          <span className="font-semibold text-[#1E3A5F] dark:text-[#F1F5F9] text-xs">{row.bedNumber}</span>
+          <p className="text-[11px] text-[#64748B] dark:text-slate-400 truncate max-w-[180px]">{row.ward}</p>
         </div>
       ),
     },
@@ -162,7 +162,7 @@ export const Admissions = () => {
       header: 'Primary Diagnosis',
       key: 'primaryDiagnosis',
       render: (row) => (
-        <span className="text-xs text-[#334155] truncate max-w-[200px] block" title={row.primaryDiagnosis}>
+        <span className="text-xs text-[#334155] dark:text-[#CBD5E1] truncate max-w-[200px] block" title={row.primaryDiagnosis}>
           {row.primaryDiagnosis}
         </span>
       ),
@@ -171,10 +171,10 @@ export const Admissions = () => {
       header: 'Admitted On',
       key: 'admissionDate',
       render: (row) => (
-        <div className="text-xs text-[#64748B] whitespace-nowrap">
-          <p className="font-medium text-[#334155]">{formatDate(row.admissionDate)}</p>
+        <div className="text-xs text-[#64748B] dark:text-[#CBD5E1] whitespace-nowrap">
+          <p className="font-medium text-[#334155] dark:text-[#F1F5F9]">{formatDate(row.admissionDate)}</p>
           {row.dischargeDate && (
-            <span className="text-[10px] text-[#64748B]">Disch: {formatDate(row.dischargeDate)}</span>
+            <span className="text-[10px] text-[#64748B] dark:text-slate-400">Disch: {formatDate(row.dischargeDate)}</span>
           )}
         </div>
       ),
@@ -193,7 +193,7 @@ export const Admissions = () => {
         <div className="flex items-center justify-end gap-1" onClick={(e) => e.stopPropagation()}>
           <button
             onClick={() => handleOpenView(row)}
-            className="p-1.5 rounded-lg text-[#64748B] hover:text-[#2563EB] hover:bg-blue-50 transition-colors"
+            className="p-1.5 rounded-lg text-[#64748B] dark:text-[#CBD5E1] hover:text-[#2563EB] dark:hover:text-[#60A5FA] hover:bg-blue-50 dark:hover:bg-blue-900/40 transition-colors"
             title="View Details"
           >
             <Eye className="w-4 h-4" />
@@ -201,7 +201,7 @@ export const Admissions = () => {
           {row.status !== 'Discharged' && (
             <button
               onClick={() => handleOpenDischarge(row)}
-              className="p-1.5 rounded-lg text-[#64748B] hover:text-[#0F766E] hover:bg-teal-50 transition-colors"
+              className="p-1.5 rounded-lg text-[#64748B] dark:text-[#CBD5E1] hover:text-[#0F766E] dark:hover:text-[#2DD4BF] hover:bg-teal-50 dark:hover:bg-teal-900/40 transition-colors"
               title="Discharge Patient"
             >
               <LogOut className="w-4 h-4" />
@@ -217,10 +217,10 @@ export const Admissions = () => {
       {/* Page Header */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
-          <h2 className="text-xl font-bold text-[#1E3A5F] tracking-tight">
+          <h2 className="text-xl font-bold text-[#1E3A5F] dark:text-[#F1F5F9] tracking-tight">
             Inpatient Admissions & Ward Occupancy
           </h2>
-          <p className="text-xs sm:text-sm text-[#64748B] mt-0.5">
+          <p className="text-xs sm:text-sm text-[#64748B] dark:text-[#CBD5E1] mt-0.5">
             Monitor real-time bed allocations, ICU telemetry beds, and discharge workflows
           </p>
         </div>
@@ -230,7 +230,7 @@ export const Admissions = () => {
       </div>
 
       {/* Filter and Search Bar */}
-      <div className="bg-white p-4 rounded-lg border border-[#E2E8F0] shadow-xs flex flex-col md:flex-row md:items-center justify-between gap-3">
+      <div className="bg-white dark:bg-[#1E293B] p-4 rounded-lg border border-[#E2E8F0] dark:border-[#334155] shadow-xs flex flex-col md:flex-row md:items-center justify-between gap-3 transition-colors">
         <div className="flex-1 max-w-md">
           <SearchInput
             value={searchQuery}
@@ -240,7 +240,7 @@ export const Admissions = () => {
         </div>
 
         <div className="flex flex-wrap items-center gap-2.5">
-          <div className="flex items-center gap-1.5 text-xs text-[#64748B]">
+          <div className="flex items-center gap-1.5 text-xs text-[#64748B] dark:text-[#CBD5E1]">
             <Filter className="w-3.5 h-3.5" />
             <span>Filters:</span>
           </div>
@@ -248,7 +248,7 @@ export const Admissions = () => {
           <select
             value={statusFilter}
             onChange={(e) => setStatusFilter(e.target.value)}
-            className="text-xs bg-[#F7F9FC] border border-[#E2E8F0] rounded-lg px-3 py-2 text-[#334155] font-medium focus:outline-none focus:ring-2 focus:ring-[#2563EB]/20 focus:border-[#2563EB]"
+            className="text-xs bg-[#F7F9FC] dark:bg-slate-800 border border-[#E2E8F0] dark:border-[#334155] rounded-lg px-3 py-2 text-[#334155] dark:text-[#F1F5F9] font-medium focus:outline-none focus:ring-2 focus:ring-[#2563EB]/20 dark:focus:ring-[#60A5FA]/20 focus:border-[#2563EB] dark:focus:border-[#60A5FA]"
           >
             <option value="ALL">All Care Levels</option>
             <option value="Admitted">Admitted</option>
@@ -263,7 +263,7 @@ export const Admissions = () => {
                 setSearchQuery('');
                 setStatusFilter('ALL');
               }}
-              className="text-xs text-[#2563EB] hover:text-[#1D4ED8] font-medium px-2 py-1"
+              className="text-xs text-[#2563EB] dark:text-[#60A5FA] hover:underline font-medium px-2 py-1"
             >
               Reset
             </button>
@@ -296,48 +296,48 @@ export const Admissions = () => {
       >
         {selectedAdmission && (
           <div className="space-y-4 text-xs">
-            <div className="flex items-center justify-between p-3.5 rounded-xl bg-slate-50 border border-slate-100">
+            <div className="flex items-center justify-between p-3.5 rounded-xl bg-slate-50 dark:bg-slate-800/80 border border-slate-100 dark:border-[#334155]">
               <div>
-                <p className="text-[11px] text-slate-500">Patient</p>
-                <p className="font-bold text-slate-900 text-sm">{selectedAdmission.patientName}</p>
-                <span className="font-mono text-slate-400 text-[10px]">{selectedAdmission.patientId}</span>
+                <p className="text-[11px] text-slate-500 dark:text-slate-400">Patient</p>
+                <p className="font-bold text-slate-900 dark:text-[#F1F5F9] text-sm">{selectedAdmission.patientName}</p>
+                <span className="font-mono text-slate-400 dark:text-slate-500 text-[10px]">{selectedAdmission.patientId}</span>
               </div>
               <Badge status={selectedAdmission.status} size="md" />
             </div>
 
-            <div className="p-4 rounded-xl bg-slate-50 border border-slate-100 grid grid-cols-2 gap-3 text-slate-700">
+            <div className="p-4 rounded-xl bg-slate-50 dark:bg-slate-800/80 border border-slate-100 dark:border-[#334155] grid grid-cols-2 gap-3 text-slate-700 dark:text-[#CBD5E1]">
               <div>
-                <p className="text-slate-500 text-[11px]">Allocated Bed</p>
-                <p className="font-bold text-slate-900">{selectedAdmission.bedNumber}</p>
-                <p className="text-slate-500 text-[11px]">{selectedAdmission.ward}</p>
+                <p className="text-slate-500 dark:text-slate-400 text-[11px]">Allocated Bed</p>
+                <p className="font-bold text-slate-900 dark:text-[#F1F5F9]">{selectedAdmission.bedNumber}</p>
+                <p className="text-slate-500 dark:text-slate-400 text-[11px]">{selectedAdmission.ward}</p>
               </div>
               <div>
-                <p className="text-slate-500 text-[11px]">Attending Consultant</p>
-                <p className="font-semibold text-slate-900">{selectedAdmission.attendingDoctor}</p>
-                <p className="text-slate-500 text-[11px]">{selectedAdmission.department}</p>
+                <p className="text-slate-500 dark:text-slate-400 text-[11px]">Attending Consultant</p>
+                <p className="font-semibold text-slate-900 dark:text-[#F1F5F9]">{selectedAdmission.attendingDoctor}</p>
+                <p className="text-slate-500 dark:text-slate-400 text-[11px]">{selectedAdmission.department}</p>
               </div>
               <div>
-                <p className="text-slate-500 text-[11px]">Admission Date</p>
-                <p className="font-medium text-slate-800">{formatDate(selectedAdmission.admissionDate)}</p>
+                <p className="text-slate-500 dark:text-slate-400 text-[11px]">Admission Date</p>
+                <p className="font-medium text-slate-800 dark:text-[#F1F5F9]">{formatDate(selectedAdmission.admissionDate)}</p>
               </div>
               <div>
-                <p className="text-slate-500 text-[11px]">Daily Accommodation Rate</p>
-                <p className="font-bold text-slate-900">{formatLKR(selectedAdmission.dailyRate)}</p>
+                <p className="text-slate-500 dark:text-slate-400 text-[11px]">Daily Accommodation Rate</p>
+                <p className="font-bold text-slate-900 dark:text-[#F1F5F9]">{formatLKR(selectedAdmission.dailyRate)}</p>
               </div>
               <div className="col-span-2">
-                <p className="text-slate-500 text-[11px]">Primary Diagnosis</p>
-                <p className="font-medium text-slate-900">{selectedAdmission.primaryDiagnosis}</p>
+                <p className="text-slate-500 dark:text-slate-400 text-[11px]">Primary Diagnosis</p>
+                <p className="font-medium text-slate-900 dark:text-[#F1F5F9]">{selectedAdmission.primaryDiagnosis}</p>
               </div>
               <div className="col-span-2">
-                <p className="text-slate-500 text-[11px]">Emergency Contact</p>
-                <p className="font-medium text-slate-800">{selectedAdmission.emergencyContact || 'None'}</p>
+                <p className="text-slate-500 dark:text-slate-400 text-[11px]">Emergency Contact</p>
+                <p className="font-medium text-slate-800 dark:text-[#CBD5E1]">{selectedAdmission.emergencyContact || 'None'}</p>
               </div>
             </div>
 
             {selectedAdmission.notes && (
-              <div className="p-3.5 rounded-xl bg-sky-50 border border-sky-100">
-                <p className="font-semibold text-sky-900 text-[11px] mb-1">Care Notes & Monitoring Orders</p>
-                <p className="text-sky-800 leading-relaxed">{selectedAdmission.notes}</p>
+              <div className="p-3.5 rounded-xl bg-sky-50 dark:bg-slate-700/60 border border-sky-100 dark:border-slate-600">
+                <p className="font-semibold text-sky-900 dark:text-[#60A5FA] text-[11px] mb-1">Care Notes & Monitoring Orders</p>
+                <p className="text-sky-800 dark:text-[#CBD5E1] leading-relaxed">{selectedAdmission.notes}</p>
               </div>
             )}
           </div>
