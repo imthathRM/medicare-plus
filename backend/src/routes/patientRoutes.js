@@ -1,14 +1,18 @@
 import { Router } from 'express';
 import prisma from '../config/prisma.js';
 import { sendSuccess, sendError } from '../utils/response.js';
+import { authenticateToken, requireRoles } from '../middleware/authMiddleware.js';
 
 const router = Router();
+
+// Apply JWT authentication to all patient routes
+router.use(authenticateToken);
 
 /**
  * GET /api/patients
  * Retrieve all patients from PostgreSQL (supports query filter: ?search=)
  */
-router.get('/', async (req, res, next) => {
+router.get('/', requireRoles('ADMIN', 'DOCTOR', 'RECEPTIONIST', 'PHARMACIST'), async (req, res, next) => {
   try {
     const { search } = req.query;
     const where = search
@@ -57,7 +61,7 @@ router.get('/:id', async (req, res, next) => {
  * POST /api/patients
  * Create a new patient record in PostgreSQL
  */
-router.post('/', async (req, res, next) => {
+router.post('/', requireRoles('ADMIN', 'DOCTOR', 'RECEPTIONIST'), async (req, res, next) => {
   try {
     const data = req.body;
     if (!data || !data.name) {
@@ -97,7 +101,7 @@ router.post('/', async (req, res, next) => {
  * PUT /api/patients/:id
  * Update an existing patient record in PostgreSQL
  */
-router.put('/:id', async (req, res, next) => {
+router.put('/:id', requireRoles('ADMIN', 'DOCTOR', 'RECEPTIONIST'), async (req, res, next) => {
   try {
     const { id: _id, createdAt: _createdAt, updatedAt: _updatedAt, ...updateData } = req.body;
 
@@ -122,9 +126,9 @@ router.put('/:id', async (req, res, next) => {
 
 /**
  * DELETE /api/patients/:id
- * Delete or archive a patient record in PostgreSQL
+ * Delete or archive a patient record in PostgreSQL (ADMIN only)
  */
-router.delete('/:id', async (req, res, next) => {
+router.delete('/:id', requireRoles('ADMIN'), async (req, res, next) => {
   try {
     const existing = await prisma.patient.findUnique({
       where: { id: req.params.id },

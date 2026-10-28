@@ -1,13 +1,16 @@
 import express from 'express';
 import cors from 'cors';
+import helmet from 'helmet';
 import { config } from './config/environment.js';
 import apiRouter from './routes/index.js';
-import { devUserResolver } from './middleware/devUserResolver.js';
 import { notFoundHandler } from './middleware/notFoundHandler.js';
 import { errorHandler } from './middleware/errorHandler.js';
 
 export const createApp = () => {
   const app = express();
+
+  // Secure HTTP Headers
+  app.use(helmet({ contentSecurityPolicy: false }));
 
   // CORS configuration allowing existing Vite frontend
   app.use(
@@ -36,16 +39,13 @@ export const createApp = () => {
       },
       credentials: true,
       methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
-      allowedHeaders: ['Content-Type', 'Authorization', 'x-user-id'],
+      allowedHeaders: ['Content-Type', 'Authorization'],
     })
   );
 
   // Request Body Parsers
   app.use(express.json({ limit: '10mb' }));
   app.use(express.urlencoded({ extended: true, limit: '10mb' }));
-
-  // Stage 5 Development User Scaffolding Middleware
-  app.use(devUserResolver);
 
   // Mount Centralized API Routes
   app.use('/api', apiRouter);

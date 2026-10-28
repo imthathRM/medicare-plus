@@ -37,11 +37,12 @@ export const Topbar = ({ isMobileOpen, setIsMobileOpen }) => {
   const { user, logout } = useAuth();
   const { hospitalProfile, appSettings, toggleGlobalTheme } = useHospitalData();
   const isDark = appSettings?.themeMode === 'dark';
+  const userRole = (user?.role || '').toUpperCase();
   const isAdmin =
     !user ||
-    user.role === 'Hospital Administrator' ||
-    user.role === 'Superadmin' ||
-    user.role === 'admin';
+    userRole === 'ADMIN' ||
+    userRole === 'HOSPITAL ADMINISTRATOR' ||
+    userRole === 'SUPERADMIN';
 
   const [showNotifications, setShowNotifications] = useState(false);
   const [showUserMenu, setShowUserMenu] = useState(false);
@@ -250,7 +251,7 @@ export const Topbar = ({ isMobileOpen, setIsMobileOpen }) => {
                 <p className="text-[11px] text-[#64748B] dark:text-[#CBD5E1] truncate">{user?.email}</p>
                 <div className="mt-2 inline-flex items-center gap-1.5 px-2 py-0.5 rounded-md bg-emerald-50 dark:bg-emerald-950/60 text-[#15803D] dark:text-[#4ADE80] text-[10px] font-semibold">
                   <ShieldCheck className="w-3 h-3" />
-                  Verified Hospital Admin
+                  Verified {user?.role || 'Staff'}
                 </div>
               </div>
 

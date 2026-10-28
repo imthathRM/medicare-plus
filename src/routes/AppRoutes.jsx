@@ -16,20 +16,50 @@ import { Reports } from '../pages/Reports';
 import { Settings } from '../pages/Settings';
 import { NotFound } from '../pages/NotFound';
 
-// Protected Route wrapper
-const ProtectedRoute = ({ children }) => {
-  const { isAuthenticated } = useAuth();
+// Protected Route wrapper with session loading and RBAC support
+const ProtectedRoute = ({ children, allowedRoles }) => {
+  const { isAuthenticated, isInitialLoading, user } = useAuth();
   const location = useLocation();
+
+  if (isInitialLoading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-[#F7F9FC] dark:bg-[#0F172A]">
+        <div className="flex flex-col items-center gap-3">
+          <div className="w-8 h-8 border-3 border-[#2563EB] border-t-transparent rounded-full animate-spin" />
+          <p className="text-xs text-[#64748B] dark:text-[#CBD5E1] font-medium">Verifying security session...</p>
+        </div>
+      </div>
+    );
+  }
 
   if (!isAuthenticated) {
     return <Navigate to="/login" state={{ from: location }} replace />;
+  }
+
+  if (allowedRoles && allowedRoles.length > 0) {
+    const userRole = (user?.role || '').toUpperCase();
+    const normalizedAllowed = allowedRoles.map((r) => r.toUpperCase());
+    if (userRole !== 'ADMIN' && !normalizedAllowed.includes(userRole)) {
+      return <Navigate to="/" replace />;
+    }
   }
 
   return children;
 };
 
 export const AppRoutes = () => {
-  const { isAuthenticated } = useAuth();
+  const { isAuthenticated, isInitialLoading } = useAuth();
+
+  if (isInitialLoading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-[#F7F9FC] dark:bg-[#0F172A]">
+        <div className="flex flex-col items-center gap-3">
+          <div className="w-8 h-8 border-3 border-[#2563EB] border-t-transparent rounded-full animate-spin" />
+          <p className="text-xs text-[#64748B] dark:text-[#CBD5E1] font-medium">Loading MediCare Plus...</p>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <Routes>
@@ -54,10 +84,38 @@ export const AppRoutes = () => {
         <Route path="departments" element={<Departments />} />
         <Route path="appointments" element={<Appointments />} />
         <Route path="admissions" element={<Admissions />} />
-        <Route path="billing" element={<Billing />} />
-        <Route path="pharmacy" element={<Pharmacy />} />
-        <Route path="staff" element={<Staff />} />
-        <Route path="reports" element={<Reports />} />
+        <Route
+          path="billing"
+          element={
+            <ProtectedRoute allowedRoles={['ADMIN', 'RECEPTIONIST', 'DOCTOR']}>
+              <Billing />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="pharmacy"
+          element={
+            <ProtectedRoute allowedRoles={['ADMIN', 'PHARMACIST', 'DOCTOR']}>
+              <Pharmacy />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="staff"
+          element={
+            <ProtectedRoute allowedRoles={['ADMIN', 'DOCTOR', 'RECEPTIONIST']}>
+              <Staff />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="reports"
+          element={
+            <ProtectedRoute allowedRoles={['ADMIN', 'DOCTOR']}>
+              <Reports />
+            </ProtectedRoute>
+          }
+        />
         <Route path="settings" element={<Settings />} />
         <Route path="*" element={<NotFound />} />
       </Route>

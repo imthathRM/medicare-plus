@@ -1,4 +1,5 @@
 import { PrismaClient } from '@prisma/client';
+import bcrypt from 'bcryptjs';
 import {
   departments,
   doctors,
@@ -142,6 +143,66 @@ async function main() {
       where: { userId },
       update: { themeMode },
       create: { userId, themeMode },
+    });
+  }
+
+  // 11. Initial Users & Authenticated Accounts (Stage 7)
+  console.log('Seeding Authenticated System Users (with bcrypt)...');
+  const defaultPasswordHash = await bcrypt.hash('password123', 10);
+  const initialUsers = [
+    {
+      id: 'USR-ADMIN-01',
+      name: 'Dr. Senaka Weeraratne',
+      email: 'admin@medicare.plus',
+      password: defaultPasswordHash,
+      role: 'ADMIN',
+      phone: '+94 11 268 4500',
+      avatar: 'https://images.unsplash.com/photo-1622253692010-333f2da6031d?w=150&auto=format&fit=crop&q=80',
+      status: 'Active',
+    },
+    {
+      id: 'USR-DOC-01',
+      name: 'Dr. Rohan Jayasuriya',
+      email: 'doctor@medicare.plus',
+      password: defaultPasswordHash,
+      role: 'DOCTOR',
+      phone: '+94 77 123 4567',
+      avatar: 'https://images.unsplash.com/photo-1537368910025-700350fe46c7?w=150&auto=format&fit=crop&q=80',
+      status: 'Active',
+    },
+    {
+      id: 'USR-RECP-01',
+      name: 'Priya Wickramasinghe',
+      email: 'receptionist@medicare.plus',
+      password: defaultPasswordHash,
+      role: 'RECEPTIONIST',
+      phone: '+94 71 987 6543',
+      avatar: 'https://images.unsplash.com/photo-1594824813579-247065968b20?w=150&auto=format&fit=crop&q=80',
+      status: 'Active',
+    },
+    {
+      id: 'USR-PHARM-01',
+      name: 'Kavindu Perera',
+      email: 'pharmacist@medicare.plus',
+      password: defaultPasswordHash,
+      role: 'PHARMACIST',
+      phone: '+94 76 543 2109',
+      avatar: 'https://images.unsplash.com/photo-1582750433449-648ed127bb54?w=150&auto=format&fit=crop&q=80',
+      status: 'Active',
+    },
+  ];
+
+  for (const user of initialUsers) {
+    await prisma.user.upsert({
+      where: { email: user.email },
+      update: {
+        name: user.name,
+        role: user.role,
+        phone: user.phone,
+        avatar: user.avatar,
+        status: user.status,
+      },
+      create: user,
     });
   }
 

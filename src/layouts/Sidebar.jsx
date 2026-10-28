@@ -27,16 +27,23 @@ const NAV_ITEMS = [
   { name: 'Departments', path: '/departments', icon: Building2 },
   { name: 'Appointments', path: '/appointments', icon: CalendarCheck2, badgeKey: 'appointments' },
   { name: 'Admissions', path: '/admissions', icon: BedDouble, badgeKey: 'admissions' },
-  { name: 'Billing', path: '/billing', icon: Receipt },
-  { name: 'Pharmacy & Inventory', path: '/pharmacy', icon: Pill, badgeKey: 'lowStock' },
-  { name: 'Staff', path: '/staff', icon: UserCog },
-  { name: 'Reports', path: '/reports', icon: BarChart3 },
+  { name: 'Billing', path: '/billing', icon: Receipt, roles: ['ADMIN', 'RECEPTIONIST', 'DOCTOR'] },
+  { name: 'Pharmacy & Inventory', path: '/pharmacy', icon: Pill, badgeKey: 'lowStock', roles: ['ADMIN', 'PHARMACIST', 'DOCTOR'] },
+  { name: 'Staff', path: '/staff', icon: UserCog, roles: ['ADMIN', 'DOCTOR', 'RECEPTIONIST'] },
+  { name: 'Reports', path: '/reports', icon: BarChart3, roles: ['ADMIN', 'DOCTOR'] },
   { name: 'Settings', path: '/settings', icon: Settings },
 ];
 
 export const Sidebar = ({ isCollapsed, setIsCollapsed, isMobileOpen, setIsMobileOpen }) => {
   const { user, logout } = useAuth();
   const { dashboardStats } = useHospitalData();
+
+  const userRole = (user?.role || '').toUpperCase();
+  const visibleNavItems = NAV_ITEMS.filter((item) => {
+    if (!item.roles) return true;
+    if (userRole === 'ADMIN') return true;
+    return item.roles.includes(userRole);
+  });
 
   const getBadgeValue = (key) => {
     if (key === 'appointments') return dashboardStats.todayAppointments;
@@ -97,7 +104,7 @@ export const Sidebar = ({ isCollapsed, setIsCollapsed, isMobileOpen, setIsMobile
 
         {/* Navigation list */}
         <nav className="flex-1 overflow-y-auto px-3 py-4 space-y-1">
-          {NAV_ITEMS.map((item) => {
+          {visibleNavItems.map((item) => {
             const Icon = item.icon;
             const badge = item.badgeKey ? getBadgeValue(item.badgeKey) : null;
 

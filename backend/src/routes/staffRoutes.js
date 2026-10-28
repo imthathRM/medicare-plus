@@ -1,14 +1,18 @@
 import { Router } from 'express';
 import prisma from '../config/prisma.js';
 import { sendSuccess, sendError } from '../utils/response.js';
+import { authenticateToken, requireRoles } from '../middleware/authMiddleware.js';
 
 const router = Router();
+
+// Apply JWT authentication to all staff routes
+router.use(authenticateToken);
 
 /**
  * GET /api/staff
  * Retrieve all hospital administrative, nursing, and clinical staff from PostgreSQL
  */
-router.get('/', async (req, res, next) => {
+router.get('/', requireRoles('ADMIN', 'DOCTOR', 'RECEPTIONIST'), async (req, res, next) => {
   try {
     const { department, role } = req.query;
     const where = {};
@@ -54,9 +58,9 @@ router.get('/:id', async (req, res, next) => {
 
 /**
  * POST /api/staff
- * Register a new staff member in PostgreSQL
+ * Register a new staff member in PostgreSQL (ADMIN only)
  */
-router.post('/', async (req, res, next) => {
+router.post('/', requireRoles('ADMIN'), async (req, res, next) => {
   try {
     const data = req.body;
     if (!data || !data.name || !data.role) {

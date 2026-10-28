@@ -1,8 +1,12 @@
 import { Router } from 'express';
 import prisma from '../config/prisma.js';
 import { sendSuccess, sendError } from '../utils/response.js';
+import { authenticateToken, requireRoles } from '../middleware/authMiddleware.js';
 
 const router = Router();
+
+// Apply JWT authentication to all appointment routes
+router.use(authenticateToken);
 
 /**
  * GET /api/appointments
@@ -57,7 +61,7 @@ router.get('/:id', async (req, res, next) => {
  * POST /api/appointments
  * Book a new appointment in PostgreSQL
  */
-router.post('/', async (req, res, next) => {
+router.post('/', requireRoles('ADMIN', 'DOCTOR', 'RECEPTIONIST'), async (req, res, next) => {
   try {
     const data = req.body;
     if (!data || !data.patientName || !data.doctorName) {
@@ -118,7 +122,7 @@ const updateStatus = async (req, res, next) => {
   }
 };
 
-router.patch('/:id/status', updateStatus);
-router.put('/:id/status', updateStatus);
+router.patch('/:id/status', requireRoles('ADMIN', 'DOCTOR', 'RECEPTIONIST'), updateStatus);
+router.put('/:id/status', requireRoles('ADMIN', 'DOCTOR', 'RECEPTIONIST'), updateStatus);
 
 export default router;

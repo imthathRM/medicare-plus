@@ -1,14 +1,18 @@
 import { Router } from 'express';
 import prisma from '../config/prisma.js';
 import { sendSuccess, sendError } from '../utils/response.js';
+import { authenticateToken, requireRoles } from '../middleware/authMiddleware.js';
 
 const router = Router();
+
+// Apply JWT authentication to all billing routes
+router.use(authenticateToken);
 
 /**
  * GET /api/billing (or /api/invoices)
  * Retrieve all hospital bills & invoices from PostgreSQL
  */
-router.get('/', async (req, res, next) => {
+router.get('/', requireRoles('ADMIN', 'RECEPTIONIST', 'DOCTOR'), async (req, res, next) => {
   try {
     const { status, patientId } = req.query;
     const where = {};
@@ -56,9 +60,9 @@ router.get('/:id', async (req, res, next) => {
 
 /**
  * POST /api/billing
- * Generate new invoice in PostgreSQL
+ * Generate new invoice in PostgreSQL (ADMIN, RECEPTIONIST only)
  */
-router.post('/', async (req, res, next) => {
+router.post('/', requireRoles('ADMIN', 'RECEPTIONIST'), async (req, res, next) => {
   try {
     const data = req.body;
     if (!data || !data.patientName || !data.totalLKR) {
@@ -89,9 +93,9 @@ router.post('/', async (req, res, next) => {
 
 /**
  * POST /api/billing/:id/payment
- * Record payment against an invoice using a database transaction
+ * Record payment against an invoice using a database transaction (ADMIN, RECEPTIONIST only)
  */
-router.post('/:id/payment', async (req, res, next) => {
+router.post('/:id/payment', requireRoles('ADMIN', 'RECEPTIONIST'), async (req, res, next) => {
   try {
     const { paymentMethod, amountPaid } = req.body;
 

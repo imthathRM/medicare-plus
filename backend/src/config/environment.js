@@ -12,6 +12,8 @@ export const config = {
   port: parseInt(process.env.PORT, 10) || 5000,
   nodeEnv: process.env.NODE_ENV || 'development',
   corsOrigin: process.env.CORS_ORIGIN || 'http://localhost:5173',
+  jwtSecret: process.env.JWT_SECRET || 'medicare_default_jwt_secret_dev_key',
+  jwtExpiresIn: process.env.JWT_EXPIRES_IN || '24h',
   isProduction: process.env.NODE_ENV === 'production',
   version: '1.0.0',
 };

@@ -8,6 +8,28 @@ datasource db {
 }
 
 // ----------------------------------------------------
+// 0. User Accounts & Authentication (Stage 7)
+// ----------------------------------------------------
+model User {
+  id        String    @id @default(uuid())
+  name      String
+  email     String    @unique
+  password  String    // Secure bcrypt password hash
+  role      String    @default("RECEPTIONIST") // ADMIN, DOCTOR, RECEPTIONIST, PHARMACIST
+  phone     String?
+  avatar    String?
+  status    String    @default("Active") // Active, Inactive, Suspended
+  lastLogin DateTime?
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+
+  @@index([email])
+  @@index([role])
+  @@index([status])
+  @@map("users")
+}
+
+// ----------------------------------------------------
 // 1. Departments
 // ----------------------------------------------------
 model Department {

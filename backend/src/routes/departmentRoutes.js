@@ -1,8 +1,12 @@
 import { Router } from 'express';
 import prisma from '../config/prisma.js';
 import { sendSuccess, sendError } from '../utils/response.js';
+import { authenticateToken } from '../middleware/authMiddleware.js';
 
 const router = Router();
+
+// Apply JWT authentication to all department routes
+router.use(authenticateToken);
 
 /**
  * GET /api/departments

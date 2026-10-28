@@ -1,6 +1,7 @@
 import { Router } from 'express';
 import prisma from '../config/prisma.js';
 import { sendSuccess, sendError } from '../utils/response.js';
+import { authenticateToken, requireRoles, optionalAuth } from '../middleware/authMiddleware.js';
 
 const router = Router();
 
@@ -10,13 +11,8 @@ const router = Router();
  * ==============================================================================
  *
  * Each authenticated user independently selects Light or Dark Theme.
+ * Authenticated user identity is derived from verified JWT token.
  * Accepts ONLY 'light' or 'dark'.
- *
- * NOTE (Stage 6 Scaffolding):
- * Full JWT authentication is scheduled for Stage 7.
- * For now, the user ID is resolved via the `devUserResolver` middleware
- * (checking `x-user-id` HTTP header or `?userId=` query parameter,
- * defaulting to 'default-user').
  *
  * Each user ID has its own isolated record in the `user_settings` table.
  * Themes are NOT shared across users globally.
@@ -27,9 +23,9 @@ const router = Router();
  * GET /api/settings/theme
  * Retrieve current user's theme preference from PostgreSQL.
  */
-router.get('/theme', async (req, res, next) => {
+router.get('/theme', optionalAuth, async (req, res, next) => {
   try {
-    const userId = req.devUser?.id || 'default-user';
+    const userId = req.user?.id || req.devUser?.id || 'default-user';
 
     const setting = await prisma.userSetting.findUnique({
       where: { userId },
@@ -42,7 +38,7 @@ router.get('/theme', async (req, res, next) => {
       {
         userId,
         themeMode,
-        isDevelopmentStub: true,
+        isAuthenticated: !!req.user,
       },
       `Theme preference for user '${userId}' retrieved successfully.`
     );
@@ -56,9 +52,9 @@ router.get('/theme', async (req, res, next) => {
  * Update theme preference for current user in PostgreSQL.
  * Accepts only 'light' or 'dark'.
  */
-router.put('/theme', async (req, res, next) => {
+router.put('/theme', optionalAuth, async (req, res, next) => {
   try {
-    const userId = req.devUser?.id || 'default-user';
+    const userId = req.user?.id || req.devUser?.id || 'default-user';
     const { themeMode, theme } = req.body;
     const requestedTheme = themeMode || theme;
 
@@ -83,7 +79,7 @@ router.put('/theme', async (req, res, next) => {
       {
         userId: updated.userId,
         themeMode: updated.themeMode,
-        isDevelopmentStub: true,
+        isAuthenticated: !!req.user,
       },
       `Theme preference for user '${userId}' successfully updated to '${updated.themeMode}'.`
     );
@@ -124,9 +120,9 @@ router.get('/hospital', async (req, res, next) => {
 
 /**
  * PUT /api/settings/hospital
- * Update institutional hospital profile in PostgreSQL.
+ * Update institutional hospital profile in PostgreSQL (ADMIN only).
  */
-router.put('/hospital', async (req, res, next) => {
+router.put('/hospital', authenticateToken, requireRoles('ADMIN'), async (req, res, next) => {
   try {
     const updates = req.body;
     if (!updates || typeof updates !== 'object') {

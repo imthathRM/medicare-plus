@@ -1,8 +1,13 @@
 import { Router } from 'express';
 import prisma from '../config/prisma.js';
 import { sendSuccess } from '../utils/response.js';
+import { authenticateToken, requireRoles } from '../middleware/authMiddleware.js';
 
 const router = Router();
+
+// Apply JWT authentication and role authorization (ADMIN, DOCTOR) to clinical & financial analytics
+router.use(authenticateToken);
+router.use(requireRoles('ADMIN', 'DOCTOR'));
 
 /**
  * GET /api/reports/summary

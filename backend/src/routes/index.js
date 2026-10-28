@@ -1,4 +1,5 @@
 import { Router } from 'express';
+import authRoutes from './authRoutes.js';
 import healthRoutes from './healthRoutes.js';
 import settingsRoutes from './settingsRoutes.js';
 import patientRoutes from './patientRoutes.js';
@@ -14,6 +15,7 @@ import reportRoutes from './reportRoutes.js';
 const apiRouter = Router();
 
 // Modular Route Mounts
+apiRouter.use('/auth', authRoutes);
 apiRouter.use('/health', healthRoutes);
 apiRouter.use('/settings', settingsRoutes);
 apiRouter.use('/patients', patientRoutes);

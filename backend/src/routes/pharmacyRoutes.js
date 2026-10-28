@@ -1,8 +1,12 @@
 import { Router } from 'express';
 import prisma from '../config/prisma.js';
 import { sendSuccess, sendError } from '../utils/response.js';
+import { authenticateToken, requireRoles } from '../middleware/authMiddleware.js';
 
 const router = Router();
+
+// Apply JWT authentication to all pharmacy routes
+router.use(authenticateToken);
 
 /**
  * GET /api/pharmacy (or /api/inventory)
@@ -54,9 +58,9 @@ router.get('/:id', async (req, res, next) => {
 
 /**
  * POST /api/pharmacy
- * Add new medicine to inventory in PostgreSQL
+ * Add new medicine to inventory in PostgreSQL (ADMIN, PHARMACIST only)
  */
-router.post('/', async (req, res, next) => {
+router.post('/', requireRoles('ADMIN', 'PHARMACIST'), async (req, res, next) => {
   try {
     const data = req.body;
     if (!data || !data.name || !data.category) {
@@ -88,9 +92,9 @@ router.post('/', async (req, res, next) => {
 
 /**
  * PUT /api/pharmacy/:id/stock
- * Adjust medicine stock level atomically via transaction
+ * Adjust medicine stock level atomically via transaction (ADMIN, PHARMACIST only)
  */
-router.put('/:id/stock', async (req, res, next) => {
+router.put('/:id/stock', requireRoles('ADMIN', 'PHARMACIST'), async (req, res, next) => {
   try {
     const { adjustment, newQuantity } = req.body;
     if (typeof newQuantity !== 'number' && typeof adjustment !== 'number') {

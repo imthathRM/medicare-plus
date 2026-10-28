@@ -1,8 +1,12 @@
 import { Router } from 'express';
 import prisma from '../config/prisma.js';
 import { sendSuccess, sendError } from '../utils/response.js';
+import { authenticateToken, requireRoles } from '../middleware/authMiddleware.js';
 
 const router = Router();
+
+// Apply JWT authentication to all admission routes
+router.use(authenticateToken);
 
 /**
  * GET /api/admissions
@@ -54,7 +58,7 @@ router.get('/:id', async (req, res, next) => {
  * POST /api/admissions
  * Register a new inpatient admission in PostgreSQL
  */
-router.post('/', async (req, res, next) => {
+router.post('/', requireRoles('ADMIN', 'DOCTOR', 'RECEPTIONIST'), async (req, res, next) => {
   try {
     const data = req.body;
     if (!data || !data.patientName || !data.ward) {
@@ -85,7 +89,7 @@ router.post('/', async (req, res, next) => {
  * PUT /api/admissions/:id
  * Update admission details in PostgreSQL
  */
-router.put('/:id', async (req, res, next) => {
+router.put('/:id', requireRoles('ADMIN', 'DOCTOR', 'RECEPTIONIST'), async (req, res, next) => {
   try {
     const existing = await prisma.admission.findUnique({
       where: { id: req.params.id },

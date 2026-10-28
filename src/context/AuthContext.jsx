@@ -1,69 +1,126 @@
-import React, { createContext, useContext, useState } from 'react';
+import React, { createContext, useContext, useState, useEffect, useCallback } from 'react';
+import { authService } from '../services/authService';
 
 const AuthContext = createContext(null);
 
-const DEMO_USER = {
-  id: 'USR-001',
-  name: 'Dr. Senaka Weeraratne',
-  email: 'admin@medicare.plus',
-  role: 'Hospital Administrator',
-  department: 'Executive Administration',
-  avatar: 'https://images.unsplash.com/photo-1622253692010-333f2da6031d?w=150&auto=format&fit=crop&q=80',
-  hospital: 'MediCare Plus Hospital',
-  lastLogin: new Date().toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' }),
-};
+const TOKEN_KEY = 'medicare_token';
+const USER_KEY = 'medicare_user';
+const STORAGE_TYPE_KEY = 'medicare_remember';
 
 export const AuthProvider = ({ children }) => {
-  // Check session storage or default to logged in for seamless demo review
+  const [token, setToken] = useState(() => {
+    return localStorage.getItem(TOKEN_KEY) || sessionStorage.getItem(TOKEN_KEY) || null;
+  });
+
   const [user, setUser] = useState(() => {
-    const saved = sessionStorage.getItem('medicare_demo_user');
-    if (saved) {
+    const raw = localStorage.getItem(USER_KEY) || sessionStorage.getItem(USER_KEY);
+    if (raw) {
       try {
-        return JSON.parse(saved);
+        return JSON.parse(raw);
       } catch {
-        return DEMO_USER;
+        return null;
       }
     }
-    return DEMO_USER;
+    return null;
   });
 
   const [isLoading, setIsLoading] = useState(false);
+  const [isInitialLoading, setIsInitialLoading] = useState(true);
 
-  const login = async (email, password, remember = false) => {
-    setIsLoading(true);
-    await new Promise((resolve) => setTimeout(resolve, 600));
+  // Clear all stored auth data
+  const clearAuthStorage = useCallback(() => {
+    localStorage.removeItem(TOKEN_KEY);
+    localStorage.removeItem(USER_KEY);
+    localStorage.removeItem(STORAGE_TYPE_KEY);
+    sessionStorage.removeItem(TOKEN_KEY);
+    sessionStorage.removeItem(USER_KEY);
+    sessionStorage.removeItem(STORAGE_TYPE_KEY);
+    setToken(null);
+    setUser(null);
+  }, []);
 
-    // Demo validation
-    if (!email || !password) {
-      setIsLoading(false);
-      throw new Error('Please provide both username/email and password.');
-    }
+  // Verify stored token on initial load
+  useEffect(() => {
+    const verifySession = async () => {
+      const activeToken = localStorage.getItem(TOKEN_KEY) || sessionStorage.getItem(TOKEN_KEY);
+      if (!activeToken) {
+        setIsInitialLoading(false);
+        return;
+      }
 
-    // Allow standard demo credentials or any email ending in medicare.plus
-    const authenticatedUser = {
-      ...DEMO_USER,
-      email: email.trim(),
+      try {
+        const verifiedUser = await authService.getCurrentUser(activeToken);
+        setUser(verifiedUser);
+        setToken(activeToken);
+        const remember = localStorage.getItem(STORAGE_TYPE_KEY) === 'true';
+        const storage = remember ? localStorage : sessionStorage;
+        storage.setItem(USER_KEY, JSON.stringify(verifiedUser));
+      } catch {
+        // Token expired or invalid
+        clearAuthStorage();
+      } finally {
+        setIsInitialLoading(false);
+      }
     };
 
-    setUser(authenticatedUser);
-    if (remember) {
-      sessionStorage.setItem('medicare_demo_user', JSON.stringify(authenticatedUser));
+    verifySession();
+  }, [clearAuthStorage]);
+
+  /**
+   * Login user with email & password against PostgreSQL backend
+   */
+  const login = async (email, password, remember = false) => {
+    setIsLoading(true);
+    try {
+      const authData = await authService.login(email, password);
+      const { token: receivedToken, user: receivedUser } = authData;
+
+      // Select storage according to "Remember me"
+      const storage = remember ? localStorage : sessionStorage;
+      // Clear opposite storage
+      if (remember) {
+        sessionStorage.removeItem(TOKEN_KEY);
+        sessionStorage.removeItem(USER_KEY);
+        localStorage.setItem(STORAGE_TYPE_KEY, 'true');
+      } else {
+        localStorage.removeItem(TOKEN_KEY);
+        localStorage.removeItem(USER_KEY);
+        localStorage.removeItem(STORAGE_TYPE_KEY);
+      }
+
+      storage.setItem(TOKEN_KEY, receivedToken);
+      storage.setItem(USER_KEY, JSON.stringify(receivedUser));
+
+      setToken(receivedToken);
+      setUser(receivedUser);
+
+      return receivedUser;
+    } finally {
+      setIsLoading(false);
     }
-    setIsLoading(false);
-    return authenticatedUser;
   };
 
-  const logout = () => {
-    setUser(null);
-    sessionStorage.removeItem('medicare_demo_user');
+  /**
+   * Logout user from session
+   */
+  const logout = async () => {
+    try {
+      if (token) {
+        await authService.logout(token);
+      }
+    } finally {
+      clearAuthStorage();
+    }
   };
 
   return (
     <AuthContext.Provider
       value={{
         user,
-        isAuthenticated: !!user,
+        token,
+        isAuthenticated: !!user && !!token,
         isLoading,
+        isInitialLoading,
         login,
         logout,
         demoCredentials: {

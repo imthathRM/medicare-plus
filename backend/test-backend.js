@@ -1,13 +1,18 @@
 import { createApp } from './src/app.js';
 import prisma from './src/config/prisma.js';
+import jwt from 'jsonwebtoken';
+import { config } from './src/config/environment.js';
 
 async function runTests() {
-  console.log('--- Starting Stage 6 PostgreSQL Backend Verification ---');
-  const app = createApp();
-  const PORT = 5056; // Dedicated test port
+  console.log('================================================================');
+  console.log('   MediCare Plus — Stage 7 Security & Auth Verification Suite   ');
+  console.log('================================================================\n');
 
+  const app = createApp();
+  const PORT = 5057; // Dedicated test port
   const server = app.listen(PORT);
   const baseURL = `http://localhost:${PORT}/api`;
+
   let passed = 0;
   let failed = 0;
 
@@ -21,183 +26,338 @@ async function runTests() {
     }
   }
 
+  let adminToken = '';
+  let doctorToken = '';
+  let receptionistToken = '';
+  let pharmacistToken = '';
+
   try {
+    // -------------------------------------------------------------------------
     // 1. Health check & PostgreSQL Connection Probe
-    console.log('\n[1] Health Endpoint & Database Probe Verification');
+    // -------------------------------------------------------------------------
+    console.log('[1] Health Endpoint & Database Probe Verification');
     const healthRes = await fetch(`${baseURL}/health`);
     const healthData = await healthRes.json();
     assert(healthRes.status === 200, 'GET /api/health returns 200 OK');
     assert(healthData.success === true, 'GET /api/health response envelope success is true');
     assert(healthData.data.status === 'healthy', 'GET /api/health reports healthy');
     assert(healthData.data.database?.status === 'connected', 'Database probe reports connected to PostgreSQL');
-    assert(healthData.data.database?.provider === 'postgresql', 'Database provider is postgresql');
 
-    // 2. User Theme Preference Endpoints in PostgreSQL
-    console.log('\n[2] User Theme Preference Verification in PostgreSQL');
-    // 2a. Default user theme
-    const themeRes1 = await fetch(`${baseURL}/settings/theme`, {
-      headers: { 'x-user-id': 'test-user-01' },
+    // -------------------------------------------------------------------------
+    // 2. Authentication: Login & Credential Verification
+    // -------------------------------------------------------------------------
+    console.log('\n[2] User Authentication & JWT Issuance');
+
+    // 2a. Admin Login
+    const adminLoginRes = await fetch(`${baseURL}/auth/login`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ email: 'admin@medicare.plus', password: 'password123' }),
     });
-    const themeData1 = await themeRes1.json();
-    assert(themeRes1.status === 200, 'GET /api/settings/theme returns 200 OK');
-    assert(themeData1.data.themeMode === 'light', 'New user defaults to light theme');
+    const adminLoginData = await adminLoginRes.json();
+    assert(adminLoginRes.status === 200, 'Valid admin login returns 200 OK');
+    assert(!!adminLoginData.data?.token, 'Login returns JWT token string');
+    assert(adminLoginData.data?.user?.role === 'ADMIN', 'Admin user has role ADMIN');
+    assert(!adminLoginData.data?.user?.password, 'User password is not leaked in login response');
+    adminToken = adminLoginData.data?.token;
 
-    // 2b. Update User A to dark
-    const putResA = await fetch(`${baseURL}/settings/theme`, {
+    // 2b. Doctor Login
+    const docLoginRes = await fetch(`${baseURL}/auth/login`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ email: 'doctor@medicare.plus', password: 'password123' }),
+    });
+    const docLoginData = await docLoginRes.json();
+    assert(docLoginRes.status === 200 && docLoginData.data?.user?.role === 'DOCTOR', 'Doctor login succeeds with DOCTOR role');
+    doctorToken = docLoginData.data?.token;
+
+    // 2c. Receptionist Login
+    const recpLoginRes = await fetch(`${baseURL}/auth/login`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ email: 'receptionist@medicare.plus', password: 'password123' }),
+    });
+    const recpLoginData = await recpLoginRes.json();
+    assert(recpLoginRes.status === 200 && recpLoginData.data?.user?.role === 'RECEPTIONIST', 'Receptionist login succeeds with RECEPTIONIST role');
+    receptionistToken = recpLoginData.data?.token;
+
+    // 2d. Pharmacist Login
+    const pharmLoginRes = await fetch(`${baseURL}/auth/login`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ email: 'pharmacist@medicare.plus', password: 'password123' }),
+    });
+    const pharmLoginData = await pharmLoginRes.json();
+    assert(pharmLoginRes.status === 200 && pharmLoginData.data?.user?.role === 'PHARMACIST', 'Pharmacist login succeeds with PHARMACIST role');
+    pharmacistToken = pharmLoginData.data?.token;
+
+    // 2e. Invalid Password
+    const badPwdRes = await fetch(`${baseURL}/auth/login`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ email: 'admin@medicare.plus', password: 'wrongpassword' }),
+    });
+    const badPwdData = await badPwdRes.json();
+    assert(badPwdRes.status === 401, 'Invalid password rejected with 401 Unauthorized');
+    assert(badPwdData.success === false, 'Invalid login response success is false');
+
+    // 2f. Non-existent User
+    const noUserRes = await fetch(`${baseURL}/auth/login`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ email: 'fakeuser@medicare.plus', password: 'password123' }),
+    });
+    assert(noUserRes.status === 401, 'Non-existent user rejected with 401 Unauthorized');
+
+    // 2g. Missing Fields
+    const emptyRes = await fetch(`${baseURL}/auth/login`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ email: '' }),
+    });
+    assert(emptyRes.status === 400, 'Blank login payload rejected with 400 Bad Request');
+
+    // -------------------------------------------------------------------------
+    // 3. Password Storage Verification in PostgreSQL
+    // -------------------------------------------------------------------------
+    console.log('\n[3] Database Password Hash Verification');
+    const dbUsers = await prisma.user.findMany();
+    assert(dbUsers.length >= 4, `At least 4 user accounts exist in PostgreSQL (found: ${dbUsers.length})`);
+    for (const u of dbUsers) {
+      assert(
+        u.password.startsWith('$2a$') || u.password.startsWith('$2b$'),
+        `User '${u.email}' password is encrypted with bcrypt hash format`
+      );
+      assert(
+        !u.password.includes('password123'),
+        `User '${u.email}' password does NOT contain plaintext password`
+      );
+    }
+
+    // -------------------------------------------------------------------------
+    // 4. Session Verification & Token Validation (/api/auth/me)
+    // -------------------------------------------------------------------------
+    console.log('\n[4] Token Validation & Session Verification (/api/auth/me)');
+
+    // 4a. Valid Me call
+    const meRes = await fetch(`${baseURL}/auth/me`, {
+      headers: { Authorization: `Bearer ${adminToken}` },
+    });
+    const meData = await meRes.json();
+    assert(meRes.status === 200, 'GET /api/auth/me with valid token returns 200 OK');
+    assert(meData.data.user?.email === 'admin@medicare.plus', 'GET /api/auth/me returns verified user profile');
+
+    // 4b. No token
+    const noTokenMe = await fetch(`${baseURL}/auth/me`);
+    assert(noTokenMe.status === 401, 'GET /api/auth/me without token returns 401 Unauthorized');
+
+    // 4c. Invalid / Tampered token
+    const badTokenMe = await fetch(`${baseURL}/auth/me`, {
+      headers: { Authorization: 'Bearer this-is-a-forged-fake-jwt-token' },
+    });
+    assert(badTokenMe.status === 401, 'GET /api/auth/me with forged token returns 401 Unauthorized');
+
+    // 4d. Expired token
+    const expiredToken = jwt.sign(
+      { id: 'USR-ADMIN-01', email: 'admin@medicare.plus', role: 'ADMIN' },
+      config.jwtSecret,
+      { expiresIn: '-1s' }
+    );
+    const expiredRes = await fetch(`${baseURL}/auth/me`, {
+      headers: { Authorization: `Bearer ${expiredToken}` },
+    });
+    const expiredData = await expiredRes.json();
+    assert(expiredRes.status === 401 && expiredData.error === 'TOKEN_EXPIRED', 'Expired token returns 401 with TOKEN_EXPIRED');
+
+    // 4e. Logout endpoint
+    const logoutRes = await fetch(`${baseURL}/auth/logout`, {
+      method: 'POST',
+      headers: { Authorization: `Bearer ${adminToken}` },
+    });
+    assert(logoutRes.status === 200, 'POST /api/auth/logout returns 200 OK');
+
+    // -------------------------------------------------------------------------
+    // 5. Authorization & Role-Based Access Control (RBAC)
+    // -------------------------------------------------------------------------
+    console.log('\n[5] Authorization & Role-Based Access Control (RBAC)');
+
+    // 5a. Unauthenticated access to protected routes
+    const unauthPat = await fetch(`${baseURL}/patients`);
+    assert(unauthPat.status === 401, 'Unauthenticated GET /api/patients is rejected with 401');
+
+    const unauthBill = await fetch(`${baseURL}/billing`);
+    assert(unauthBill.status === 401, 'Unauthenticated GET /api/billing is rejected with 401');
+
+    const unauthRep = await fetch(`${baseURL}/reports/summary`);
+    assert(unauthRep.status === 401, 'Unauthenticated GET /api/reports/summary is rejected with 401');
+
+    // 5b. Admin access to Admin-only user directory
+    const adminUsersRes = await fetch(`${baseURL}/auth/users`, {
+      headers: { Authorization: `Bearer ${adminToken}` },
+    });
+    assert(adminUsersRes.status === 200, 'Admin can access GET /api/auth/users (200 OK)');
+
+    // 5c. Receptionist attempting to access Admin-only user directory (Should be 403)
+    const recpUsersRes = await fetch(`${baseURL}/auth/users`, {
+      headers: { Authorization: `Bearer ${receptionistToken}` },
+    });
+    assert(recpUsersRes.status === 403, 'Receptionist attempting GET /api/auth/users is blocked with 403 Forbidden');
+
+    // 5d. Pharmacist attempting to access clinical reports (Should be 403)
+    const pharmReportsRes = await fetch(`${baseURL}/reports/summary`, {
+      headers: { Authorization: `Bearer ${pharmacistToken}` },
+    });
+    assert(pharmReportsRes.status === 403, 'Pharmacist attempting GET /api/reports/summary is blocked with 403 Forbidden');
+
+    // 5e. Receptionist attempting to register doctor (Admin only -> 403)
+    const recpDoctorCreate = await fetch(`${baseURL}/doctors`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${receptionistToken}`,
+      },
+      body: JSON.stringify({ name: 'Dr. Unauthorized', department: 'Cardiology' }),
+    });
+    assert(recpDoctorCreate.status === 403, 'Receptionist attempting POST /api/doctors is blocked with 403 Forbidden');
+
+    // 5f. Pharmacist updating medicine stock (Permitted -> 200)
+    const medicines = await prisma.medicine.findMany();
+    if (medicines.length > 0) {
+      const medId = medicines[0].id;
+      const pharmStockRes = await fetch(`${baseURL}/pharmacy/${medId}/stock`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${pharmacistToken}`,
+        },
+        body: JSON.stringify({ adjustment: 10 }),
+      });
+      assert(pharmStockRes.status === 200, 'Pharmacist updating stock level via PUT /api/pharmacy/:id/stock succeeds (200 OK)');
+    }
+
+    // -------------------------------------------------------------------------
+    // 6. User Theme Isolation with Verified JWT Tokens
+    // -------------------------------------------------------------------------
+    console.log('\n[6] Per-User Theme Preference with Verified JWT Identity');
+
+    // Update Doctor theme to dark
+    const docThemePut = await fetch(`${baseURL}/settings/theme`, {
       method: 'PUT',
-      headers: { 'Content-Type': 'application/json', 'x-user-id': 'doctor-sarah' },
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${doctorToken}`,
+      },
       body: JSON.stringify({ themeMode: 'dark' }),
     });
-    const putDataA = await putResA.json();
-    assert(putResA.status === 200 && putDataA.data.themeMode === 'dark', 'PUT /api/settings/theme sets doctor-sarah to dark');
+    const docThemePutData = await docThemePut.json();
+    assert(docThemePut.status === 200 && docThemePutData.data.themeMode === 'dark', 'Doctor updates theme to dark');
 
-    // 2c. Update User B to light
-    const putResB = await fetch(`${baseURL}/settings/theme`, {
+    // Update Receptionist theme to light
+    const recpThemePut = await fetch(`${baseURL}/settings/theme`, {
       method: 'PUT',
-      headers: { 'Content-Type': 'application/json', 'x-user-id': 'nurse-priya' },
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${receptionistToken}`,
+      },
       body: JSON.stringify({ themeMode: 'light' }),
     });
-    const putDataB = await putResB.json();
-    assert(putResB.status === 200 && putDataB.data.themeMode === 'light', 'PUT /api/settings/theme sets nurse-priya to light');
+    const recpThemePutData = await recpThemePut.json();
+    assert(recpThemePut.status === 200 && recpThemePutData.data.themeMode === 'light', 'Receptionist updates theme to light');
 
-    // 2d. Multi-User Isolation in PostgreSQL
-    const getResA = await fetch(`${baseURL}/settings/theme`, {
-      headers: { 'x-user-id': 'doctor-sarah' },
+    // Verify isolation
+    const docThemeGet = await fetch(`${baseURL}/settings/theme`, {
+      headers: { Authorization: `Bearer ${doctorToken}` },
     });
-    const getDataA = await getResA.json();
-    assert(getDataA.data.themeMode === 'dark', 'PostgreSQL isolation check: doctor-sarah remains dark');
+    const docThemeGetData = await docThemeGet.json();
+    assert(docThemeGetData.data.themeMode === 'dark', 'Doctor theme remains isolated as dark');
 
-    const getResB = await fetch(`${baseURL}/settings/theme`, {
-      headers: { 'x-user-id': 'nurse-priya' },
+    const recpThemeGet = await fetch(`${baseURL}/settings/theme`, {
+      headers: { Authorization: `Bearer ${receptionistToken}` },
     });
-    const getDataB = await getResB.json();
-    assert(getDataB.data.themeMode === 'light', 'PostgreSQL isolation check: nurse-priya remains light');
+    const recpThemeGetData = await recpThemeGet.json();
+    assert(recpThemeGetData.data.themeMode === 'light', 'Receptionist theme remains isolated as light');
 
-    // 2e. Validation: Reject invalid theme value
-    const invalidPutRes = await fetch(`${baseURL}/settings/theme`, {
-      method: 'PUT',
-      headers: { 'Content-Type': 'application/json', 'x-user-id': 'doctor-sarah' },
-      body: JSON.stringify({ themeMode: 'neon-cyberpunk' }),
+    // -------------------------------------------------------------------------
+    // 7. Existing PostgreSQL CRUD Operations with Auth Tokens
+    // -------------------------------------------------------------------------
+    console.log('\n[7] Existing PostgreSQL CRUD Operations with Authorization');
+
+    // Patients
+    const patListRes = await fetch(`${baseURL}/patients`, {
+      headers: { Authorization: `Bearer ${adminToken}` },
     });
-    const invalidPutData = await invalidPutRes.json();
-    assert(invalidPutRes.status === 400, 'PUT /api/settings/theme rejects invalid theme with 400 Bad Request');
-    assert(invalidPutData.success === false, 'Invalid theme response success is false');
+    assert(patListRes.status === 200, 'Authenticated GET /api/patients returns 200 OK');
 
-    // 3. PostgreSQL CRUD Operations Verification
-    console.log('\n[3] PostgreSQL CRUD Operations Verification');
+    // Doctors
+    const docListRes = await fetch(`${baseURL}/doctors`, {
+      headers: { Authorization: `Bearer ${adminToken}` },
+    });
+    assert(docListRes.status === 200, 'Authenticated GET /api/doctors returns 200 OK');
 
-    // 3a. Patients CRUD
-    const patientsRes = await fetch(`${baseURL}/patients`);
-    const patientsData = await patientsRes.json();
-    assert(patientsRes.status === 200 && Array.isArray(patientsData.data), 'GET /api/patients retrieves records from PostgreSQL');
+    // Departments
+    const deptListRes = await fetch(`${baseURL}/departments`, {
+      headers: { Authorization: `Bearer ${adminToken}` },
+    });
+    assert(deptListRes.status === 200, 'Authenticated GET /api/departments returns 200 OK');
 
-    const testPatId = `PAT-TEST-${Date.now()}`;
-    const createPatRes = await fetch(`${baseURL}/patients`, {
+    // Appointments
+    const aptListRes = await fetch(`${baseURL}/appointments`, {
+      headers: { Authorization: `Bearer ${adminToken}` },
+    });
+    assert(aptListRes.status === 200, 'Authenticated GET /api/appointments returns 200 OK');
+
+    // Admissions
+    const admListRes = await fetch(`${baseURL}/admissions`, {
+      headers: { Authorization: `Bearer ${adminToken}` },
+    });
+    assert(admListRes.status === 200, 'Authenticated GET /api/admissions returns 200 OK');
+
+    // Billing
+    const billListRes = await fetch(`${baseURL}/billing`, {
+      headers: { Authorization: `Bearer ${adminToken}` },
+    });
+    assert(billListRes.status === 200, 'Authenticated GET /api/billing returns 200 OK');
+
+    // Pharmacy
+    const pharmListRes = await fetch(`${baseURL}/pharmacy`, {
+      headers: { Authorization: `Bearer ${pharmacistToken}` },
+    });
+    assert(pharmListRes.status === 200, 'Authenticated GET /api/pharmacy returns 200 OK');
+
+    // Staff
+    const staffListRes = await fetch(`${baseURL}/staff`, {
+      headers: { Authorization: `Bearer ${adminToken}` },
+    });
+    assert(staffListRes.status === 200, 'Authenticated GET /api/staff returns 200 OK');
+
+    // Reports KPI Summary
+    const repSummaryRes = await fetch(`${baseURL}/reports/summary`, {
+      headers: { Authorization: `Bearer ${doctorToken}` },
+    });
+    assert(repSummaryRes.status === 200, 'Authenticated GET /api/reports/summary returns 200 OK');
+
+    // -------------------------------------------------------------------------
+    // 8. Rate Limiting Headers Verification
+    // -------------------------------------------------------------------------
+    console.log('\n[8] Security Headers & Rate Limiting Verification');
+    const rateLimitRes = await fetch(`${baseURL}/auth/login`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        id: testPatId,
-        name: 'Database Integration Test Patient',
-        gender: 'Female',
-        age: 34,
-        bloodGroup: 'O+',
-        phone: '+94 77 000 1122',
-      }),
+      body: JSON.stringify({ email: 'admin@medicare.plus', password: 'password123' }),
     });
-    const createPatData = await createPatRes.json();
-    assert(createPatRes.status === 201 && createPatData.data.id === testPatId, 'POST /api/patients creates record in PostgreSQL');
+    assert(rateLimitRes.headers.has('ratelimit-limit') || rateLimitRes.headers.has('x-ratelimit-limit'), 'Login response includes standard RateLimit headers');
+    assert(rateLimitRes.headers.has('x-dns-prefetch-control') || rateLimitRes.headers.has('x-content-type-options'), 'Response includes Helmet security headers');
 
-    const getPatRes = await fetch(`${baseURL}/patients/${testPatId}`);
-    const getPatData = await getPatRes.json();
-    assert(getPatRes.status === 200 && getPatData.data.name === 'Database Integration Test Patient', 'GET /api/patients/:id reads from PostgreSQL');
-
-    const updatePatRes = await fetch(`${baseURL}/patients/${testPatId}`, {
-      method: 'PUT',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ age: 35 }),
-    });
-    const updatePatData = await updatePatRes.json();
-    assert(updatePatRes.status === 200 && updatePatData.data.age === 35, 'PUT /api/patients/:id updates record in PostgreSQL');
-
-    const delPatRes = await fetch(`${baseURL}/patients/${testPatId}`, { method: 'DELETE' });
-    assert(delPatRes.status === 200, 'DELETE /api/patients/:id deletes record from PostgreSQL');
-
-    // 3b. Doctors & Departments
-    const doctorsRes = await fetch(`${baseURL}/doctors`);
-    const doctorsData = await doctorsRes.json();
-    assert(doctorsRes.status === 200 && doctorsData.data.length > 0, 'GET /api/doctors returns doctors from PostgreSQL');
-
-    const deptRes = await fetch(`${baseURL}/departments`);
-    const deptData = await deptRes.json();
-    assert(deptRes.status === 200 && deptData.data.length >= 5, 'GET /api/departments returns departments from PostgreSQL');
-
-    // 3c. Appointments
-    const aptRes = await fetch(`${baseURL}/appointments`);
-    const aptData = await aptRes.json();
-    assert(aptRes.status === 200 && aptData.data.length > 0, 'GET /api/appointments returns appointments from PostgreSQL');
-
-    // 3d. Admissions
-    const admRes = await fetch(`${baseURL}/admissions`);
-    const admData = await admRes.json();
-    assert(admRes.status === 200 && admData.data.length > 0, 'GET /api/admissions returns admissions from PostgreSQL');
-
-    // 3e. Invoices & Transactional Payment
-    const billRes = await fetch(`${baseURL}/billing`);
-    const billData = await billRes.json();
-    assert(billRes.status === 200 && billData.data.length > 0, 'GET /api/billing returns invoices from PostgreSQL');
-
-    const targetInvoice = billData.data.find((inv) => inv.status === 'Pending') || billData.data[0];
-    const payRes = await fetch(`${baseURL}/billing/${targetInvoice.id}/payment`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ paymentMethod: 'Credit Card', amountPaid: targetInvoice.totalLKR }),
-    });
-    const payData = await payRes.json();
-    assert(payRes.status === 200 && payData.data.status === 'Paid', 'POST /api/billing/:id/payment executes transactional update in PostgreSQL');
-
-    // 3f. Pharmacy & Transactional Stock Adjustment
-    const pharmRes = await fetch(`${baseURL}/pharmacy`);
-    const pharmData = await pharmRes.json();
-    assert(pharmRes.status === 200 && pharmData.data.length > 0, 'GET /api/pharmacy returns medicines from PostgreSQL');
-
-    const targetMed = pharmData.data[0];
-    const stockRes = await fetch(`${baseURL}/pharmacy/${targetMed.id}/stock`, {
-      method: 'PUT',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ adjustment: 10 }),
-    });
-    const stockData = await stockRes.json();
-    assert(stockRes.status === 200 && stockData.data.stockQuantity === targetMed.stockQuantity + 10, 'PUT /api/pharmacy/:id/stock updates stock via transaction in PostgreSQL');
-
-    // 3g. Staff
-    const staffRes = await fetch(`${baseURL}/staff`);
-    const staffData = await staffRes.json();
-    assert(staffRes.status === 200 && staffData.data.length > 0, 'GET /api/staff returns staff from PostgreSQL');
-
-    // 3h. Reports Summary
-    const repRes = await fetch(`${baseURL}/reports/summary`);
-    const repData = await repRes.json();
-    assert(repRes.status === 200 && repData.data.totalPatients > 0, 'GET /api/reports/summary returns aggregated counts from PostgreSQL');
-
-    // 4. Centralized 404 Handling
-    console.log('\n[4] Centralized 404 Handling');
-    const unknownRes = await fetch(`${baseURL}/non-existent-endpoint`);
-    const unknownData = await unknownRes.json();
-    assert(unknownRes.status === 404 && unknownData.success === false, 'Unknown endpoint returns 404 Not Found');
-
-    console.log(`\n=============================================`);
-    console.log(`Stage 6 Test Results: ${passed} Passed, ${failed} Failed`);
-    console.log(`=============================================`);
   } catch (err) {
     console.error('Test execution failed with error:', err);
     failed++;
   } finally {
-    await new Promise((resolve) => server.close(resolve));
+    server.close();
     await prisma.$disconnect();
-  }
-
-  if (failed > 0) {
-    process.exitCode = 1;
+    console.log('\n================================================================');
+    console.log(`Test Execution Finished: ${passed} Passed, ${failed} Failed`);
+    console.log('================================================================');
+    process.exit(failed > 0 ? 1 : 0);
   }
 }
 

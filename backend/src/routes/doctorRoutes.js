@@ -1,8 +1,12 @@
 import { Router } from 'express';
 import prisma from '../config/prisma.js';
 import { sendSuccess, sendError } from '../utils/response.js';
+import { authenticateToken, requireRoles } from '../middleware/authMiddleware.js';
 
 const router = Router();
+
+// Apply JWT authentication to all doctor routes
+router.use(authenticateToken);
 
 /**
  * GET /api/doctors
@@ -55,9 +59,9 @@ router.get('/:id', async (req, res, next) => {
 
 /**
  * POST /api/doctors
- * Register a new doctor in PostgreSQL
+ * Register a new doctor in PostgreSQL (ADMIN only)
  */
-router.post('/', async (req, res, next) => {
+router.post('/', requireRoles('ADMIN'), async (req, res, next) => {
   try {
     const data = req.body;
     if (!data || !data.name || !data.department) {
@@ -89,9 +93,9 @@ router.post('/', async (req, res, next) => {
 
 /**
  * PUT /api/doctors/:id
- * Update an existing doctor profile in PostgreSQL
+ * Update an existing doctor profile in PostgreSQL (ADMIN only)
  */
-router.put('/:id', async (req, res, next) => {
+router.put('/:id', requireRoles('ADMIN'), async (req, res, next) => {
   try {
     const existing = await prisma.doctor.findUnique({
       where: { id: req.params.id },
