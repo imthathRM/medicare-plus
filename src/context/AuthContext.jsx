@@ -124,8 +124,8 @@ export const AuthProvider = ({ children }) => {
         login,
         logout,
         demoCredentials: {
-          email: 'admin@medicare.plus',
-          password: 'password123',
+          email: 'mohamedimthath25@gmail.com',
+          password: '@Rmi2004',
         },
       }}
     >

@@ -11,8 +11,8 @@ export const Login = () => {
   const location = useLocation();
   const { login, isLoading } = useAuth();
 
-  const [email, setEmail] = useState('admin@medicare.plus');
-  const [password, setPassword] = useState('password123');
+  const [email, setEmail] = useState('mohamedimthath25@gmail.com');
+  const [password, setPassword] = useState('@Rmi2004');
   const [showPassword, setShowPassword] = useState(false);
   const [rememberMe, setRememberMe] = useState(true);
   const [errors, setErrors] = useState({});
@@ -45,15 +45,19 @@ export const Login = () => {
     }
   };
 
-  const handleUseDemo = (roleEmail = 'admin@medicare.plus') => {
+  const handleUseDemo = (roleEmail = 'mohamedimthath25@gmail.com') => {
     setEmail(roleEmail);
-    setPassword('password123');
+    if (roleEmail === 'mohamedimthath25@gmail.com') {
+      setPassword('@Rmi2004');
+    } else {
+      setPassword('password123');
+    }
     setErrors({});
     setLoginError('');
   };
 
   const demoRoles = [
-    { label: 'Admin', email: 'admin@medicare.plus' },
+    { label: 'Admin', email: 'mohamedimthath25@gmail.com' },
     { label: 'Doctor', email: 'doctor@medicare.plus' },
     { label: 'Receptionist', email: 'receptionist@medicare.plus' },
     { label: 'Pharmacist', email: 'pharmacist@medicare.plus' },

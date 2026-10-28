@@ -52,12 +52,13 @@ async function runTests() {
     const adminLoginRes = await fetch(`${baseURL}/auth/login`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ email: 'admin@medicare.plus', password: 'password123' }),
+      body: JSON.stringify({ email: 'mohamedimthath25@gmail.com', password: '@Rmi2004' }),
     });
     const adminLoginData = await adminLoginRes.json();
     assert(adminLoginRes.status === 200, 'Valid admin login returns 200 OK');
     assert(!!adminLoginData.data?.token, 'Login returns JWT token string');
     assert(adminLoginData.data?.user?.role === 'ADMIN', 'Admin user has role ADMIN');
+    assert(adminLoginData.data?.user?.name === 'ImthathRM', 'Admin user name is ImthathRM');
     assert(!adminLoginData.data?.user?.password, 'User password is not leaked in login response');
     adminToken = adminLoginData.data?.token;
 
@@ -95,7 +96,7 @@ async function runTests() {
     const badPwdRes = await fetch(`${baseURL}/auth/login`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ email: 'admin@medicare.plus', password: 'wrongpassword' }),
+      body: JSON.stringify({ email: 'mohamedimthath25@gmail.com', password: 'wrongpassword' }),
     });
     const badPwdData = await badPwdRes.json();
     assert(badPwdRes.status === 401, 'Invalid password rejected with 401 Unauthorized');
@@ -145,7 +146,8 @@ async function runTests() {
     });
     const meData = await meRes.json();
     assert(meRes.status === 200, 'GET /api/auth/me with valid token returns 200 OK');
-    assert(meData.data.user?.email === 'admin@medicare.plus', 'GET /api/auth/me returns verified user profile');
+    assert(meData.data.user?.email === 'mohamedimthath25@gmail.com', 'GET /api/auth/me returns verified user profile');
+    assert(meData.data.user?.name === 'ImthathRM', 'GET /api/auth/me returns updated admin name ImthathRM');
 
     // 4b. No token
     const noTokenMe = await fetch(`${baseURL}/auth/me`);
@@ -159,7 +161,7 @@ async function runTests() {
 
     // 4d. Expired token
     const expiredToken = jwt.sign(
-      { id: 'USR-ADMIN-01', email: 'admin@medicare.plus', role: 'ADMIN' },
+      { id: 'USR-ADMIN-01', email: 'mohamedimthath25@gmail.com', role: 'ADMIN' },
       config.jwtSecret,
       { expiresIn: '-1s' }
     );
@@ -343,7 +345,7 @@ async function runTests() {
     const rateLimitRes = await fetch(`${baseURL}/auth/login`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ email: 'admin@medicare.plus', password: 'password123' }),
+      body: JSON.stringify({ email: 'mohamedimthath25@gmail.com', password: '@Rmi2004' }),
     });
     assert(rateLimitRes.headers.has('ratelimit-limit') || rateLimitRes.headers.has('x-ratelimit-limit'), 'Login response includes standard RateLimit headers');
     assert(rateLimitRes.headers.has('x-dns-prefetch-control') || rateLimitRes.headers.has('x-content-type-options'), 'Response includes Helmet security headers');

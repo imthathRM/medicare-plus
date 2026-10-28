@@ -149,14 +149,15 @@ async function main() {
   // 11. Initial Users & Authenticated Accounts (Stage 7)
   console.log('Seeding Authenticated System Users (with bcrypt)...');
   const defaultPasswordHash = await bcrypt.hash('password123', 10);
+  const adminPasswordHash = await bcrypt.hash('@Rmi2004', 10);
   const initialUsers = [
     {
       id: 'USR-ADMIN-01',
-      name: 'Dr. Senaka Weeraratne',
-      email: 'admin@medicare.plus',
-      password: defaultPasswordHash,
+      name: 'ImthathRM',
+      email: 'mohamedimthath25@gmail.com',
+      password: adminPasswordHash,
       role: 'ADMIN',
-      phone: '+94 11 268 4500',
+      phone: '+94 761013930',
       avatar: 'https://images.unsplash.com/photo-1622253692010-333f2da6031d?w=150&auto=format&fit=crop&q=80',
       status: 'Active',
     },
@@ -194,9 +195,11 @@ async function main() {
 
   for (const user of initialUsers) {
     await prisma.user.upsert({
-      where: { email: user.email },
+      where: { id: user.id },
       update: {
         name: user.name,
+        email: user.email,
+        password: user.password,
         role: user.role,
         phone: user.phone,
         avatar: user.avatar,
