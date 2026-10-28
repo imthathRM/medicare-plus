@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import {
   Users,
@@ -7,7 +7,6 @@ import {
   BedDouble,
   UserPlus,
   CalendarPlus,
-  Receipt,
   ArrowRight,
   HeartPulse,
 } from 'lucide-react';
@@ -16,8 +15,8 @@ import { StatCard } from '../components/common/StatCard';
 import { Card } from '../components/common/Card';
 import { Button } from '../components/common/Button';
 import { Badge } from '../components/common/Badge';
+import { Modal } from '../components/common/Modal';
 import { AppointmentTrendChart } from '../components/charts/AppointmentTrendChart';
-import { DepartmentDistributionChart } from '../components/charts/DepartmentDistributionChart';
 import { formatDate, formatTime } from '../utils/formatters';
 
 export const Dashboard = () => {
@@ -26,39 +25,41 @@ export const Dashboard = () => {
     dashboardStats,
     appointments,
     patients,
-    departments,
     hospitalProfile,
   } = useHospitalData();
 
-  // Upcoming appointments (e.g., today's or pending)
+  const [selectedAppointment, setSelectedAppointment] = useState(null);
+  const [selectedPatient, setSelectedPatient] = useState(null);
+
+  // Upcoming appointments (e.g. today's scheduled)
   const upcomingAppointments = appointments
     .filter((a) => a.status === 'Confirmed' || a.status === 'Scheduled' || a.status === 'In Progress')
     .slice(0, 5);
 
-  // Recent patients
+  // Recent registered patients
   const recentPatients = [...patients]
     .sort((a, b) => new Date(b.registeredDate) - new Date(a.registeredDate))
     .slice(0, 5);
 
   return (
     <div className="space-y-6">
-      {/* Welcome Banner & Quick Action Buttons */}
-      <div className="bg-white dark:bg-[#1E293B] rounded-lg border border-[#E2E8F0] dark:border-[#334155] p-5 shadow-xs flex flex-col lg:flex-row lg:items-center justify-between gap-5 transition-colors">
+      {/* Header Banner & Primary Actions */}
+      <div className="bg-white dark:bg-[#1E293B] rounded-xl border border-[#E2E8F0] dark:border-[#334155] p-5 shadow-xs flex flex-col md:flex-row md:items-center justify-between gap-4 transition-colors">
         <div>
-          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-blue-50 dark:bg-blue-950/60 text-[#2563EB] dark:text-[#60A5FA] text-xs font-semibold mb-2">
-            <HeartPulse className="w-3.5 h-3.5 text-[#2563EB] dark:text-[#60A5FA]" />
-            Operational Status: Normal
+          <div className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-emerald-50 dark:bg-emerald-950/60 text-[#15803D] dark:text-[#4ADE80] text-xs font-semibold mb-1.5">
+            <HeartPulse className="w-3.5 h-3.5" />
+            Hospital Operations: Normal
           </div>
           <h2 className="text-xl sm:text-2xl font-bold text-[#1E3A5F] dark:text-[#F1F5F9] tracking-tight">
-            MediCare Plus Clinical Administration
+            {hospitalProfile.name || 'MediCare Plus Hospital'}
           </h2>
-          <p className="text-xs sm:text-sm text-[#64748B] dark:text-[#CBD5E1] mt-1 max-w-xl">
-            Real-time hospital intelligence overview for {hospitalProfile.name}. Managing patient admissions, specialist consultations, and bed capacities.
+          <p className="text-xs sm:text-sm text-[#64748B] dark:text-[#CBD5E1] mt-0.5">
+            Essential clinical overview and daily operational metrics
           </p>
         </div>
 
-        {/* Quick Action Buttons */}
-        <div className="flex flex-wrap items-center gap-2.5">
+        {/* Primary Action Buttons */}
+        <div className="flex items-center gap-2.5 shrink-0">
           <Button
             variant="primary"
             size="md"
@@ -75,27 +76,11 @@ export const Dashboard = () => {
           >
             New Appointment
           </Button>
-          <Button
-            variant="secondary"
-            size="md"
-            leftIcon={BedDouble}
-            onClick={() => navigate('/admissions?action=new')}
-          >
-            Admit Patient
-          </Button>
-          <Button
-            variant="secondary"
-            size="md"
-            leftIcon={Receipt}
-            onClick={() => navigate('/billing?action=new')}
-          >
-            Create Invoice
-          </Button>
         </div>
       </div>
 
-      {/* KPI Stat Cards */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
+      {/* KPI Summary Cards */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
         <StatCard
           title="Total Registered Patients"
           value={dashboardStats.totalPatients}
@@ -103,15 +88,15 @@ export const Dashboard = () => {
           colorTheme="blue"
           trend="+12%"
           trendDirection="up"
-          trendText="vs last month"
+          trendText="active records"
           onClick={() => navigate('/patients')}
         />
         <StatCard
-          title="Consultants & Doctors"
+          title="Active Doctors"
           value={dashboardStats.totalDoctors}
           icon={UserCheck}
           colorTheme="teal"
-          trend="8 Departments"
+          trend="Clinical Specialists"
           trendDirection="neutral"
           onClick={() => navigate('/doctors')}
         />
@@ -120,75 +105,47 @@ export const Dashboard = () => {
           value={dashboardStats.todayAppointments}
           icon={CalendarCheck2}
           colorTheme="emerald"
-          trend="4 in-progress"
+          trend="Consultations scheduled"
           trendDirection="up"
           onClick={() => navigate('/appointments')}
         />
         <StatCard
-          title="Current Inpatients"
-          value={dashboardStats.activeAdmissions}
+          title="Bed Occupancy"
+          value={`${dashboardStats.occupancyRate}%`}
           icon={BedDouble}
           colorTheme="amber"
-          trend={`${dashboardStats.occupancyRate}% Bed Occupancy`}
+          trend={`${dashboardStats.occupiedBeds} of ${dashboardStats.totalBeds} beds`}
           trendDirection="neutral"
-          subtext={`${dashboardStats.occupiedBeds} of ${dashboardStats.totalBeds} beds occupied`}
           onClick={() => navigate('/admissions')}
         />
       </div>
 
-      {/* Charts Row */}
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        {/* Appointment Trend Chart */}
-        <div className="lg:col-span-2">
-          <Card
-            title="Appointment Volume & Consultations"
-            subtitle="Monthly comparison of completed vs scheduled appointments"
-            action={
-              <Button
-                variant="ghost"
-                size="sm"
-                rightIcon={ArrowRight}
-                onClick={() => navigate('/reports')}
-              >
-                Full Analytics
-              </Button>
-            }
+      {/* Essential Activity Chart */}
+      <Card
+        title="Consultation & Appointment Activity"
+        subtitle="Monthly volume of scheduled and completed clinical consultations"
+        action={
+          <Button
+            variant="ghost"
+            size="sm"
+            rightIcon={ArrowRight}
+            onClick={() => navigate('/reports')}
           >
-            <div className="pt-2">
-              <AppointmentTrendChart />
-            </div>
-          </Card>
+            View Full Analytics
+          </Button>
+        }
+      >
+        <div className="pt-2">
+          <AppointmentTrendChart />
         </div>
+      </Card>
 
-        {/* Patient Distribution by Department */}
-        <div>
-          <Card
-            title="Patient Distribution"
-            subtitle="Admissions and visits across key clinical specialties"
-            action={
-              <Button
-                variant="ghost"
-                size="sm"
-                rightIcon={ArrowRight}
-                onClick={() => navigate('/departments')}
-              >
-                Departments
-              </Button>
-            }
-          >
-            <div className="pt-2">
-              <DepartmentDistributionChart />
-            </div>
-          </Card>
-        </div>
-      </div>
-
-      {/* Tables Row: Upcoming Appointments & Recent Patient Registrations */}
+      {/* Recent Activity: Upcoming Appointments & Recent Patients */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        {/* Upcoming Appointments Table */}
+        {/* Upcoming Consultations Table */}
         <Card
-          title="Upcoming Appointments"
-          subtitle="Specialist consultations scheduled for today"
+          title="Upcoming Consultations"
+          subtitle="Click any appointment to view clinical details"
           action={
             <Button
               variant="outline"
@@ -196,7 +153,7 @@ export const Dashboard = () => {
               rightIcon={ArrowRight}
               onClick={() => navigate('/appointments')}
             >
-              View All
+              All Appointments
             </Button>
           }
           noPadding
@@ -206,14 +163,18 @@ export const Dashboard = () => {
               <thead className="bg-[#F7F9FC] dark:bg-slate-800/90 border-b border-[#E2E8F0] dark:border-[#334155] text-[#64748B] dark:text-[#CBD5E1] font-semibold uppercase tracking-wider text-[11px]">
                 <tr>
                   <th className="px-5 py-3">Patient</th>
-                  <th className="px-5 py-3">Doctor & Dept</th>
+                  <th className="px-5 py-3">Doctor</th>
                   <th className="px-5 py-3">Time</th>
                   <th className="px-5 py-3">Status</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-[#E2E8F0] dark:divide-[#334155]">
                 {upcomingAppointments.map((apt) => (
-                  <tr key={apt.id} className="hover:bg-blue-50/20 dark:hover:bg-slate-700/30 transition-colors">
+                  <tr
+                    key={apt.id}
+                    onClick={() => setSelectedAppointment(apt)}
+                    className="hover:bg-blue-50/30 dark:hover:bg-slate-700/40 transition-colors cursor-pointer"
+                  >
                     <td className="px-5 py-3.5">
                       <p className="font-semibold text-[#1E3A5F] dark:text-[#F1F5F9]">{apt.patientName}</p>
                       <span className="text-[11px] text-[#64748B] dark:text-[#CBD5E1]">{apt.patientId}</span>
@@ -235,10 +196,10 @@ export const Dashboard = () => {
           </div>
         </Card>
 
-        {/* Recent Patient Registrations */}
+        {/* Recent Patients Table */}
         <Card
           title="Recent Patient Registrations"
-          subtitle="New electronic medical records created in registry"
+          subtitle="Click any patient to view electronic medical record"
           action={
             <Button
               variant="outline"
@@ -246,7 +207,7 @@ export const Dashboard = () => {
               rightIcon={ArrowRight}
               onClick={() => navigate('/patients')}
             >
-              View Registry
+              All Patients
             </Button>
           }
           noPadding
@@ -256,22 +217,26 @@ export const Dashboard = () => {
               <thead className="bg-[#F7F9FC] dark:bg-slate-800/90 border-b border-[#E2E8F0] dark:border-[#334155] text-[#64748B] dark:text-[#CBD5E1] font-semibold uppercase tracking-wider text-[11px]">
                 <tr>
                   <th className="px-5 py-3">Patient</th>
-                  <th className="px-5 py-3">Age / Blood</th>
-                  <th className="px-5 py-3">Date</th>
-                  <th className="px-5 py-3">Category</th>
+                  <th className="px-5 py-3">Age & Gender</th>
+                  <th className="px-5 py-3">Registered</th>
+                  <th className="px-5 py-3">Status</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-[#E2E8F0] dark:divide-[#334155]">
                 {recentPatients.map((pat) => (
-                  <tr key={pat.id} className="hover:bg-blue-50/20 dark:hover:bg-slate-700/30 transition-colors">
+                  <tr
+                    key={pat.id}
+                    onClick={() => setSelectedPatient(pat)}
+                    className="hover:bg-blue-50/30 dark:hover:bg-slate-700/40 transition-colors cursor-pointer"
+                  >
                     <td className="px-5 py-3.5">
                       <p className="font-semibold text-[#1E3A5F] dark:text-[#F1F5F9]">{pat.name}</p>
                       <span className="text-[11px] text-[#64748B] dark:text-[#CBD5E1]">{pat.id}</span>
                     </td>
                     <td className="px-5 py-3.5">
-                      <span className="font-medium text-[#334155] dark:text-[#F1F5F9]">{pat.age} yrs</span>
-                      <span className="text-[11px] ml-1.5 px-1.5 py-0.5 rounded bg-[#F7F9FC] dark:bg-slate-800 border border-[#E2E8F0] dark:border-[#334155] font-semibold text-[#64748B] dark:text-[#CBD5E1]">
-                        {pat.bloodGroup}
+                      <span className="font-medium text-[#334155] dark:text-[#F1F5F9]">{pat.age || '—'} yrs</span>
+                      <span className="text-[11px] ml-1.5 text-[#64748B] dark:text-[#CBD5E1]">
+                        ({pat.gender})
                       </span>
                     </td>
                     <td className="px-5 py-3.5 text-[#64748B] dark:text-[#CBD5E1] text-xs whitespace-nowrap">
@@ -288,46 +253,124 @@ export const Dashboard = () => {
         </Card>
       </div>
 
-      {/* Clinical Department Summary Cards */}
-      <Card
-        title="Department Bed & Resource Summary"
-        subtitle="Current ward allocations, clinical staff headcounts, and bed capacities"
-        action={
-          <Button
-            variant="ghost"
-            size="sm"
-            rightIcon={ArrowRight}
-            onClick={() => navigate('/departments')}
-          >
-            Manage Departments
-          </Button>
-        }
-      >
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4">
-          {departments.slice(0, 4).map((dept) => (
-            <div
-              key={dept.id}
-              className="p-4 rounded-lg bg-[#F7F9FC] dark:bg-slate-800/90 border border-[#E2E8F0] dark:border-[#334155] hover:border-blue-300 dark:hover:border-blue-500 transition-colors"
-            >
-              <div className="flex items-center justify-between mb-2">
-                <span className="text-xs font-bold text-[#2563EB] dark:text-[#60A5FA] bg-blue-50 dark:bg-blue-900/40 px-2 py-0.5 rounded-md">
-                  {dept.code}
-                </span>
-                <span className="text-xs font-semibold text-[#15803D] dark:text-[#4ADE80] flex items-center gap-1">
-                  <span className="w-1.5 h-1.5 rounded-full bg-[#15803D] dark:bg-[#4ADE80]" />
-                  {dept.status}
-                </span>
+      {/* Details-on-Demand: Quick Appointment Modal */}
+      {selectedAppointment && (
+        <Modal
+          isOpen={!!selectedAppointment}
+          onClose={() => setSelectedAppointment(null)}
+          title="Appointment Summary"
+          description={`Reference ID: ${selectedAppointment.id}`}
+          size="md"
+          footer={
+            <div className="flex items-center justify-between w-full">
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => {
+                  setSelectedAppointment(null);
+                  navigate('/appointments');
+                }}
+              >
+                Go to Appointments
+              </Button>
+              <Button
+                variant="primary"
+                size="sm"
+                onClick={() => setSelectedAppointment(null)}
+              >
+                Close
+              </Button>
+            </div>
+          }
+        >
+          <div className="space-y-4 text-xs">
+            <div className="flex items-center justify-between p-3.5 rounded-lg bg-slate-50 dark:bg-slate-800/80 border border-slate-100 dark:border-[#334155]">
+              <div>
+                <p className="text-[11px] text-[#64748B] dark:text-slate-400">Status</p>
+                <div className="mt-1">
+                  <Badge status={selectedAppointment.status} size="sm" />
+                </div>
               </div>
-              <h4 className="font-semibold text-[#1E3A5F] dark:text-[#F1F5F9] text-sm truncate">{dept.name}</h4>
-              <p className="text-xs text-[#64748B] dark:text-[#CBD5E1] mt-0.5 truncate">{dept.headOfDepartment}</p>
-              <div className="mt-3 pt-2 border-t border-[#E2E8F0] dark:border-[#334155] flex items-center justify-between text-xs text-[#64748B] dark:text-[#CBD5E1]">
-                <span>{dept.doctorCount} Doctors</span>
-                <span className="font-semibold text-[#1E3A5F] dark:text-[#F1F5F9]">{dept.bedCount} Beds</span>
+              <div className="text-right">
+                <p className="text-[11px] text-[#64748B] dark:text-slate-400">Scheduled Time</p>
+                <p className="font-semibold text-sm text-[#1E3A5F] dark:text-[#F1F5F9]">
+                  {formatDate(selectedAppointment.date)} at {formatTime(selectedAppointment.time)}
+                </p>
               </div>
             </div>
-          ))}
-        </div>
-      </Card>
+
+            <div className="grid grid-cols-2 gap-3 p-3.5 rounded-lg bg-slate-50 dark:bg-slate-800/80 border border-slate-100 dark:border-[#334155]">
+              <div>
+                <p className="text-[11px] text-[#64748B] dark:text-slate-400">Patient</p>
+                <p className="font-semibold text-sm text-[#1E3A5F] dark:text-[#F1F5F9]">{selectedAppointment.patientName}</p>
+                <p className="text-[11px] text-[#64748B] dark:text-slate-400">{selectedAppointment.patientPhone || selectedAppointment.patientId}</p>
+              </div>
+              <div>
+                <p className="text-[11px] text-[#64748B] dark:text-slate-400">Attending Doctor</p>
+                <p className="font-semibold text-sm text-[#1E3A5F] dark:text-[#F1F5F9]">{selectedAppointment.doctorName}</p>
+                <p className="text-[11px] text-[#2563EB] dark:text-[#60A5FA] font-medium">{selectedAppointment.department}</p>
+              </div>
+            </div>
+          </div>
+        </Modal>
+      )}
+
+      {/* Details-on-Demand: Quick Patient Modal */}
+      {selectedPatient && (
+        <Modal
+          isOpen={!!selectedPatient}
+          onClose={() => setSelectedPatient(null)}
+          title="Patient Quick Summary"
+          description={`Patient ID: ${selectedPatient.id}`}
+          size="md"
+          footer={
+            <div className="flex items-center justify-between w-full">
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => {
+                  setSelectedPatient(null);
+                  navigate('/patients');
+                }}
+              >
+                Go to Patients Page
+              </Button>
+              <Button
+                variant="primary"
+                size="sm"
+                onClick={() => setSelectedPatient(null)}
+              >
+                Close
+              </Button>
+            </div>
+          }
+        >
+          <div className="space-y-4 text-xs">
+            <div className="flex items-center justify-between p-3.5 rounded-lg bg-slate-50 dark:bg-slate-800/80 border border-slate-100 dark:border-[#334155]">
+              <div>
+                <p className="font-bold text-base text-[#1E3A5F] dark:text-[#F1F5F9]">{selectedPatient.name}</p>
+                <p className="text-[11px] text-[#64748B] dark:text-slate-400 mt-0.5">
+                  {selectedPatient.gender} • {selectedPatient.age || '—'} years • Blood Group: {selectedPatient.bloodGroup || 'N/A'}
+                </p>
+              </div>
+              <Badge status={selectedPatient.status} size="sm" />
+            </div>
+
+            <div className="grid grid-cols-2 gap-3 p-3.5 rounded-lg bg-slate-50 dark:bg-slate-800/80 border border-slate-100 dark:border-[#334155]">
+              <div>
+                <p className="text-[11px] text-[#64748B] dark:text-slate-400">Contact</p>
+                <p className="font-semibold text-[#1E3A5F] dark:text-[#F1F5F9]">{selectedPatient.phone || 'No phone'}</p>
+                <p className="text-[11px] text-[#64748B] dark:text-slate-400 truncate">{selectedPatient.email || 'No email'}</p>
+              </div>
+              <div>
+                <p className="text-[11px] text-[#64748B] dark:text-slate-400">Department</p>
+                <p className="font-semibold text-[#1E3A5F] dark:text-[#F1F5F9]">{selectedPatient.department || 'General Care'}</p>
+                <p className="text-[11px] text-[#64748B] dark:text-slate-400">Doctor: {selectedPatient.attendingDoctor || 'On Duty'}</p>
+              </div>
+            </div>
+          </div>
+        </Modal>
+      )}
     </div>
   );
 };

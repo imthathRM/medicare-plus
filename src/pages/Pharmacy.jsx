@@ -1,6 +1,7 @@
 import React, { useState, useMemo } from 'react';
 import {
   PlusCircle,
+  Eye,
   Edit2,
   Trash2,
   Filter,
@@ -27,6 +28,7 @@ export const Pharmacy = () => {
   // Modals
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+  const [isViewModalOpen, setIsViewModalOpen] = useState(false);
   const [isAdjustModalOpen, setIsAdjustModalOpen] = useState(false);
   const [isDeleteConfirmOpen, setIsDeleteConfirmOpen] = useState(false);
 
@@ -112,6 +114,11 @@ export const Pharmacy = () => {
     });
     setFormErrors({});
     setIsEditModalOpen(true);
+  };
+
+  const handleOpenView = (med) => {
+    setSelectedMedicine(med);
+    setIsViewModalOpen(true);
   };
 
   const handleOpenAdjust = (med) => {
@@ -237,15 +244,22 @@ export const Pharmacy = () => {
       render: (row) => (
         <div className="flex items-center justify-end gap-1" onClick={(e) => e.stopPropagation()}>
           <button
-            onClick={() => handleOpenAdjust(row)}
+            onClick={() => handleOpenView(row)}
             className="p-1.5 rounded-lg text-[#64748B] hover:text-[#2563EB] hover:bg-blue-50 dark:hover:bg-blue-950/40 dark:text-slate-400 transition-colors"
+            title="View Details"
+          >
+            <Eye className="w-4 h-4" />
+          </button>
+          <button
+            onClick={() => handleOpenAdjust(row)}
+            className="p-1.5 rounded-lg text-[#64748B] hover:text-[#0F766E] hover:bg-teal-50 dark:hover:bg-teal-950/40 dark:text-slate-400 transition-colors"
             title="Adjust Stock Quantity"
           >
             <Boxes className="w-4 h-4" />
           </button>
           <button
             onClick={() => handleOpenEdit(row)}
-            className="p-1.5 rounded-lg text-[#64748B] hover:text-[#0F766E] hover:bg-teal-50 dark:hover:bg-teal-950/40 dark:text-slate-400 transition-colors"
+            className="p-1.5 rounded-lg text-[#64748B] hover:text-slate-700 hover:bg-slate-100 dark:hover:bg-slate-800 dark:text-slate-400 transition-colors"
             title="Edit Item"
           >
             <Edit2 className="w-4 h-4" />
@@ -339,7 +353,7 @@ export const Pharmacy = () => {
         pageSize={8}
         emptyTitle="No medicine items found"
         emptyMessage="No catalog items match your search and filter criteria."
-        onRowClick={handleOpenEdit}
+        onRowClick={handleOpenView}
       />
 
       {/* Modal: Add Medicine */}
@@ -531,6 +545,133 @@ export const Pharmacy = () => {
             </FormField>
           </div>
         </form>
+      </Modal>
+
+      {/* Modal: View Medicine Details */}
+      <Modal
+        isOpen={isViewModalOpen}
+        onClose={() => setIsViewModalOpen(false)}
+        title="Medicine Dossier & Stock Specification"
+        description="Comprehensive pharmaceutical properties, batch tracking, and dispensary inventory"
+        size="md"
+        footer={
+          <div className="flex items-center justify-between w-full">
+            <div className="flex items-center gap-2">
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => {
+                  setIsViewModalOpen(false);
+                  handleOpenAdjust(selectedMedicine);
+                }}
+              >
+                Adjust Stock
+              </Button>
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => {
+                  setIsViewModalOpen(false);
+                  handleOpenEdit(selectedMedicine);
+                }}
+              >
+                Edit Item
+              </Button>
+            </div>
+            <Button variant="secondary" onClick={() => setIsViewModalOpen(false)}>
+              Close
+            </Button>
+          </div>
+        }
+      >
+        {selectedMedicine && (
+          <div className="space-y-4">
+            <div className="flex items-start justify-between p-4 rounded-xl bg-blue-50/70 dark:bg-slate-800/80 border border-blue-100 dark:border-slate-700">
+              <div>
+                <span className="text-[10px] font-mono text-[#2563EB] dark:text-[#60A5FA] font-bold">
+                  {selectedMedicine.id}
+                </span>
+                <h3 className="text-base font-bold text-slate-900 dark:text-slate-100">
+                  {selectedMedicine.name}
+                </h3>
+                <p className="text-xs text-slate-500 dark:text-slate-400 italic">
+                  {selectedMedicine.genericName}
+                </p>
+              </div>
+              <div className="flex flex-col items-end gap-1.5">
+                <Badge status={selectedMedicine.quantity <= selectedMedicine.minThreshold ? 'Low Stock' : 'Active'} size="sm" />
+                <span className="text-[10px] px-2 py-0.5 rounded bg-slate-200 dark:bg-slate-700 text-slate-700 dark:text-slate-300 font-medium">
+                  {selectedMedicine.category}
+                </span>
+              </div>
+            </div>
+
+            <div className="grid grid-cols-2 sm:grid-cols-3 gap-3 text-xs">
+              <div className="p-3 rounded-lg bg-slate-50 dark:bg-slate-800/50 border border-slate-100 dark:border-slate-700/60">
+                <span className="text-slate-400 text-[10px] uppercase font-bold tracking-wider">Form & Dosage</span>
+                <p className="font-semibold text-slate-800 dark:text-slate-200 mt-0.5">
+                  {selectedMedicine.form} ({selectedMedicine.dosage})
+                </p>
+              </div>
+
+              <div className="p-3 rounded-lg bg-slate-50 dark:bg-slate-800/50 border border-slate-100 dark:border-slate-700/60">
+                <span className="text-slate-400 text-[10px] uppercase font-bold tracking-wider">Available Stock</span>
+                <p className="font-semibold text-slate-800 dark:text-slate-200 mt-0.5">
+                  {selectedMedicine.quantity} units
+                </p>
+              </div>
+
+              <div className="p-3 rounded-lg bg-slate-50 dark:bg-slate-800/50 border border-slate-100 dark:border-slate-700/60">
+                <span className="text-slate-400 text-[10px] uppercase font-bold tracking-wider">Reorder Level</span>
+                <p className="font-semibold text-slate-800 dark:text-slate-200 mt-0.5">
+                  {selectedMedicine.minThreshold} units
+                </p>
+              </div>
+
+              <div className="p-3 rounded-lg bg-slate-50 dark:bg-slate-800/50 border border-slate-100 dark:border-slate-700/60">
+                <span className="text-slate-400 text-[10px] uppercase font-bold tracking-wider">Unit Price</span>
+                <p className="font-semibold text-slate-800 dark:text-slate-200 mt-0.5">
+                  {formatLKR(selectedMedicine.unitPrice)}
+                </p>
+              </div>
+
+              <div className="p-3 rounded-lg bg-slate-50 dark:bg-slate-800/50 border border-slate-100 dark:border-slate-700/60">
+                <span className="text-slate-400 text-[10px] uppercase font-bold tracking-wider">Inventory Value</span>
+                <p className="font-semibold text-teal-700 dark:text-teal-400 mt-0.5">
+                  {formatLKR(selectedMedicine.quantity * selectedMedicine.unitPrice)}
+                </p>
+              </div>
+
+              <div className="p-3 rounded-lg bg-slate-50 dark:bg-slate-800/50 border border-slate-100 dark:border-slate-700/60">
+                <span className="text-slate-400 text-[10px] uppercase font-bold tracking-wider">Expiry Date</span>
+                <p className="font-semibold text-slate-800 dark:text-slate-200 mt-0.5">
+                  {formatDate(selectedMedicine.expiryDate)}
+                </p>
+              </div>
+
+              <div className="p-3 rounded-lg bg-slate-50 dark:bg-slate-800/50 border border-slate-100 dark:border-slate-700/60">
+                <span className="text-slate-400 text-[10px] uppercase font-bold tracking-wider">Batch Number</span>
+                <p className="font-mono text-xs font-semibold text-slate-800 dark:text-slate-200 mt-0.5">
+                  {selectedMedicine.batchNumber}
+                </p>
+              </div>
+
+              <div className="p-3 rounded-lg bg-slate-50 dark:bg-slate-800/50 border border-slate-100 dark:border-slate-700/60">
+                <span className="text-slate-400 text-[10px] uppercase font-bold tracking-wider">Storage Bay</span>
+                <p className="font-semibold text-slate-800 dark:text-slate-200 mt-0.5">
+                  {selectedMedicine.storageLocation}
+                </p>
+              </div>
+
+              <div className="p-3 rounded-lg bg-slate-50 dark:bg-slate-800/50 border border-slate-100 dark:border-slate-700/60">
+                <span className="text-slate-400 text-[10px] uppercase font-bold tracking-wider">Manufacturer</span>
+                <p className="font-medium text-slate-700 dark:text-slate-300 truncate mt-0.5" title={selectedMedicine.manufacturer}>
+                  {selectedMedicine.manufacturer}
+                </p>
+              </div>
+            </div>
+          </div>
+        )}
       </Modal>
 
       {/* Modal: Quick Stock Adjustment */}

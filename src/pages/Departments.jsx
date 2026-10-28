@@ -7,12 +7,17 @@ import {
   Phone,
   MapPin,
   Inbox,
+  Grid,
+  List,
+  Eye,
+  Edit2,
 } from 'lucide-react';
 import { useHospitalData } from '../context/HospitalDataContext';
 import { Button } from '../components/common/Button';
 import { Badge } from '../components/common/Badge';
 import { Modal } from '../components/common/Modal';
 import { SearchInput } from '../components/common/SearchInput';
+import { DataTable } from '../components/common/DataTable';
 import { FormField, Input, Textarea } from '../components/common/FormField';
 import { validateRequired, validatePhone, validateNumber } from '../utils/validators';
 
@@ -20,6 +25,7 @@ export const Departments = () => {
   const { departments, doctors, addDepartment, updateDepartment } = useHospitalData();
 
   const [searchQuery, setSearchQuery] = useState('');
+  const [viewMode, setViewMode] = useState('table'); // 'table' | 'grid'
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [isViewModalOpen, setIsViewModalOpen] = useState(false);
@@ -128,6 +134,83 @@ export const Departments = () => {
     return doctors.filter((d) => d.department === selectedDept.name);
   }, [doctors, selectedDept]);
 
+  const tableColumns = [
+    {
+      header: 'Department',
+      key: 'name',
+      render: (row) => (
+        <div className="flex items-center gap-3">
+          <div className="w-9 h-9 rounded-lg bg-blue-50 dark:bg-slate-700 text-[#2563EB] dark:text-[#60A5FA] flex items-center justify-center shrink-0 border border-blue-100 dark:border-blue-800/40">
+            <Building2 className="w-4 h-4" />
+          </div>
+          <div>
+            <p className="font-semibold text-slate-900 dark:text-[#F1F5F9] text-xs">{row.name}</p>
+            <span className="text-[10px] font-bold text-[#2563EB] dark:text-[#60A5FA] bg-blue-50 dark:bg-blue-900/40 px-1.5 py-0.5 rounded">
+              {row.code}
+            </span>
+          </div>
+        </div>
+      ),
+    },
+    {
+      header: 'Head of Department',
+      key: 'headOfDepartment',
+      render: (row) => (
+        <span className="text-xs font-medium text-slate-800 dark:text-[#CBD5E1]">{row.headOfDepartment}</span>
+      ),
+    },
+    {
+      header: 'Location & Phone',
+      key: 'location',
+      render: (row) => (
+        <div className="text-xs">
+          <p className="text-slate-800 dark:text-[#CBD5E1] font-medium">{row.location}</p>
+          <p className="text-slate-400 dark:text-slate-500 text-[11px]">{row.phone}</p>
+        </div>
+      ),
+    },
+    {
+      header: 'Capacity',
+      key: 'doctorCount',
+      render: (row) => (
+        <div className="flex items-center gap-3 text-xs">
+          <span className="font-medium text-slate-700 dark:text-slate-300">{row.doctorCount} Doctors</span>
+          <span className="text-slate-300 dark:text-slate-600">|</span>
+          <span className="font-semibold text-teal-700 dark:text-teal-400">{row.bedCount} Beds</span>
+        </div>
+      ),
+    },
+    {
+      header: 'Status',
+      key: 'status',
+      render: (row) => <Badge status={row.status} size="sm" />,
+    },
+    {
+      header: 'Actions',
+      key: 'actions',
+      className: 'text-right actions-column',
+      cellClassName: 'text-right actions-column',
+      render: (row) => (
+        <div className="flex items-center justify-end gap-1" onClick={(e) => e.stopPropagation()}>
+          <button
+            onClick={() => handleOpenView(row)}
+            className="p-1.5 rounded-lg text-[#64748B] dark:text-[#CBD5E1] hover:text-[#2563EB] dark:hover:text-[#60A5FA] hover:bg-blue-50 dark:hover:bg-blue-900/40 transition-colors"
+            title="View Details"
+          >
+            <Eye className="w-4 h-4" />
+          </button>
+          <button
+            onClick={() => handleOpenEdit(row)}
+            className="p-1.5 rounded-lg text-[#64748B] dark:text-[#CBD5E1] hover:text-[#0F766E] dark:hover:text-[#2DD4BF] hover:bg-teal-50 dark:hover:bg-teal-900/40 transition-colors"
+            title="Edit Department"
+          >
+            <Edit2 className="w-4 h-4" />
+          </button>
+        </div>
+      ),
+    },
+  ];
+
   return (
     <div className="space-y-5">
       {/* Page Header */}
@@ -138,9 +221,36 @@ export const Departments = () => {
             Operational medical units, ward capacities, and clinical leadership
           </p>
         </div>
-        <Button variant="primary" leftIcon={PlusCircle} onClick={handleOpenAdd}>
-          Add Department
-        </Button>
+        <div className="flex items-center gap-2">
+          {/* View Mode Toggle */}
+          <div className="flex items-center bg-white dark:bg-[#1E293B] border border-[#E2E8F0] dark:border-[#334155] rounded-lg p-1">
+            <button
+              onClick={() => setViewMode('grid')}
+              className={`p-1.5 rounded-lg transition-colors ${
+                viewMode === 'grid'
+                  ? 'bg-blue-50 dark:bg-slate-700 text-[#2563EB] dark:text-[#60A5FA]'
+                  : 'text-[#64748B] dark:text-[#CBD5E1] hover:text-[#1E3A5F] dark:hover:text-[#F1F5F9]'
+              }`}
+              title="Card Grid View"
+            >
+              <Grid className="w-4 h-4" />
+            </button>
+            <button
+              onClick={() => setViewMode('table')}
+              className={`p-1.5 rounded-lg transition-colors ${
+                viewMode === 'table'
+                  ? 'bg-blue-50 dark:bg-slate-700 text-[#2563EB] dark:text-[#60A5FA]'
+                  : 'text-[#64748B] dark:text-[#CBD5E1] hover:text-[#1E3A5F] dark:hover:text-[#F1F5F9]'
+              }`}
+              title="Table List View"
+            >
+              <List className="w-4 h-4" />
+            </button>
+          </div>
+          <Button variant="primary" leftIcon={PlusCircle} onClick={handleOpenAdd}>
+            Add Department
+          </Button>
+        </div>
       </div>
 
       {/* Search Bar */}
@@ -152,8 +262,17 @@ export const Departments = () => {
         />
       </div>
 
-      {/* Department Cards Grid */}
-      {filteredDepartments.length > 0 ? (
+      {/* Content: Table or Grid View */}
+      {viewMode === 'table' ? (
+        <DataTable
+          columns={tableColumns}
+          data={filteredDepartments}
+          pageSize={8}
+          emptyTitle="No departments found"
+          emptyMessage="No clinical departments match your current search criteria."
+          onRowClick={handleOpenView}
+        />
+      ) : filteredDepartments.length > 0 ? (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
           {filteredDepartments.map((dept) => (
             <div

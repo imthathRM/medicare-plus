@@ -29,7 +29,7 @@ export const Doctors = () => {
   const [searchQuery, setSearchQuery] = useState('');
   const [departmentFilter, setDepartmentFilter] = useState('ALL');
   const [availabilityFilter, setAvailabilityFilter] = useState('ALL');
-  const [viewMode, setViewMode] = useState('grid'); // 'grid' | 'table'
+  const [viewMode, setViewMode] = useState('table'); // 'grid' | 'table'
 
   // Modals
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
