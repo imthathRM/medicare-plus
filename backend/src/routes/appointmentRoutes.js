@@ -139,9 +139,28 @@ router.put('/:id', requireRoles('ADMIN', 'DOCTOR', 'RECEPTIONIST'), async (req, 
       return sendError(res, `Appointment with ID '${req.params.id}' not found.`, 404);
     }
 
-    const { id: _id, createdAt: _createdAt, updatedAt: _updatedAt, patient: _patient, doctor: _doctor, fee, ...updateData } = req.body;
-    if (fee !== undefined && updateData.feeLKR === undefined) {
-      updateData.feeLKR = Number(fee) || 3500;
+    const allowedKeys = [
+      'patientId',
+      'patientName',
+      'patientPhone',
+      'doctorId',
+      'doctorName',
+      'department',
+      'date',
+      'time',
+      'room',
+      'status',
+      'type',
+      'feeLKR',
+    ];
+    const updateData = {};
+    for (const key of allowedKeys) {
+      if (req.body[key] !== undefined) {
+        updateData[key] = req.body[key];
+      }
+    }
+    if (req.body.fee !== undefined && updateData.feeLKR === undefined) {
+      updateData.feeLKR = Number(req.body.fee) || 3500;
     }
 
     const updated = await prisma.appointment.update({

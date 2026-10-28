@@ -103,7 +103,32 @@ router.post('/', requireRoles('ADMIN', 'DOCTOR', 'RECEPTIONIST'), async (req, re
  */
 router.put('/:id', requireRoles('ADMIN', 'DOCTOR', 'RECEPTIONIST'), async (req, res, next) => {
   try {
-    const { id: _id, createdAt: _createdAt, updatedAt: _updatedAt, ...updateData } = req.body;
+    const allowedKeys = [
+      'name',
+      'gender',
+      'dob',
+      'age',
+      'bloodGroup',
+      'phone',
+      'email',
+      'address',
+      'nationalId',
+      'emergencyContact',
+      'status',
+      'registeredDate',
+      'attendingDoctor',
+      'department',
+      'allergies',
+      'medicalHistory',
+      'lastVisit',
+    ];
+
+    const updateData = {};
+    for (const key of allowedKeys) {
+      if (req.body[key] !== undefined) {
+        updateData[key] = key === 'age' && req.body[key] !== null ? Number(req.body[key]) : req.body[key];
+      }
+    }
 
     const existing = await prisma.patient.findUnique({
       where: { id: req.params.id },

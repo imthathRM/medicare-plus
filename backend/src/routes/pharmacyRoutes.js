@@ -121,24 +121,34 @@ router.put('/:id', requireRoles('ADMIN', 'PHARMACIST'), async (req, res, next) =
       return sendError(res, `Pharmacy item with ID '${req.params.id}' not found.`, 404);
     }
 
-    const { id: _id, createdAt: _createdAt, updatedAt: _updatedAt, ...rawUpdate } = req.body;
-    const updateData = { ...rawUpdate };
+    const allowedKeys = [
+      'name',
+      'brand',
+      'category',
+      'dosageForm',
+      'unitPriceLKR',
+      'stockQuantity',
+      'reorderLevel',
+      'status',
+    ];
+    const updateData = {};
+    for (const key of allowedKeys) {
+      if (req.body[key] !== undefined) {
+        updateData[key] = req.body[key];
+      }
+    }
 
-    if (updateData.quantity !== undefined && updateData.stockQuantity === undefined) {
-      updateData.stockQuantity = Number(updateData.quantity) || 0;
-      delete updateData.quantity;
+    if (req.body.quantity !== undefined && updateData.stockQuantity === undefined) {
+      updateData.stockQuantity = Number(req.body.quantity) || 0;
     }
-    if (updateData.minThreshold !== undefined && updateData.reorderLevel === undefined) {
-      updateData.reorderLevel = Number(updateData.minThreshold) || 50;
-      delete updateData.minThreshold;
+    if (req.body.minThreshold !== undefined && updateData.reorderLevel === undefined) {
+      updateData.reorderLevel = Number(req.body.minThreshold) || 50;
     }
-    if (updateData.unitPrice !== undefined && updateData.unitPriceLKR === undefined) {
-      updateData.unitPriceLKR = Number(updateData.unitPrice) || 0;
-      delete updateData.unitPrice;
+    if (req.body.unitPrice !== undefined && updateData.unitPriceLKR === undefined) {
+      updateData.unitPriceLKR = Number(req.body.unitPrice) || 0;
     }
-    if (updateData.form && !updateData.dosageForm) {
-      updateData.dosageForm = updateData.form;
-      delete updateData.form;
+    if (req.body.form && !updateData.dosageForm) {
+      updateData.dosageForm = req.body.form;
     }
 
     if (updateData.stockQuantity !== undefined) {

@@ -129,24 +129,38 @@ router.put('/:id', requireRoles('ADMIN', 'RECEPTIONIST'), async (req, res, next)
       return sendError(res, `Invoice with ID '${req.params.id}' not found.`, 404);
     }
 
-    const { id: _id, createdAt: _createdAt, updatedAt: _updatedAt, patient: _patient, ...rawUpdate } = req.body;
-    const updateData = { ...rawUpdate };
+    const allowedKeys = [
+      'invoiceNumber',
+      'patientId',
+      'patientName',
+      'date',
+      'dueDate',
+      'subtotalLKR',
+      'taxLKR',
+      'totalLKR',
+      'amountPaid',
+      'status',
+      'paymentMethod',
+      'paidAt',
+    ];
+    const updateData = {};
+    for (const key of allowedKeys) {
+      if (req.body[key] !== undefined) {
+        updateData[key] = req.body[key];
+      }
+    }
 
-    if (updateData.totalAmount !== undefined && updateData.totalLKR === undefined) {
-      updateData.totalLKR = Number(updateData.totalAmount) || 0;
-      delete updateData.totalAmount;
+    if (req.body.totalAmount !== undefined && updateData.totalLKR === undefined) {
+      updateData.totalLKR = Number(req.body.totalAmount) || 0;
     }
-    if (updateData.subtotal !== undefined && updateData.subtotalLKR === undefined) {
-      updateData.subtotalLKR = Number(updateData.subtotal) || 0;
-      delete updateData.subtotal;
+    if (req.body.subtotal !== undefined && updateData.subtotalLKR === undefined) {
+      updateData.subtotalLKR = Number(req.body.subtotal) || 0;
     }
-    if (updateData.tax !== undefined && updateData.taxLKR === undefined) {
-      updateData.taxLKR = Number(updateData.tax) || 0;
-      delete updateData.tax;
+    if (req.body.tax !== undefined && updateData.taxLKR === undefined) {
+      updateData.taxLKR = Number(req.body.tax) || 0;
     }
-    if (updateData.paidAmount !== undefined && updateData.amountPaid === undefined) {
-      updateData.amountPaid = Number(updateData.paidAmount) || 0;
-      delete updateData.paidAmount;
+    if (req.body.paidAmount !== undefined && updateData.amountPaid === undefined) {
+      updateData.amountPaid = Number(req.body.paidAmount) || 0;
     }
 
     const updated = await prisma.invoice.update({

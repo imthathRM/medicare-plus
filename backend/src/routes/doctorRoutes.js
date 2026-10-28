@@ -123,19 +123,33 @@ router.put('/:id', requireRoles('ADMIN'), async (req, res, next) => {
       return sendError(res, `Doctor with ID '${req.params.id}' not found.`, 404);
     }
 
-    const { id: _id, createdAt: _createdAt, updatedAt: _updatedAt, departmentRef: _departmentRef, appointments: _appointments, ...updateData } = req.body;
-
-    if (updateData.specialty && !updateData.specialization) {
-      updateData.specialization = updateData.specialty;
-      delete updateData.specialty;
+    const allowedKeys = [
+      'name',
+      'slmcRegNo',
+      'department',
+      'departmentId',
+      'specialization',
+      'qualification',
+      'phone',
+      'email',
+      'status',
+      'consultationRoom',
+      'consultationFeeLKR',
+    ];
+    const updateData = {};
+    for (const key of allowedKeys) {
+      if (req.body[key] !== undefined) {
+        updateData[key] = req.body[key];
+      }
     }
-    if (updateData.roomNumber && !updateData.consultationRoom) {
-      updateData.consultationRoom = updateData.roomNumber;
-      delete updateData.roomNumber;
+    if (req.body.specialty && !updateData.specialization) {
+      updateData.specialization = req.body.specialty;
     }
-    if (updateData.consultationFee !== undefined && updateData.consultationFeeLKR === undefined) {
-      updateData.consultationFeeLKR = Number(updateData.consultationFee) || 3500;
-      delete updateData.consultationFee;
+    if (req.body.roomNumber && !updateData.consultationRoom) {
+      updateData.consultationRoom = req.body.roomNumber;
+    }
+    if (req.body.consultationFee !== undefined && updateData.consultationFeeLKR === undefined) {
+      updateData.consultationFeeLKR = Number(req.body.consultationFee) || 3500;
     }
 
     const updated = await prisma.doctor.update({

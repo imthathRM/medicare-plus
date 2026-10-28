@@ -166,6 +166,7 @@ async function runStage8IntegrationTests() {
     const getApts = await fetch(`${baseURL}/appointments`, { headers: authHeaders });
     const aptsList = await getApts.json();
     assert(getApts.status === 200, 'GET /api/appointments returns 200 OK');
+    assert(Array.isArray(aptsList.data), 'Appointments data is an array');
 
     const testAptId = `APT-INT-${Date.now()}`;
     const createApt = await fetch(`${baseURL}/appointments`, {
