@@ -1,19 +1,33 @@
-import { delay, createApiResponse } from './api';
-import { initialDepartments } from '../data/mockDepartments';
+import { apiClient } from './api';
 
 export const departmentService = {
   async getAll() {
-    await delay();
-    return createApiResponse(initialDepartments);
+    return apiClient.get('/departments');
+  },
+
+  async getById(id) {
+    return apiClient.get(`/departments/${encodeURIComponent(id)}`);
   },
 
   async create(deptData) {
-    await delay();
-    return createApiResponse({ ...deptData, id: `DEP-${Date.now()}` }, true, 'Department added successfully');
+    const payload = {
+      ...deptData,
+      doctorCount: Number(deptData.doctorCount) || 0,
+      bedCount: Number(deptData.bedCount) || 0,
+    };
+    return apiClient.post('/departments', payload);
   },
 
   async update(id, deptData) {
-    await delay();
-    return createApiResponse({ ...deptData, id }, true, 'Department updated successfully');
+    const payload = {
+      ...deptData,
+      doctorCount: deptData.doctorCount !== undefined ? Number(deptData.doctorCount) : undefined,
+      bedCount: deptData.bedCount !== undefined ? Number(deptData.bedCount) : undefined,
+    };
+    return apiClient.put(`/departments/${encodeURIComponent(id)}`, payload);
+  },
+
+  async delete(id) {
+    return apiClient.delete(`/departments/${encodeURIComponent(id)}`);
   },
 };

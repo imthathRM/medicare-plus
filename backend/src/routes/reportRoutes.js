@@ -11,7 +11,7 @@ router.use(requireRoles('ADMIN', 'DOCTOR'));
 
 /**
  * GET /api/reports/summary
- * Retrieve top-level KPI metrics dynamically aggregated from PostgreSQL
+ * Retrieve top-level KPI metrics dynamically aggregated from PostgreSQL (ADMIN, DOCTOR)
  */
 router.get('/summary', async (req, res, next) => {
   try {
@@ -59,9 +59,9 @@ router.get('/summary', async (req, res, next) => {
 
 /**
  * GET /api/reports/trends
- * Retrieve monthly appointment trend dataset
+ * Retrieve monthly appointment trend dataset (ADMIN, DOCTOR)
  */
-router.get('/trends', async (req, res) => {
+router.get('/trends', requireRoles('ADMIN', 'DOCTOR'), async (req, res) => {
   const trends = [
     { month: 'May', completed: 620, cancelled: 45, newRegistrations: 110 },
     { month: 'Jun', completed: 710, cancelled: 52, newRegistrations: 135 },
@@ -76,9 +76,9 @@ router.get('/trends', async (req, res) => {
 
 /**
  * GET /api/reports/distribution
- * Retrieve department-wise patient distribution dataset
+ * Retrieve department-wise patient distribution dataset (ADMIN, DOCTOR)
  */
-router.get('/distribution', async (req, res, next) => {
+router.get('/distribution', requireRoles('ADMIN', 'DOCTOR'), async (req, res, next) => {
   try {
     const departments = await prisma.department.findMany({
       select: { name: true, doctorCount: true },

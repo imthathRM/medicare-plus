@@ -22,21 +22,22 @@ export const Settings = () => {
 
   const [activeTab, setActiveTab] = useState('hospital'); // 'hospital' | 'profile' | 'preferences'
 
-  // Form states
-  const [profileForm, setProfileForm] = useState({ ...hospitalProfile });
-  const [settingsForm, setSettingsForm] = useState({ ...appSettings });
-  const [userProfileForm, setUserProfileForm] = useState({
-    name: user?.name || 'Dr. Senaka Weeraratne',
-    email: user?.email || 'admin@medicare.plus',
-    role: user?.role || 'Hospital Administrator',
+  // Form states initialized with live context/auth values
+  const [profileForm, setProfileForm] = useState(() => ({ ...hospitalProfile }));
+  const [settingsForm, setSettingsForm] = useState(() => ({ ...appSettings }));
+  const [userProfileForm, setUserProfileForm] = useState(() => ({
+    name: user?.name || 'ImthathRM',
+    email: user?.email || 'mohamedimthath25@gmail.com',
+    role: user?.role || 'ADMIN',
     department: user?.department || 'Executive Administration',
-  });
+  }));
 
   const isAdmin =
     !user ||
     user.role === 'Hospital Administrator' ||
     user.role === 'Superadmin' ||
-    user.role === 'admin';
+    user.role === 'admin' ||
+    (user.role && user.role.toUpperCase() === 'ADMIN');
 
   const handleThemeSelect = (mode) => {
     if (!isAdmin) return;

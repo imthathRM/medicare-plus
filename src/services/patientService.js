@@ -1,31 +1,26 @@
-import { delay, createApiResponse } from './api';
-import { initialPatients } from '../data/mockPatients';
+import { apiClient } from './api';
 
 export const patientService = {
-  async getAll() {
-    await delay();
-    return createApiResponse(initialPatients);
+  async getAll(params = {}) {
+    const query = new URLSearchParams();
+    if (params.search) query.append('search', params.search);
+    const queryString = query.toString() ? `?${query.toString()}` : '';
+    return apiClient.get(`/patients${queryString}`);
   },
 
   async getById(id) {
-    await delay();
-    const patient = initialPatients.find((p) => p.id === id);
-    if (!patient) throw new Error('Patient not found');
-    return createApiResponse(patient);
+    return apiClient.get(`/patients/${encodeURIComponent(id)}`);
   },
 
   async create(patientData) {
-    await delay();
-    return createApiResponse({ ...patientData, id: `PAT-${Date.now()}` }, true, 'Patient registered successfully');
+    return apiClient.post('/patients', patientData);
   },
 
   async update(id, patientData) {
-    await delay();
-    return createApiResponse({ ...patientData, id }, true, 'Patient details updated successfully');
+    return apiClient.put(`/patients/${encodeURIComponent(id)}`, patientData);
   },
 
   async delete(id) {
-    await delay();
-    return createApiResponse({ id }, true, 'Patient record archived');
+    return apiClient.delete(`/patients/${encodeURIComponent(id)}`);
   },
 };

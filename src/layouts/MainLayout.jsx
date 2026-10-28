@@ -33,9 +33,9 @@ export const MainLayout = () => {
         <div className="bg-blue-50/70 dark:bg-slate-800/80 border-b border-blue-100 dark:border-slate-700 px-4 sm:px-6 py-1.5 flex items-center justify-between text-xs text-[#1E3A5F] dark:text-[#F1F5F9] no-print transition-colors">
           <div className="flex items-center gap-2">
             <Sparkles className="w-3.5 h-3.5 text-[#2563EB] dark:text-[#60A5FA] shrink-0" />
-            <span className="font-semibold">MediCare Plus System Active:</span>
+            <span className="font-semibold">MediCare Plus Enterprise System:</span>
             <span className="hidden sm:inline text-[#64748B] dark:text-[#CBD5E1]">
-              In-memory mock data active. Add, edit, status changes, and searches are fully interactive.
+              PostgreSQL & Express API Integration Connected. Real-time hospital records synchronized.
             </span>
           </div>
           <button

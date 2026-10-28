@@ -30,7 +30,14 @@ router.get('/', async (req, res, next) => {
       orderBy: { id: 'asc' },
     });
 
-    return sendSuccess(res, doctors, `Retrieved ${doctors.length} doctor profile(s).`);
+    const normalizedDoctors = doctors.map((d) => ({
+      ...d,
+      specialty: d.specialization || d.department || '',
+      consultationFee: d.consultationFeeLKR || 3500,
+      roomNumber: d.consultationRoom || 'OPD-101',
+    }));
+
+    return sendSuccess(res, normalizedDoctors, `Retrieved ${normalizedDoctors.length} doctor profile(s).`);
   } catch (error) {
     next(error);
   }
@@ -51,7 +58,14 @@ router.get('/:id', async (req, res, next) => {
       return sendError(res, `Doctor with ID '${req.params.id}' not found.`, 404);
     }
 
-    return sendSuccess(res, doctor, 'Doctor profile retrieved.');
+    const normalizedDoctor = {
+      ...doctor,
+      specialty: doctor.specialization || doctor.department || '',
+      consultationFee: doctor.consultationFeeLKR || 3500,
+      roomNumber: doctor.consultationRoom || 'OPD-101',
+    };
+
+    return sendSuccess(res, normalizedDoctor, 'Doctor profile retrieved.');
   } catch (error) {
     next(error);
   }
@@ -68,20 +82,24 @@ router.post('/', requireRoles('ADMIN'), async (req, res, next) => {
       return sendError(res, 'Doctor name and department are required.', 400);
     }
 
+    const fee = data.consultationFeeLKR !== undefined 
+      ? Number(data.consultationFeeLKR) 
+      : (data.consultationFee !== undefined ? Number(data.consultationFee) : 3500);
+
     const newDoctor = await prisma.doctor.create({
       data: {
         id: data.id || `DOC-${Date.now()}`,
-        name: data.name,
+        name: data.name.trim(),
         slmcRegNo: data.slmcRegNo || 'Pending',
         department: data.department,
         departmentId: data.departmentId || null,
-        specialization: data.specialization || '',
+        specialization: data.specialization || data.specialty || '',
         qualification: data.qualification || '',
         phone: data.phone || '',
         email: data.email || '',
         status: data.status || 'Available',
-        consultationRoom: data.consultationRoom || '',
-        consultationFeeLKR: typeof data.consultationFeeLKR === 'number' ? data.consultationFeeLKR : 3500,
+        consultationRoom: data.consultationRoom || data.roomNumber || '',
+        consultationFeeLKR: isNaN(fee) ? 3500 : fee,
       },
     });
 
@@ -105,7 +123,20 @@ router.put('/:id', requireRoles('ADMIN'), async (req, res, next) => {
       return sendError(res, `Doctor with ID '${req.params.id}' not found.`, 404);
     }
 
-    const { id: _id, createdAt: _createdAt, updatedAt: _updatedAt, departmentRef: _departmentRef, ...updateData } = req.body;
+    const { id: _id, createdAt: _createdAt, updatedAt: _updatedAt, departmentRef: _departmentRef, appointments: _appointments, ...updateData } = req.body;
+
+    if (updateData.specialty && !updateData.specialization) {
+      updateData.specialization = updateData.specialty;
+      delete updateData.specialty;
+    }
+    if (updateData.roomNumber && !updateData.consultationRoom) {
+      updateData.consultationRoom = updateData.roomNumber;
+      delete updateData.roomNumber;
+    }
+    if (updateData.consultationFee !== undefined && updateData.consultationFeeLKR === undefined) {
+      updateData.consultationFeeLKR = Number(updateData.consultationFee) || 3500;
+      delete updateData.consultationFee;
+    }
 
     const updated = await prisma.doctor.update({
       where: { id: req.params.id },
@@ -113,6 +144,30 @@ router.put('/:id', requireRoles('ADMIN'), async (req, res, next) => {
     });
 
     return sendSuccess(res, updated, 'Doctor profile updated successfully.');
+  } catch (error) {
+    next(error);
+  }
+});
+
+/**
+ * DELETE /api/doctors/:id
+ * Delete doctor profile from PostgreSQL (ADMIN only)
+ */
+router.delete('/:id', requireRoles('ADMIN'), async (req, res, next) => {
+  try {
+    const existing = await prisma.doctor.findUnique({
+      where: { id: req.params.id },
+    });
+
+    if (!existing) {
+      return sendError(res, `Doctor with ID '${req.params.id}' not found.`, 404);
+    }
+
+    await prisma.doctor.delete({
+      where: { id: req.params.id },
+    });
+
+    return sendSuccess(res, { id: req.params.id }, `Doctor '${existing.name}' removed from roster.`);
   } catch (error) {
     next(error);
   }

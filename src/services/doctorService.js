@@ -1,26 +1,41 @@
-import { delay, createApiResponse } from './api';
-import { initialDoctors } from '../data/mockDoctors';
+import { apiClient } from './api';
 
 export const doctorService = {
-  async getAll() {
-    await delay();
-    return createApiResponse(initialDoctors);
+  async getAll(params = {}) {
+    const query = new URLSearchParams();
+    if (params.department && params.department !== 'ALL') query.append('department', params.department);
+    if (params.status && params.status !== 'ALL') query.append('status', params.status);
+    const queryString = query.toString() ? `?${query.toString()}` : '';
+    return apiClient.get(`/doctors${queryString}`);
   },
 
   async getById(id) {
-    await delay();
-    const doc = initialDoctors.find((d) => d.id === id);
-    if (!doc) throw new Error('Doctor not found');
-    return createApiResponse(doc);
+    return apiClient.get(`/doctors/${encodeURIComponent(id)}`);
   },
 
   async create(doctorData) {
-    await delay();
-    return createApiResponse({ ...doctorData, id: `DOC-${Date.now()}` }, true, 'Doctor profile registered');
+    const payload = {
+      ...doctorData,
+      specialization: doctorData.specialization || doctorData.specialty || '',
+      consultationFeeLKR: Number(doctorData.consultationFeeLKR || doctorData.consultationFee || 3500),
+      consultationRoom: doctorData.consultationRoom || doctorData.roomNumber || 'OPD-101',
+    };
+    return apiClient.post('/doctors', payload);
   },
 
   async update(id, doctorData) {
-    await delay();
-    return createApiResponse({ ...doctorData, id }, true, 'Doctor profile updated');
+    const payload = {
+      ...doctorData,
+      specialization: doctorData.specialization || doctorData.specialty,
+      consultationFeeLKR: doctorData.consultationFeeLKR !== undefined || doctorData.consultationFee !== undefined
+        ? Number(doctorData.consultationFeeLKR || doctorData.consultationFee)
+        : undefined,
+      consultationRoom: doctorData.consultationRoom || doctorData.roomNumber,
+    };
+    return apiClient.put(`/doctors/${encodeURIComponent(id)}`, payload);
+  },
+
+  async delete(id) {
+    return apiClient.delete(`/doctors/${encodeURIComponent(id)}`);
   },
 };

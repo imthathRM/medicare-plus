@@ -1,10 +1,11 @@
 /**
  * MediCare Plus - Centralized API Service Foundation
- * 
- * In this Part 1 Frontend Foundation phase, this service layer mimics async
- * API interactions with local simulated latency and standardized response envelopes.
- * When real backend endpoints are wired in Part 2, swap endpoints here without
- * touching UI components.
+ *
+ * Provides a standardized HTTP client (`apiClient`) configured with:
+ * - Base URL resolution from `VITE_API_URL` or fallback to `http://localhost:5000/api`
+ * - Automatic JWT bearer token extraction from localStorage/sessionStorage
+ * - Consistent error extraction and response normalization
+ * - Dual compatibility helpers (`createApiResponse`, `delay`) for safe transitions
  */
 
 export const API_CONFIG = {
@@ -13,6 +14,98 @@ export const API_CONFIG = {
   headers: {
     'Content-Type': 'application/json',
     Accept: 'application/json',
+  },
+};
+
+/**
+ * Retrieve the active JWT token from persistent or session storage
+ */
+export const getAuthToken = () => {
+  try {
+    return (
+      localStorage.getItem('medicare_token') ||
+      sessionStorage.getItem('medicare_token') ||
+      null
+    );
+  } catch {
+    return null;
+  }
+};
+
+/**
+ * Centralized HTTP Client
+ */
+export const apiClient = {
+  async request(endpoint, options = {}) {
+    const url = endpoint.startsWith('http')
+      ? endpoint
+      : `${API_CONFIG.baseURL}${endpoint.startsWith('/') ? '' : '/'}${endpoint}`;
+
+    const token = getAuthToken();
+
+    const headers = {
+      ...API_CONFIG.headers,
+      ...(token ? { Authorization: `Bearer ${token}` } : {}),
+      ...(options.headers || {}),
+    };
+
+    const config = {
+      ...options,
+      headers,
+    };
+
+    const response = await fetch(url, config);
+    let json;
+    try {
+      json = await response.json();
+    } catch {
+      json = null;
+    }
+
+    if (!response.ok) {
+      const errorMsg =
+        json?.message ||
+        json?.error ||
+        `Request failed with status ${response.status} (${response.statusText})`;
+      const error = new Error(errorMsg);
+      error.status = response.status;
+      error.data = json;
+      throw error;
+    }
+
+    return json;
+  },
+
+  get(endpoint, options = {}) {
+    return this.request(endpoint, { ...options, method: 'GET' });
+  },
+
+  post(endpoint, body, options = {}) {
+    return this.request(endpoint, {
+      ...options,
+      method: 'POST',
+      body: body !== undefined ? JSON.stringify(body) : undefined,
+    });
+  },
+
+  put(endpoint, body, options = {}) {
+    return this.request(endpoint, {
+      ...options,
+      method: 'PUT',
+      body: body !== undefined ? JSON.stringify(body) : undefined,
+    });
+  },
+
+  patch(endpoint, body, options = {}) {
+    return this.request(endpoint, {
+      ...options,
+      method: 'PATCH',
+      body: body !== undefined ? JSON.stringify(body) : undefined,
+    });
+  },
+
+  delete(endpoint, options = {}) {
+    return this.request(endpoint, { ...options, method: 'DELETE' });
   },
 };
 

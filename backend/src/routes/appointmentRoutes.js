@@ -125,4 +125,58 @@ const updateStatus = async (req, res, next) => {
 router.patch('/:id/status', requireRoles('ADMIN', 'DOCTOR', 'RECEPTIONIST'), updateStatus);
 router.put('/:id/status', requireRoles('ADMIN', 'DOCTOR', 'RECEPTIONIST'), updateStatus);
 
+/**
+ * PUT /api/appointments/:id
+ * Full update for an appointment in PostgreSQL
+ */
+router.put('/:id', requireRoles('ADMIN', 'DOCTOR', 'RECEPTIONIST'), async (req, res, next) => {
+  try {
+    const existing = await prisma.appointment.findUnique({
+      where: { id: req.params.id },
+    });
+
+    if (!existing) {
+      return sendError(res, `Appointment with ID '${req.params.id}' not found.`, 404);
+    }
+
+    const { id: _id, createdAt: _createdAt, updatedAt: _updatedAt, patient: _patient, doctor: _doctor, fee, ...updateData } = req.body;
+    if (fee !== undefined && updateData.feeLKR === undefined) {
+      updateData.feeLKR = Number(fee) || 3500;
+    }
+
+    const updated = await prisma.appointment.update({
+      where: { id: req.params.id },
+      data: updateData,
+    });
+
+    return sendSuccess(res, updated, 'Appointment updated successfully.');
+  } catch (error) {
+    next(error);
+  }
+});
+
+/**
+ * DELETE /api/appointments/:id
+ * Cancel or delete appointment in PostgreSQL
+ */
+router.delete('/:id', requireRoles('ADMIN', 'RECEPTIONIST'), async (req, res, next) => {
+  try {
+    const existing = await prisma.appointment.findUnique({
+      where: { id: req.params.id },
+    });
+
+    if (!existing) {
+      return sendError(res, `Appointment with ID '${req.params.id}' not found.`, 404);
+    }
+
+    await prisma.appointment.delete({
+      where: { id: req.params.id },
+    });
+
+    return sendSuccess(res, { id: req.params.id }, `Appointment '${req.params.id}' cancelled/deleted.`);
+  } catch (error) {
+    next(error);
+  }
+});
+
 export default router;

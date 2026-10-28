@@ -99,7 +99,23 @@ router.put('/:id', requireRoles('ADMIN', 'DOCTOR', 'RECEPTIONIST'), async (req, 
       return sendError(res, `Admission record with ID '${req.params.id}' not found.`, 404);
     }
 
-    const { id: _id, createdAt: _createdAt, updatedAt: _updatedAt, patient: _patient, ...updateData } = req.body;
+    const allowedKeys = [
+      'patientId',
+      'patientName',
+      'ward',
+      'bedNumber',
+      'admissionDate',
+      'dischargeDate',
+      'status',
+      'admittingDoctor',
+      'diagnosis',
+    ];
+    const updateData = {};
+    for (const key of allowedKeys) {
+      if (req.body[key] !== undefined) {
+        updateData[key] = req.body[key];
+      }
+    }
 
     const updated = await prisma.admission.update({
       where: { id: req.params.id },
@@ -107,6 +123,30 @@ router.put('/:id', requireRoles('ADMIN', 'DOCTOR', 'RECEPTIONIST'), async (req, 
     });
 
     return sendSuccess(res, updated, 'Admission record updated successfully.');
+  } catch (error) {
+    next(error);
+  }
+});
+
+/**
+ * DELETE /api/admissions/:id
+ * Delete admission record from PostgreSQL (ADMIN only)
+ */
+router.delete('/:id', requireRoles('ADMIN'), async (req, res, next) => {
+  try {
+    const existing = await prisma.admission.findUnique({
+      where: { id: req.params.id },
+    });
+
+    if (!existing) {
+      return sendError(res, `Admission record with ID '${req.params.id}' not found.`, 404);
+    }
+
+    await prisma.admission.delete({
+      where: { id: req.params.id },
+    });
+
+    return sendSuccess(res, { id: req.params.id }, `Admission record '${req.params.id}' removed.`);
   } catch (error) {
     next(error);
   }

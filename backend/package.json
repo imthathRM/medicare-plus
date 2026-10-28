@@ -9,6 +9,8 @@
     "start": "node src/server.js",
     "dev": "node --watch src/server.js",
     "test": "node test-backend.js",
+    "test:integration": "node test-stage8-integration.js",
+    "test:all": "node test-backend.js && node test-stage8-integration.js",
     "test:health": "node -e \"fetch('http://localhost:5000/api/health').then(r=>r.json()).then(console.log)\"",
     "prisma:generate": "prisma generate",
     "prisma:migrate": "prisma migrate dev",

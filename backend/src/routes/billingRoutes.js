@@ -31,7 +31,16 @@ router.get('/', requireRoles('ADMIN', 'RECEPTIONIST', 'DOCTOR'), async (req, res
       include: { patient: true },
     });
 
-    return sendSuccess(res, invoices, `Retrieved ${invoices.length} billing invoice(s).`);
+    const normalizedInvoices = invoices.map((inv) => ({
+      ...inv,
+      totalAmount: inv.totalLKR,
+      paidAmount: inv.amountPaid || 0,
+      subtotal: inv.subtotalLKR,
+      tax: inv.taxLKR,
+      patientName: inv.patientName || inv.patient?.name || 'Patient',
+    }));
+
+    return sendSuccess(res, normalizedInvoices, `Retrieved ${normalizedInvoices.length} billing invoice(s).`);
   } catch (error) {
     next(error);
   }
@@ -52,7 +61,16 @@ router.get('/:id', async (req, res, next) => {
       return sendError(res, `Invoice with ID '${req.params.id}' not found.`, 404);
     }
 
-    return sendSuccess(res, invoice, 'Invoice retrieved.');
+    const normalizedInvoice = {
+      ...invoice,
+      totalAmount: invoice.totalLKR,
+      paidAmount: invoice.amountPaid || 0,
+      subtotal: invoice.subtotalLKR,
+      tax: invoice.taxLKR,
+      patientName: invoice.patientName || invoice.patient?.name || 'Patient',
+    };
+
+    return sendSuccess(res, normalizedInvoice, 'Invoice retrieved.');
   } catch (error) {
     next(error);
   }
@@ -65,9 +83,14 @@ router.get('/:id', async (req, res, next) => {
 router.post('/', requireRoles('ADMIN', 'RECEPTIONIST'), async (req, res, next) => {
   try {
     const data = req.body;
-    if (!data || !data.patientName || !data.totalLKR) {
-      return sendError(res, 'Patient name and total amount are required.', 400);
+    const total = Number(data.totalLKR ?? data.totalAmount);
+    if (!data || !data.patientName || isNaN(total) || total <= 0) {
+      return sendError(res, 'Patient name and a valid total amount are required.', 400);
     }
+
+    const subtotal = Number(data.subtotalLKR ?? data.subtotal ?? total);
+    const tax = Number(data.taxLKR ?? data.tax ?? 0);
+    const amountPaid = Number(data.amountPaid ?? data.paidAmount ?? 0);
 
     const newInvoice = await prisma.invoice.create({
       data: {
@@ -77,15 +100,85 @@ router.post('/', requireRoles('ADMIN', 'RECEPTIONIST'), async (req, res, next) =
         patientName: data.patientName,
         date: data.date || new Date().toISOString().slice(0, 10),
         dueDate: data.dueDate || new Date(Date.now() + 7 * 86400000).toISOString().slice(0, 10),
-        subtotalLKR: Number(data.subtotalLKR || data.totalLKR),
-        taxLKR: Number(data.taxLKR || 0),
-        totalLKR: Number(data.totalLKR),
-        status: data.status || 'Pending',
-        paymentMethod: data.paymentMethod || null,
+        subtotalLKR: subtotal,
+        taxLKR: tax,
+        totalLKR: total,
+        amountPaid: amountPaid,
+        status: data.status || (amountPaid >= total ? 'Paid' : amountPaid > 0 ? 'Partially Paid' : 'Pending'),
+        paymentMethod: data.paymentMethod || (amountPaid > 0 ? 'Cash' : null),
       },
     });
 
     return sendSuccess(res, newInvoice, 'Invoice generated successfully in PostgreSQL.', 201);
+  } catch (error) {
+    next(error);
+  }
+});
+
+/**
+ * PUT /api/billing/:id
+ * Update invoice details in PostgreSQL (ADMIN, RECEPTIONIST only)
+ */
+router.put('/:id', requireRoles('ADMIN', 'RECEPTIONIST'), async (req, res, next) => {
+  try {
+    const existing = await prisma.invoice.findUnique({
+      where: { id: req.params.id },
+    });
+
+    if (!existing) {
+      return sendError(res, `Invoice with ID '${req.params.id}' not found.`, 404);
+    }
+
+    const { id: _id, createdAt: _createdAt, updatedAt: _updatedAt, patient: _patient, ...rawUpdate } = req.body;
+    const updateData = { ...rawUpdate };
+
+    if (updateData.totalAmount !== undefined && updateData.totalLKR === undefined) {
+      updateData.totalLKR = Number(updateData.totalAmount) || 0;
+      delete updateData.totalAmount;
+    }
+    if (updateData.subtotal !== undefined && updateData.subtotalLKR === undefined) {
+      updateData.subtotalLKR = Number(updateData.subtotal) || 0;
+      delete updateData.subtotal;
+    }
+    if (updateData.tax !== undefined && updateData.taxLKR === undefined) {
+      updateData.taxLKR = Number(updateData.tax) || 0;
+      delete updateData.tax;
+    }
+    if (updateData.paidAmount !== undefined && updateData.amountPaid === undefined) {
+      updateData.amountPaid = Number(updateData.paidAmount) || 0;
+      delete updateData.paidAmount;
+    }
+
+    const updated = await prisma.invoice.update({
+      where: { id: req.params.id },
+      data: updateData,
+    });
+
+    return sendSuccess(res, updated, 'Invoice updated successfully.');
+  } catch (error) {
+    next(error);
+  }
+});
+
+/**
+ * DELETE /api/billing/:id
+ * Delete invoice from PostgreSQL (ADMIN only)
+ */
+router.delete('/:id', requireRoles('ADMIN'), async (req, res, next) => {
+  try {
+    const existing = await prisma.invoice.findUnique({
+      where: { id: req.params.id },
+    });
+
+    if (!existing) {
+      return sendError(res, `Invoice with ID '${req.params.id}' not found.`, 404);
+    }
+
+    await prisma.invoice.delete({
+      where: { id: req.params.id },
+    });
+
+    return sendSuccess(res, { id: req.params.id }, `Invoice '${existing.invoiceNumber}' deleted.`);
   } catch (error) {
     next(error);
   }

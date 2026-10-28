@@ -86,4 +86,58 @@ router.post('/', requireRoles('ADMIN'), async (req, res, next) => {
   }
 });
 
+/**
+ * PUT /api/staff/:id
+ * Update an existing staff member in PostgreSQL (ADMIN only)
+ */
+router.put('/:id', requireRoles('ADMIN'), async (req, res, next) => {
+  try {
+    const { id } = req.params;
+    const data = req.body;
+
+    const existing = await prisma.staff.findUnique({ where: { id } });
+    if (!existing) {
+      return sendError(res, `Staff member with ID '${id}' not found.`, 404);
+    }
+
+    const updateData = {};
+    if (data.name !== undefined) updateData.name = data.name;
+    if (data.role !== undefined) updateData.role = data.role;
+    if (data.department !== undefined) updateData.department = data.department;
+    if (data.phone !== undefined) updateData.phone = data.phone;
+    if (data.email !== undefined) updateData.email = data.email;
+    if (data.status !== undefined) updateData.status = data.status;
+    if (data.shift !== undefined) updateData.shift = data.shift;
+
+    const updated = await prisma.staff.update({
+      where: { id },
+      data: updateData,
+    });
+
+    return sendSuccess(res, updated, 'Staff member updated successfully in PostgreSQL.');
+  } catch (error) {
+    next(error);
+  }
+});
+
+/**
+ * DELETE /api/staff/:id
+ * Remove staff member from PostgreSQL (ADMIN only)
+ */
+router.delete('/:id', requireRoles('ADMIN'), async (req, res, next) => {
+  try {
+    const { id } = req.params;
+
+    const existing = await prisma.staff.findUnique({ where: { id } });
+    if (!existing) {
+      return sendError(res, `Staff member with ID '${id}' not found.`, 404);
+    }
+
+    await prisma.staff.delete({ where: { id } });
+    return sendSuccess(res, null, `Staff member '${id}' deleted successfully.`);
+  } catch (error) {
+    next(error);
+  }
+});
+
 export default router;

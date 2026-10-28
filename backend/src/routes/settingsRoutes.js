@@ -134,7 +134,13 @@ router.put('/hospital', authenticateToken, requireRoles('ADMIN'), async (req, re
     const profile = await prisma.hospitalProfile.upsert({
       where: { id: 'default-hospital' },
       update: allowedUpdates,
-      create: { id: 'default-hospital', ...allowedUpdates },
+      create: {
+        id: 'default-hospital',
+        name: 'MediCare Plus Hospital',
+        currency: 'LKR',
+        timezone: 'Asia/Colombo (UTC+05:30)',
+        ...allowedUpdates,
+      },
     });
 
     return sendSuccess(res, profile, 'Hospital profile updated successfully in PostgreSQL.');
