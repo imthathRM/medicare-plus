@@ -1,140 +1,311 @@
-# MediCare Plus — Backend (Stage 6: PostgreSQL Database Integration)
+# MediCare Plus — Hospital Management System
 
-Modular Node.js + Express backend integrated with PostgreSQL using Prisma ORM for the MediCare Plus Hospital Management System.
+A full-stack Hospital Management System designed to manage hospital operations, including patients, doctors, appointments, admissions, billing, pharmacy inventory, staff, and reports.
 
----
+## 1. Project Overview
 
-## Stage 6 Scope & Implementation Highlights
+MediCare Plus is a modern hospital management application developed using React, Node.js, Express.js, PostgreSQL, and Prisma ORM.
 
-- **Framework**: Express.js with native ES modules (`"type": "module"`).
-- **Database Engine**: PostgreSQL (tested with PostgreSQL 17 on Windows x64).
-- **ORM**: Prisma ORM (`@prisma/client` and `prisma` CLI).
-- **Database Name**: `MediCare_Plus`.
-- **Relational Data Models**:
-  - `Department`: Clinical and non-clinical departments.
-  - `Doctor`: Doctor profiles and consultation fees, linked to departments.
-  - `Patient`: Comprehensive patient clinical history, contact information, and status.
-  - `Appointment`: Clinical bookings linking patients and attending doctors.
-  - `Admission`: Inpatient ward tracking and bed assignments.
-  - `Invoice`: Financial billing records with transactional payment support.
-  - `Medicine`: Pharmaceutical inventory with transactional stock level updates.
-  - `Staff`: Hospital administrative, nursing, and clinical staff.
-  - `UserSetting`: Isolated per-user appearance preferences (`light` | `dark`).
-  - `HospitalProfile`: Hospital institutional metadata and bed capacity.
-- **Transactional Consistency**: Financial payment settlements and pharmaceutical stock adjustments use atomic `prisma.$transaction(...)` blocks.
-- **Per-User Theme Isolation**: Each user's theme selection is stored in the `user_settings` PostgreSQL table, ensuring independent user preferences.
-- **Health Check & Database Probe**: `GET /api/health` queries PostgreSQL (`SELECT 1`) to report live database connectivity alongside uptime.
-- **Migration & Idempotent Seeding**: Initial database migration applied cleanly with automated, repeatable seeding (upserts avoid duplicate records).
+The system provides a centralized platform for managing hospital operations through a user-friendly interface and a modular backend architecture.
 
----
+### Key Highlights
 
-## Prerequisites
+- Patient registration and management
+- Doctor and department management
+- Appointment scheduling
+- Inpatient admission and discharge management
+- Billing and invoice management
+- Pharmacy and medicine inventory management
+- Staff management
+- Hospital reports and analytics
+- JWT-based authentication
+- Hospital settings and user preferences
+- PostgreSQL database integration
 
-1. **Node.js**: `v20+` (tested on Node `v24.15.0`)
-2. **npm**: `v10+` (tested on npm `11.12.1`)
-3. **PostgreSQL**: PostgreSQL 14+ (tested on PostgreSQL 17 running on localhost:5432)
+## 2. Technologies Used
 
----
+| Component | Technology |
+|---|---|
+| Frontend | React 19 |
+| Build Tool | Vite |
+| Styling | Tailwind CSS |
+| Routing | React Router |
+| Icons | Lucide React |
+| Backend | Node.js |
+| Backend Framework | Express.js |
+| Database | PostgreSQL |
+| ORM | Prisma |
+| Authentication | JWT |
+| Password Hashing | bcryptjs |
+| API Communication | JavaScript Fetch API |
 
-## Environment Configuration
+## 3. System Architecture
 
-Create or update `backend/.env` with your PostgreSQL database credentials:
+The application follows a client-server architecture.
+
+1. **Frontend:** React provides the user interface and handles user interactions.
+2. **API Service:** The centralized API client sends HTTP requests and attaches JWT tokens when available.
+3. **Backend:** Express.js handles API requests, routing, middleware, and business logic.
+4. **ORM:** Prisma manages communication between the backend and PostgreSQL.
+5. **Database:** PostgreSQL stores application data.
+
+## 4. Project Folder Structure
+
+```text
+medicare-plus/
+├── backend/
+│   ├── prisma/
+│   │   ├── migrations/
+│   │   ├── schema.prisma
+│   │   └── seed.js
+│   ├── scripts/
+│   ├── src/
+│   │   ├── config/
+│   │   ├── data/
+│   │   ├── middleware/
+│   │   ├── routes/
+│   │   ├── utils/
+│   │   ├── app.js
+│   │   └── server.js
+│   ├── .env.example
+│   ├── package.json
+│   └── README.md
+├── public/
+├── src/
+│   ├── assets/
+│   ├── components/
+│   ├── context/
+│   ├── data/
+│   ├── layouts/
+│   ├── pages/
+│   ├── routes/
+│   ├── services/
+│   ├── utils/
+│   ├── App.jsx
+│   ├── App.css
+│   ├── index.css
+│   └── main.jsx
+├── index.html
+├── package.json
+├── vite.config.js
+└── README.md
+```
+
+## 5. Prerequisites
+
+Install the following software before running the project:
+
+- Node.js (v20 or later recommended)
+- npm
+- PostgreSQL (v14 or later)
+- Git
+
+## 6. Installation and Setup
+
+### Step 1: Clone the Repository
+
+```bash
+git clone https://github.com/imthathRM/medicare-plus.git
+cd medicare-plus
+```
+
+### Step 2: Install Frontend Dependencies
+
+Run from the project root:
+
+```bash
+npm install
+```
+
+### Step 3: Install Backend Dependencies
+
+```bash
+cd backend
+npm install
+```
+
+### Step 4: Configure Environment Variables
+
+Copy `.env.example` to `.env` inside the `backend/` directory.
+
+Update the values according to your local PostgreSQL configuration.
+
+Example:
 
 ```env
 PORT=5000
 NODE_ENV=development
 CORS_ORIGIN=http://localhost:5173
-
-# PostgreSQL Database Connection URL (Prisma ORM)
-DATABASE_URL="postgresql://USERNAME:PASSWORD@localhost:5432/MediCare_Plus?schema=public"
+DATABASE_URL="postgresql://postgres:YOUR_PASSWORD@localhost:5432/MediCare_Plus?schema=public"
+JWT_SECRET=replace_with_a_strong_secret
+JWT_EXPIRES_IN=24h
 ```
 
-> **Security Note**: Never commit `backend/.env` to Git. The file is excluded by `.gitignore`. Use `backend/.env.example` as a safe placeholder template.
+Do not commit the `.env` file or expose real credentials.
 
----
+### Step 5: Create the PostgreSQL Database
 
-## Database Setup & Prisma Migrations
+Create a PostgreSQL database named:
 
-### 1. Generate Prisma Client
-```bash
-cd backend
-npx prisma generate
+```text
+MediCare_Plus
 ```
 
-### 2. Apply Database Migrations
-```bash
-cd backend
-npx prisma migrate dev --name init_postgres_schema
-```
-*(If the `medicare` database does not exist, Prisma will prompt to create it automatically.)*
+Make sure PostgreSQL is running before continuing.
 
-### 3. Seed Sample Data (Optional / Repeatable)
-The seed script uses `upsert` queries to prevent duplicate entries:
+### Step 6: Generate Prisma Client
+
+From the `backend/` directory:
+
 ```bash
-cd backend
+npm run prisma:generate
+```
+
+### Step 7: Apply Database Migrations
+
+```bash
+npx prisma migrate deploy
+```
+
+### Step 8: Seed Initial Data
+
+```bash
 npm run prisma:seed
-# or
-npx prisma db seed
 ```
 
----
+The seed script inserts initial hospital data and demonstration user accounts. It uses Prisma `upsert` operations to avoid duplicate records.
 
-## Running the Backend
+## 7. Running the Application
 
-From the workspace root:
+Run the frontend and backend in separate terminals.
+
+### Terminal 1 — Frontend
+
+From the project root:
+
 ```bash
-# Start backend in production mode
-npm run server
-
-# Start backend in development mode with automatic reload
-npm run server:dev
-```
-
-Or from inside `backend/`:
-```bash
-cd backend
-npm start
 npm run dev
 ```
 
----
+Frontend URL:
 
-## Verification & Testing
-
-### Run Backend Test Suite
-```bash
-# From workspace root
-npm run test:backend
-
-# Or from inside backend/
-cd backend
-npm test
+```text
+http://localhost:5173
 ```
-The test suite verifies:
-1. `GET /api/health` returns HTTP 200 with `{ database: { status: 'connected', provider: 'postgresql' } }`.
-2. Per-user theme isolation in PostgreSQL (`doctor-sarah` = `dark`, `nurse-priya` = `light`).
-3. Theme input validation (rejecting non-`light`/`dark` values with HTTP 400).
-4. Full CRUD operations against PostgreSQL for Patients.
-5. Directory reads for Doctors, Departments, Appointments, Admissions, Invoices, Medicines, and Staff.
-6. Transactional payment recording against invoices (`POST /api/billing/:id/payment`).
-7. Transactional stock adjustments for medicines (`PUT /api/pharmacy/:id/stock`).
-8. Executive KPI metrics calculation directly from PostgreSQL collections.
-9. Centralized 404 and 500 error interception.
+
+### Terminal 2 — Backend
+
+From the project root:
+
+```bash
+npm run server:dev
+```
+
+Backend URL:
+
+```text
+http://localhost:5000
+```
+
+Backend health check:
+
+```text
+http://localhost:5000/api/health
+```
+
+## 8. API Overview
+
+The backend provides modular API route groups:
+
+| Module | Base API Path |
+|---|---|
+| Authentication | `/api/auth` |
+| Health | `/api/health` |
+| Settings | `/api/settings` |
+| Patients | `/api/patients` |
+| Doctors | `/api/doctors` |
+| Departments | `/api/departments` |
+| Appointments | `/api/appointments` |
+| Admissions | `/api/admissions` |
+| Billing | `/api/billing` |
+| Invoices | `/api/invoices` |
+| Pharmacy | `/api/pharmacy` |
+| Inventory | `/api/inventory` |
+| Staff | `/api/staff` |
+| Reports | `/api/reports` |
+
+## 9. Database Design
+
+The Prisma schema defines 11 database models:
+
+- User
+- Department
+- Doctor
+- Patient
+- Appointment
+- Admission
+- Invoice
+- Medicine
+- Staff
+- UserSetting
+- HospitalProfile
+
+The database uses relational associations between departments, doctors, patients, appointments, admissions, and invoices.
+
+## 10. Authentication and Security
+
+The backend uses:
+
+- JSON Web Tokens (JWT) for authentication.
+- bcryptjs for password hashing.
+- Bearer token authentication for protected API requests.
+- Environment variables for sensitive configuration.
+- Express middleware for request handling and error management.
+
+Never publish real passwords, JWT secrets, or database credentials.
+
+## 11. Build and Testing
+
+### Frontend Production Build
+
+From the project root:
+
+```bash
+npm run build
+```
+
+### Frontend Lint
+
+```bash
+npm run lint
+```
+
+### Backend Tests
+
+```bash
+npm run test:backend
+```
+
+Additional backend test commands can be executed inside `backend/`:
+
+```bash
+npm run test:integration
+npm run test:system
+npm run test:all
+```
+
+## 12. Additional Documentation
+
+For backend-specific setup, database configuration, migrations, API testing, and troubleshooting, refer to:
+
+```text
+backend/README.md
+```
+
+## 13. Project Repository
+
+GitHub: https://github.com/imthathRM/medicare-plus
 
 ---
 
-## Common Connection & Migration Errors
-
-| Error | Cause | Solution |
-| :--- | :--- | :--- |
-| `fe_sendauth: no password supplied` | PostgreSQL requires password authentication but password was omitted. | Ensure `DATABASE_URL` in `backend/.env` includes the correct password: `postgresql://user:password@localhost:5432/MediCare_Plus?schema=public`. |
-| `Database MediCare_Plus does not exist` | Database has not been initialized yet in pgAdmin or PostgreSQL. | Create the database in pgAdmin or run `CREATE DATABASE "MediCare_Plus";` in `psql`, then apply migrations. |
-| `Environment variable not found: DATABASE_URL` | Prisma command was executed outside `backend/` where `.env` is located. | Change directory to `backend/` before running Prisma commands, or pass `--schema=backend/prisma/schema.prisma`. |
-| `ECONNREFUSED 127.0.0.1:5432` | PostgreSQL service is stopped or port 5432 is blocked. | Verify that the Windows service `postgresql-x64-17` is running (`Get-Service *postgres*`). |
-
----
-
-## Roadmap Alignment (Remaining Stages)
-
-- **Stage 7 — Authentication & Authorization**: Implement JWT authentication, bcrypt password hashing, login/register endpoints, and role-based access control (Admin, Doctor, Nurse, Staff). Replace `devUserResolver` with secure token verification.
-- **Stage 8 — Frontend-Backend Integration**: Wire React frontend service modules (`src/services/*.js`) to live Express endpoints, replacing mock delays with async HTTP client calls.
+**MediCare Plus — Hospital Management System**
